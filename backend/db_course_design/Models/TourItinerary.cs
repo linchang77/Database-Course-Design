@@ -9,7 +9,7 @@ public partial class TourItinerary
 
     public byte? GroupId { get; set; }
 
-    public DateTime? ItineraryDate { get; set; }
+    public DateTime? ItineraryTime { get; set; }
 
     public TimeSpan? ItineraryDuration { get; set; }
 

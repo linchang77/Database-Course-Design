@@ -39,6 +39,8 @@ public partial class ModelContext : DbContext
 
     public virtual DbSet<HotelRoom> HotelRooms { get; set; }
 
+    public virtual DbSet<HotelRoomType> HotelRoomTypes { get; set; }
+
     public virtual DbSet<OrderDatum> OrderData { get; set; }
 
     public virtual DbSet<ScenicSpot> ScenicSpots { get; set; }
@@ -88,10 +90,12 @@ public partial class ModelContext : DbContext
             entity.Property(e => e.AdminName)
                 .HasMaxLength(20)
                 .IsUnicode(false)
+                .HasDefaultValueSql("null\n")
                 .HasColumnName("ADMIN_NAME");
             entity.Property(e => e.Password)
                 .HasMaxLength(20)
                 .IsUnicode(false)
+                .HasDefaultValueSql("null\n")
                 .HasColumnName("PASSWORD");
         });
 
@@ -156,29 +160,29 @@ public partial class ModelContext : DbContext
                 .HasColumnType("NUMBER(38)")
                 .HasColumnName("FINANCIAL_RECORD_ID");
             entity.Property(e => e.Expence)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("null\n")
                 .HasColumnType("NUMBER(12,2)")
                 .HasColumnName("EXPENCE");
             entity.Property(e => e.FinancialRecordCategory)
                 .HasMaxLength(20)
                 .IsUnicode(false)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("null\n")
                 .HasColumnName("FINANCIAL_RECORD_CATEGORY");
             entity.Property(e => e.FinancialRecordDescription)
                 .HasMaxLength(150)
                 .IsUnicode(false)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("null\n")
                 .HasColumnName("FINANCIAL_RECORD_DESCRIPTION");
             entity.Property(e => e.Income)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("null\n")
                 .HasColumnType("NUMBER(12,2)")
                 .HasColumnName("INCOME");
             entity.Property(e => e.Profit)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("null\n")
                 .HasColumnType("NUMBER(12,2)")
                 .HasColumnName("PROFIT");
             entity.Property(e => e.RecordingDate)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("null\n")
                 .HasColumnType("DATE")
                 .HasColumnName("RECORDING_DATE");
         });
@@ -440,6 +444,33 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("ROOM_TYPE");
+
+            entity.HasOne(d => d.HotelRoomType).WithMany(p => p.HotelRooms)
+                .HasForeignKey(d => new { d.HotelId, d.RoomType })
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("HOTEL_ID_AND_ROOM_TYPE_AS_FK_OF_HOTEL_ROOM_REFERENCING_HOTEL");
+        });
+
+        modelBuilder.Entity<HotelRoomType>(entity =>
+        {
+            entity.HasKey(e => new { e.HotelId, e.RoomType }).HasName("HOTEL_ID_AND_ROOM_TYPE_AS_PK_OF_HOTEL_ROOM_TYPE");
+
+            entity.ToTable("HOTEL_ROOM_TYPE");
+
+            entity.Property(e => e.HotelId)
+                .HasColumnType("NUMBER(38)")
+                .HasColumnName("HOTEL_ID");
+            entity.Property(e => e.RoomType)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("ROOM_TYPE");
+            entity.Property(e => e.RoomPrice)
+                .HasColumnType("NUMBER(6,2)")
+                .HasColumnName("ROOM_PRICE");
+
+            entity.HasOne(d => d.Hotel).WithMany(p => p.HotelRoomTypes)
+                .HasForeignKey(d => d.HotelId)
+                .HasConstraintName("HOTEL_ID_AS_FK_OF_HOTEL_ROOM_TYPE_REFERENCING_HOTEL");
         });
 
         modelBuilder.Entity<OrderDatum>(entity =>
@@ -458,7 +489,6 @@ public partial class ModelContext : DbContext
             entity.Property(e => e.OrderType)
                 .HasMaxLength(20)
                 .IsUnicode(false)
-                .ValueGeneratedOnAdd()
                 .HasColumnName("ORDER_TYPE");
             entity.Property(e => e.Price)
                 .HasColumnType("NUMBER(8,2)")
@@ -587,6 +617,9 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("GROUP_NAME");
+            entity.Property(e => e.GroupPrice)
+                .HasColumnType("NUMBER(6,2)")
+                .HasColumnName("GROUP_PRICE");
             entity.Property(e => e.GuideId)
                 .HasPrecision(4)
                 .HasColumnName("GUIDE_ID");
@@ -629,20 +662,21 @@ public partial class ModelContext : DbContext
 
             entity.Property(e => e.ItineraryId)
                 .HasPrecision(2)
+                .ValueGeneratedOnAdd()
                 .HasColumnName("ITINERARY_ID");
             entity.Property(e => e.Activities)
-                .HasMaxLength(20)
+                .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("ACTIVITIES");
             entity.Property(e => e.GroupId)
                 .HasPrecision(4)
                 .HasColumnName("GROUP_ID");
-            entity.Property(e => e.ItineraryDate)
-                .HasColumnType("DATE")
-                .HasColumnName("ITINERARY_DATE");
             entity.Property(e => e.ItineraryDuration)
                 .HasColumnType("INTERVAL DAY(2) TO SECOND(6)")
                 .HasColumnName("ITINERARY_DURATION");
+            entity.Property(e => e.ItineraryTime)
+                .HasColumnType("DATE")
+                .HasColumnName("ITINERARY_TIME");
             entity.Property(e => e.Location)
                 .HasMaxLength(20)
                 .IsUnicode(false)
@@ -689,7 +723,6 @@ public partial class ModelContext : DbContext
 
             entity.Property(e => e.TransactionId)
                 .HasPrecision(10)
-                .ValueGeneratedNever()
                 .HasColumnName("TRANSACTION_ID");
             entity.Property(e => e.Amount)
                 .HasColumnType("NUMBER(12,2)")
@@ -715,7 +748,7 @@ public partial class ModelContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("TRANSACTION_STATUS");
             entity.Property(e => e.TransactionTime)
-                .HasPrecision(0)
+                .HasColumnType("DATE")
                 .HasColumnName("TRANSACTION_TIME");
             entity.Property(e => e.UserId)
                 .HasPrecision(4)
@@ -728,6 +761,8 @@ public partial class ModelContext : DbContext
 
             entity.ToTable("USERS");
 
+            entity.HasIndex(e => e.UserName, "USER_NAME_UNIQUE").IsUnique();
+
             entity.Property(e => e.UserId)
                 .HasPrecision(8)
                 .HasColumnName("USER_ID");
@@ -735,26 +770,27 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("''\n")
                 .HasColumnName("PASSWORD");
             entity.Property(e => e.ProfilePicture)
                 .HasMaxLength(20)
                 .IsUnicode(false)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("''\n")
                 .HasColumnName("PROFILE_PICTURE");
             entity.Property(e => e.RegistrationTime)
-                .HasPrecision(0)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("to_date('2024/07/25 00:00:00', 'yyyy/mm/dd hh24:mi:ss')\n")
+                .HasColumnType("DATE")
                 .HasColumnName("REGISTRATION_TIME");
             entity.Property(e => e.UserGender)
                 .HasMaxLength(4)
                 .IsUnicode(false)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("'无'\n")
                 .IsFixedLength()
                 .HasColumnName("USER_GENDER");
             entity.Property(e => e.UserName)
                 .HasMaxLength(20)
                 .IsUnicode(false)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("''\n")
                 .HasColumnName("USER_NAME");
         });
 
@@ -812,16 +848,28 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("ARRIVAL_CITY");
+            entity.Property(e => e.ArrivalStation)
+                .HasMaxLength(40)
+                .IsUnicode(false)
+                .HasColumnName("ARRIVAL_STATION");
             entity.Property(e => e.ArrivalTime)
-                .HasPrecision(0)
+                .HasColumnType("DATE")
                 .HasColumnName("ARRIVAL_TIME");
             entity.Property(e => e.DepartureCity)
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("DEPARTURE_CITY");
+            entity.Property(e => e.DepartureStation)
+                .HasMaxLength(40)
+                .IsUnicode(false)
+                .HasColumnName("DEPARTURE_STATION");
             entity.Property(e => e.DepartureTime)
-                .HasPrecision(0)
+                .HasColumnType("DATE")
                 .HasColumnName("DEPARTURE_TIME");
+            entity.Property(e => e.VehicleModel)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("VEHICLE_MODEL");
             entity.Property(e => e.VehicleType)
                 .HasMaxLength(20)
                 .IsUnicode(false)
@@ -852,15 +900,23 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("TICKET_ARRIVAL_CITY");
+            entity.Property(e => e.TicketArrivalStation)
+                .HasMaxLength(40)
+                .IsUnicode(false)
+                .HasColumnName("TICKET_ARRIVAL_STATION");
             entity.Property(e => e.TicketArrivalTime)
-                .HasPrecision(0)
+                .HasColumnType("DATE")
                 .HasColumnName("TICKET_ARRIVAL_TIME");
             entity.Property(e => e.TicketDepartureCity)
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("TICKET_DEPARTURE_CITY");
+            entity.Property(e => e.TicketDepartureStation)
+                .HasMaxLength(40)
+                .IsUnicode(false)
+                .HasColumnName("TICKET_DEPARTURE_STATION");
             entity.Property(e => e.TicketDepartureTime)
-                .HasPrecision(0)
+                .HasColumnType("DATE")
                 .HasColumnName("TICKET_DEPARTURE_TIME");
             entity.Property(e => e.TicketPrice)
                 .HasColumnType("NUMBER(6,2)")
@@ -889,6 +945,7 @@ public partial class ModelContext : DbContext
 
             entity.HasOne(d => d.Vehicle).WithMany(p => p.VehicleTickets)
                 .HasForeignKey(d => d.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("VEHICLE_ID_AS_FK_OF_VEHICLE_TICKET_REFERENCING_TRAIN_SCHEDULE");
         });
         modelBuilder.HasSequence("LOGMNR_DIDS$");

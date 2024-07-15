@@ -5,9 +5,9 @@ namespace EntityFramework.Models;
 
 public partial class VehicleTicket
 {
-    public string VehicleId { get; set; } = null!;
+    public string? VehicleId { get; set; }
 
-    public string TicketType { get; set; } = null!;
+    public string? TicketType { get; set; }
 
     public decimal? TicketPrice { get; set; }
 
@@ -23,11 +23,15 @@ public partial class VehicleTicket
 
     public decimal? TicketRemaining { get; set; }
 
+    public string? TicketDepartureStation { get; set; }
+
+    public string? TicketArrivalStation { get; set; }
+
     public virtual City? TicketArrivalCityNavigation { get; set; }
 
     public virtual City? TicketDepartureCityNavigation { get; set; }
 
-    public virtual VehicleSchedule Vehicle { get; set; } = null!;
+    public virtual VehicleSchedule? Vehicle { get; set; }
 
     public virtual ICollection<VehicleOrder> VehicleOrders { get; set; } = new List<VehicleOrder>();
 }

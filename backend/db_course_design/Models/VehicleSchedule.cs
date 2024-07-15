@@ -17,6 +17,12 @@ public partial class VehicleSchedule
 
     public string? DepartureCity { get; set; }
 
+    public string? VehicleModel { get; set; }
+
+    public string? ArrivalStation { get; set; }
+
+    public string? DepartureStation { get; set; }
+
     public virtual City? ArrivalCityNavigation { get; set; }
 
     public virtual City? DepartureCityNavigation { get; set; }

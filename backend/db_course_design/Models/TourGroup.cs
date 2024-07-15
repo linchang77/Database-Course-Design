@@ -15,6 +15,8 @@ public partial class TourGroup
 
     public string? GroupName { get; set; }
 
+    public decimal? GroupPrice { get; set; }
+
     public virtual Guide? Guide { get; set; }
 
     public virtual ICollection<TourItinerary> TourItineraries { get; set; } = new List<TourItinerary>();

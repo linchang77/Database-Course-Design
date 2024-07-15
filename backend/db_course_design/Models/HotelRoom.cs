@@ -14,4 +14,6 @@ public partial class HotelRoom
     public bool? RoomClear { get; set; }
 
     public virtual ICollection<HotelOrder> HotelOrders { get; set; } = new List<HotelOrder>();
+
+    public virtual HotelRoomType? HotelRoomType { get; set; }
 }
