@@ -436,17 +436,10 @@ public partial class ModelContext : DbContext
             entity.Property(e => e.RoomClear)
                 .HasPrecision(1)
                 .HasColumnName("ROOM_CLEAR");
-            entity.Property(e => e.RoomPrice)
-                .HasColumnType("NUMBER(6,2)")
-                .HasColumnName("ROOM_PRICE");
             entity.Property(e => e.RoomType)
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("ROOM_TYPE");
-
-            entity.HasOne(d => d.Hotel).WithMany(p => p.HotelRooms)
-                .HasForeignKey(d => d.HotelId)
-                .HasConstraintName("HOTEL_ID_AS_FK_OF_HOTEL_ROOM_REFERENCING_HOTEL");
         });
 
         modelBuilder.Entity<OrderDatum>(entity =>

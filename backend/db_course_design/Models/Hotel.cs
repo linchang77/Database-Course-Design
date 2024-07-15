@@ -18,6 +18,4 @@ public partial class Hotel
     public string? HotelIntroduction { get; set; }
 
     public virtual City? CityNameNavigation { get; set; }
-
-    public virtual ICollection<HotelRoom> HotelRooms { get; set; } = new List<HotelRoom>();
 }
