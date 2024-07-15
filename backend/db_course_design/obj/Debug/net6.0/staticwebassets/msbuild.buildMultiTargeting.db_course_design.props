@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\db_course_design.props" />
+</Project>
