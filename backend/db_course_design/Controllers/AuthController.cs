@@ -10,6 +10,8 @@ namespace db_course_design.Controler
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+        //加盐的值
+        private string salt = "jleyrCCO8Z+JT5mez87yuw==";
         //建立一个请求登录的表
         public class LoginRequest
         {
@@ -44,7 +46,7 @@ namespace db_course_design.Controler
         {
             var admin = await _context.Users
                 .FirstOrDefaultAsync(a => a.UserName == loginRequest.UserName 
-                && a.Password == loginRequest.Password);
+                && a.Password == SaltedPassword.HashPassword(loginRequest.Password,salt));
 
             if (admin == null)
             {
@@ -58,7 +60,7 @@ namespace db_course_design.Controler
         {
             var admin = await _context.Admins
                 .FirstOrDefaultAsync(a => a.AdminName == loginRequest.UserName
-                && a.Password == loginRequest.Password);
+                && a.Password == SaltedPassword.HashPassword(loginRequest.Password, salt));
             if (admin == null)
             {
                 return Ok(Result<string>.Error("Invalid credentials"));
@@ -72,7 +74,7 @@ namespace db_course_design.Controler
         {
             var admin = await _context.Guides
                 .FirstOrDefaultAsync(a => a.GuideName == loginRequest.UserName
-                && a.Password == loginRequest.Password);
+                && a.Password == SaltedPassword.HashPassword(loginRequest.Password, salt));
 
             if (admin == null)
             {
@@ -99,7 +101,8 @@ namespace db_course_design.Controler
             var newAdmin = new Admin
             {
                 AdminName = registerRequest.UserName,
-                Password = registerRequest.Password
+                Password = SaltedPassword.HashPassword(registerRequest.Password, salt)
+
             };
 
             _context.Admins.Add(newAdmin);
@@ -125,7 +128,7 @@ namespace db_course_design.Controler
             var newUser = new User
             {
                 UserName = registerRequest.UserName,
-                Password = registerRequest.Password,
+                Password = SaltedPassword.HashPassword(registerRequest.Password, salt),
                 RegistrationTime = DateTime.Now
             };
 
@@ -152,7 +155,7 @@ namespace db_course_design.Controler
             var newguide = new Guide
             {
                 GuideName = registerRequest.UserName,
-                Password = registerRequest.Password
+                Password = SaltedPassword.HashPassword(registerRequest.Password, salt)
             };
 
             _context.Guides.Add(newguide);
