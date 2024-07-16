@@ -1,14 +1,26 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\linchang\\source\\repos\\db_course_design\\",
+  "WorkspaceRootPath": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|c:\\users\\linchang\\source\\repos\\db_course_design\\db_course_design\\models\\modelcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|solutionrelative:db_course_design\\models\\modelcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|c:\\users\\linchang\\desktop\\database-course-design\\backend\\db_course_design\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|solutionrelative:db_course_design\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|c:\\users\\linchang\\source\\repos\\db_course_design\\db_course_design\\models\\admin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|c:\\users\\linchang\\desktop\\database-course-design\\backend\\db_course_design\\models\\guide.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|solutionrelative:db_course_design\\models\\guide.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|c:\\users\\linchang\\desktop\\database-course-design\\backend\\db_course_design\\models\\admin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|solutionrelative:db_course_design\\models\\admin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|c:\\users\\linchang\\desktop\\database-course-design\\backend\\db_course_design\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|solutionrelative:db_course_design\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|c:\\users\\linchang\\desktop\\database-course-design\\backend\\db_course_design\\models\\modelcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4B85350A-F140-4310-B9DC-A2774FE4D638}|db_course_design\\db_course_design.csproj|solutionrelative:db_course_design\\models\\modelcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedHeight": 111,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -30,27 +42,68 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ModelContext.cs",
-              "DocumentMoniker": "C:\\Users\\linchang\\source\\repos\\db_course_design\\db_course_design\\Models\\ModelContext.cs",
-              "RelativeDocumentMoniker": "db_course_design\\Models\\ModelContext.cs",
-              "ToolTip": "C:\\Users\\linchang\\source\\repos\\db_course_design\\db_course_design\\Models\\ModelContext.cs",
-              "RelativeToolTip": "db_course_design\\Models\\ModelContext.cs",
-              "ViewState": "AQIAALwDAAAAAAAAAADwv8UDAAAAAAAA",
+              "DocumentIndex": 1,
+              "Title": "Guide.cs",
+              "DocumentMoniker": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\Models\\Guide.cs",
+              "RelativeDocumentMoniker": "db_course_design\\Models\\Guide.cs",
+              "ToolTip": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\Models\\Guide.cs",
+              "RelativeToolTip": "db_course_design\\Models\\Guide.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-15T12:57:35.028Z"
+              "WhenOpened": "2024-07-16T02:48:00.196Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Admin.cs",
-              "DocumentMoniker": "C:\\Users\\linchang\\source\\repos\\db_course_design\\db_course_design\\Models\\Admin.cs",
-              "RelativeDocumentMoniker": "db_course_design\\Models\\Admin.cs",
-              "ToolTip": "C:\\Users\\linchang\\source\\repos\\db_course_design\\db_course_design\\Models\\Admin.cs",
-              "RelativeToolTip": "db_course_design\\Models\\Admin.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAADwvwAAAAAAAAAA",
+              "DocumentIndex": 3,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\Models\\User.cs",
+              "RelativeDocumentMoniker": "db_course_design\\Models\\User.cs",
+              "ToolTip": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\Models\\User.cs",
+              "RelativeToolTip": "db_course_design\\Models\\User.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAADwvw8AAAAvAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-15T12:57:25.566Z"
+              "WhenOpened": "2024-07-16T02:47:55.218Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "db_course_design\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "db_course_design\\Controllers\\AuthController.cs",
+              "ViewState": "AQIAAFcAAAAAAAAAAAAUwF0AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-16T02:39:51.854Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ModelContext.cs",
+              "DocumentMoniker": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\Models\\ModelContext.cs",
+              "RelativeDocumentMoniker": "db_course_design\\Models\\ModelContext.cs",
+              "ToolTip": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\Models\\ModelContext.cs",
+              "RelativeToolTip": "db_course_design\\Models\\ModelContext.cs",
+              "ViewState": "AQIAAOwCAAAAAAAAAAAAAPoCAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-15T12:57:35.028Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Admin.cs",
+              "DocumentMoniker": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\Models\\Admin.cs",
+              "RelativeDocumentMoniker": "db_course_design\\Models\\Admin.cs",
+              "ToolTip": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\Models\\Admin.cs",
+              "RelativeToolTip": "db_course_design\\Models\\Admin.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAADwvwsAAAAcAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-15T12:57:25.566Z",
+              "EditorCaption": ""
             }
           ]
         },
