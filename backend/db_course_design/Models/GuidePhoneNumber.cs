@@ -5,7 +5,7 @@ namespace EntityFramework.Models;
 
 public partial class GuidePhoneNumber
 {
-    public string GuidePhoneNumber1 { get; set; } = null!;
+    public string PhoneNumber { get; set; } = null!;
 
     public byte GuideId { get; set; }
 

@@ -160,28 +160,34 @@ public partial class ModelContext : DbContext
                 .HasColumnType("NUMBER(38)")
                 .HasColumnName("FINANCIAL_RECORD_ID");
             entity.Property(e => e.Expence)
+                .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("null\n")
                 .HasColumnType("NUMBER(12,2)")
                 .HasColumnName("EXPENCE");
             entity.Property(e => e.FinancialRecordCategory)
                 .HasMaxLength(20)
                 .IsUnicode(false)
+                .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("null\n")
                 .HasColumnName("FINANCIAL_RECORD_CATEGORY");
             entity.Property(e => e.FinancialRecordDescription)
                 .HasMaxLength(150)
                 .IsUnicode(false)
+                .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("null\n")
                 .HasColumnName("FINANCIAL_RECORD_DESCRIPTION");
             entity.Property(e => e.Income)
+                .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("null\n")
                 .HasColumnType("NUMBER(12,2)")
                 .HasColumnName("INCOME");
             entity.Property(e => e.Profit)
+                .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("null\n")
                 .HasColumnType("NUMBER(12,2)")
                 .HasColumnName("PROFIT");
             entity.Property(e => e.RecordingDate)
+                .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("null\n")
                 .HasColumnType("DATE")
                 .HasColumnName("RECORDING_DATE");
@@ -231,31 +237,10 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("PASSWORD");
-            entity.Property(e => e.TravelGroup)
-                .HasMaxLength(20)
+            entity.Property(e => e.ProfilePicture)
+                .HasMaxLength(40)
                 .IsUnicode(false)
-                .HasColumnName("TRAVEL_GROUP");
-
-            entity.HasMany(d => d.Groups).WithMany(p => p.Guides)
-                .UsingEntity<Dictionary<string, object>>(
-                    "GuidingTour",
-                    r => r.HasOne<TourGroup>().WithMany()
-                        .HasForeignKey("GroupId")
-                        .HasConstraintName("GROUP_ID_AS_FK_OF_GUIDING_TOUR_REFERENCING_TOUR_GROUP"),
-                    l => l.HasOne<Guide>().WithMany()
-                        .HasForeignKey("GuideId")
-                        .HasConstraintName("GUIDE_ID_AS_FK_OF_GUIDING_TOUR_REFERENCING_GUIDE"),
-                    j =>
-                    {
-                        j.HasKey("GuideId", "GroupId").HasName("GUIDE_ID_AND_GROUP_ID_AS_PK_OF_GUIDING_TOUR");
-                        j.ToTable("GUIDING_TOUR");
-                        j.IndexerProperty<byte>("GuideId")
-                            .HasPrecision(4)
-                            .HasColumnName("GUIDE_ID");
-                        j.IndexerProperty<byte>("GroupId")
-                            .HasPrecision(4)
-                            .HasColumnName("GROUP_ID");
-                    });
+                .HasColumnName("PROFILE_PICTURE");
         });
 
         modelBuilder.Entity<GuideOrder>(entity =>
@@ -294,14 +279,14 @@ public partial class ModelContext : DbContext
 
         modelBuilder.Entity<GuidePhoneNumber>(entity =>
         {
-            entity.HasKey(e => new { e.GuidePhoneNumber1, e.GuideId }).HasName("GUIDE_ID_AND_GUIDE_PHONE_NUMBER_AS_PK_OF_GUIDE_PHONE_NUMBER");
+            entity.HasKey(e => new { e.PhoneNumber, e.GuideId }).HasName("GUIDE_ID_AND_GUIDE_PHONE_NUMBER_AS_PK_OF_GUIDE_PHONE_NUMBER");
 
             entity.ToTable("GUIDE_PHONE_NUMBER");
 
-            entity.Property(e => e.GuidePhoneNumber1)
+            entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(20)
                 .IsUnicode(false)
-                .HasColumnName("GUIDE_PHONE_NUMBER");
+                .HasColumnName("PHONE_NUMBER");
             entity.Property(e => e.GuideId)
                 .HasPrecision(4)
                 .HasColumnName("GUIDE_ID");
@@ -489,6 +474,7 @@ public partial class ModelContext : DbContext
             entity.Property(e => e.OrderType)
                 .HasMaxLength(20)
                 .IsUnicode(false)
+                .ValueGeneratedOnAdd()
                 .HasColumnName("ORDER_TYPE");
             entity.Property(e => e.Price)
                 .HasColumnType("NUMBER(8,2)")
@@ -773,23 +759,27 @@ public partial class ModelContext : DbContext
                 .HasDefaultValueSql("''\n")
                 .HasColumnName("PASSWORD");
             entity.Property(e => e.ProfilePicture)
-                .HasMaxLength(20)
+                .HasMaxLength(40)
                 .IsUnicode(false)
+                .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("''\n")
                 .HasColumnName("PROFILE_PICTURE");
             entity.Property(e => e.RegistrationTime)
+                .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("to_date('2024/07/25 00:00:00', 'yyyy/mm/dd hh24:mi:ss')\n")
                 .HasColumnType("DATE")
                 .HasColumnName("REGISTRATION_TIME");
             entity.Property(e => e.UserGender)
                 .HasMaxLength(4)
                 .IsUnicode(false)
+                .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("'无'\n")
                 .IsFixedLength()
                 .HasColumnName("USER_GENDER");
             entity.Property(e => e.UserName)
                 .HasMaxLength(20)
                 .IsUnicode(false)
+                .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("''\n")
                 .HasColumnName("USER_NAME");
         });
@@ -820,7 +810,7 @@ public partial class ModelContext : DbContext
             entity.ToTable("VEHICLE_ORDER");
 
             entity.Property(e => e.OrderId)
-                .HasColumnType("NUMBER(20)")
+                .HasPrecision(10)
                 .HasColumnName("ORDER_ID");
             entity.Property(e => e.TicketId)
                 .HasColumnType("NUMBER(38)")
@@ -828,6 +818,10 @@ public partial class ModelContext : DbContext
             entity.Property(e => e.TicketNumber)
                 .HasColumnType("NUMBER(38)")
                 .HasColumnName("TICKET_NUMBER");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.VehicleOrders)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("ORDER_ID_AS_FK_OF_VEHICLE_ORDER_REFERENCING_ORDER_DATA");
 
             entity.HasOne(d => d.Ticket).WithMany(p => p.VehicleOrders)
                 .HasForeignKey(d => d.TicketId)

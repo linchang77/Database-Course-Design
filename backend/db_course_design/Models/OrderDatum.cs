@@ -26,4 +26,6 @@ public partial class OrderDatum
     public virtual TourOrder? TourOrder { get; set; }
 
     public virtual User? User { get; set; }
+
+    public virtual ICollection<VehicleOrder> VehicleOrders { get; set; } = new List<VehicleOrder>();
 }

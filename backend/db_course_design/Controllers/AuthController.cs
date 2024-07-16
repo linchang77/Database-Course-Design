@@ -32,7 +32,7 @@ namespace db_course_design.Controler
         }
 
         /*业务逻辑：
-         登录界面可以选择管理员登录还是用户登录，有两个身份的登录接口
+         登录界面可以选择管理员登录还是用户登录还是导游登录，有三个身份的登录接口
          输入：用户名和密码
          输出：字符串
          注册界面可以选择管理员注册还是用户注册
@@ -51,7 +51,7 @@ namespace db_course_design.Controler
                 return Ok(Result<string>.Error("Invalid credentials"));
             }
 
-            return Ok(Result<string>.Success("Admin login successful"));
+            return Ok(Result<string>.Success("User login successful"));
         }
         [HttpPost("login/admin")]
         public async Task<IActionResult> AdminLogin([FromBody] LoginRequest loginRequest)
@@ -66,7 +66,23 @@ namespace db_course_design.Controler
 
             return Ok(Result<string>.Success("Admin login successful"));
         }
-        // 用户注册API
+
+        [HttpPost("login/guide")]
+        public async Task<IActionResult> GuideLogin([FromBody] LoginRequest loginRequest)
+        {
+            var admin = await _context.Guides
+                .FirstOrDefaultAsync(a => a.GuideName == loginRequest.UserName
+                && a.Password == loginRequest.Password);
+
+            if (admin == null)
+            {
+                return Ok(Result<string>.Error("Invalid credentials"));
+            }
+
+            return Ok(Result<string>.Success("Guide login successful"));
+        }
+
+        // 管理员注册
         [HttpPost("register/admin")]
         public async Task<IActionResult> AdminRegister([FromBody] RegisterRequest registerRequest)
         {
@@ -92,7 +108,7 @@ namespace db_course_design.Controler
             return Ok(Result<string>.Success("Admin registered successfully"));
         }
 
-
+        //用户注册
         [HttpPost("register/user")]
         public async Task<IActionResult> UserRegister([FromBody] RegisterRequest registerRequest)
         {
@@ -117,6 +133,32 @@ namespace db_course_design.Controler
             await _context.SaveChangesAsync();
 
             return Ok(Result<string>.Success("User registered successfully"));
+        }
+
+        //导游注册
+        [HttpPost("register/guide")]
+        public async Task<IActionResult> GuideRegister([FromBody] RegisterRequest registerRequest)
+        {
+            // 检查用户名是否已存在
+            var existingUser = await _context.Guides
+                .FirstOrDefaultAsync(u => u.GuideName == registerRequest.UserName);
+
+            if (existingUser != null)
+            {
+                return Ok(Result<string>.Error("Guide already exists"));
+            }
+
+            // 创建新用户
+            var newguide = new Guide
+            {
+                GuideName = registerRequest.UserName,
+                Password = registerRequest.Password
+            };
+
+            _context.Guides.Add(newguide);
+            await _context.SaveChangesAsync();
+
+            return Ok(Result<string>.Success("Guide registered successfully"));
         }
     }
 }

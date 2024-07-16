@@ -13,8 +13,6 @@ public partial class Guide
 
     public string? GuideGender { get; set; }
 
-    public string? TravelGroup { get; set; }
-
     public bool? GuideFree { get; set; }
 
     public string? GuideIntroduction { get; set; }
@@ -27,6 +25,8 @@ public partial class Guide
 
     public decimal? GuidePrice { get; set; }
 
+    public string? ProfilePicture { get; set; }
+
     public virtual ICollection<GuideOrder> GuideOrders { get; set; } = new List<GuideOrder>();
 
     public virtual ICollection<GuidePhoneNumber> GuidePhoneNumbers { get; set; } = new List<GuidePhoneNumber>();
@@ -36,6 +36,4 @@ public partial class Guide
     public virtual ICollection<GuideSalaryRecord> GuideSalaryRecords { get; set; } = new List<GuideSalaryRecord>();
 
     public virtual ICollection<TourGroup> TourGroups { get; set; } = new List<TourGroup>();
-
-    public virtual ICollection<TourGroup> Groups { get; set; } = new List<TourGroup>();
 }

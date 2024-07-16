@@ -23,7 +23,5 @@ public partial class TourGroup
 
     public virtual ICollection<TourOrder> TourOrders { get; set; } = new List<TourOrder>();
 
-    public virtual ICollection<Guide> Guides { get; set; } = new List<Guide>();
-
     public virtual ICollection<User> Users { get; set; } = new List<User>();
 }
