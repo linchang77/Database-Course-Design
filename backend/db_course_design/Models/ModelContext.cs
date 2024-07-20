@@ -532,7 +532,7 @@ public partial class ModelContext : DbContext
 
         modelBuilder.Entity<ScenicSpotOrder>(entity =>
         {
-            entity.HasKey(e => new { e.OrderId, e.ScenicSpotId, e.TicketType }).HasName("ORDER_ID_AND_SCENIC_SPOT_ID_AND_TICKET_TYPE_AS_PK_OF_SCENIC_SPOT_ORDER");
+            entity.HasKey(e => new { e.OrderId, e.ScenicSpotId, e.TicketType, e.TicketDate }).HasName("ORDER_ID_AND_SCENIC_SPOT_ID_AND_TICKET_TYPE_AS_PK_OF_SCENIC_SPOT_ORDER");
 
             entity.ToTable("SCENIC_SPOT_ORDER");
 
@@ -546,6 +546,9 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("TICKET_TYPE");
+            entity.Property(e => e.TicketDate)
+                .HasColumnType("DATE")
+                .HasColumnName("TICKET_DATE");
             entity.Property(e => e.TicketNumber)
                 .HasColumnType("NUMBER(38)")
                 .HasColumnName("TICKET_NUMBER");
@@ -555,13 +558,13 @@ public partial class ModelContext : DbContext
                 .HasConstraintName("ORDER_ID_AS_FK_OF_SCENIC_SPOT_ORDER_REFERENCING_USERS");
 
             entity.HasOne(d => d.ScenicSpotTicket).WithMany(p => p.ScenicSpotOrders)
-                .HasForeignKey(d => new { d.ScenicSpotId, d.TicketType })
+                .HasForeignKey(d => new { d.ScenicSpotId, d.TicketType, d.TicketDate })
                 .HasConstraintName("SCENIC_SPOT_ID_AND_TICKET_TYPE_AS_FK_OF_SCENIC_SPOT_ORDER_REFERENCING_SCENIC_SPOT_TICKET");
         });
 
         modelBuilder.Entity<ScenicSpotTicket>(entity =>
         {
-            entity.HasKey(e => new { e.ScenicSpotId, e.TicketType }).HasName("SCENIC_SPOT_ID_AND_TICKET_TYPE_AS_PK_OF_SCENIC_SPOT_TICKET");
+            entity.HasKey(e => new { e.ScenicSpotId, e.TicketType, e.TicketDate }).HasName("SCENIC_SPOT_ID_AND_TICKET_TYPE_AS_PK_OF_SCENIC_SPOT_TICKET");
 
             entity.ToTable("SCENIC_SPOT_TICKET");
 
@@ -572,6 +575,9 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("TICKET_TYPE");
+            entity.Property(e => e.TicketDate)
+                .HasColumnType("DATE")
+                .HasColumnName("TICKET_DATE");
             entity.Property(e => e.TicketPrice)
                 .HasColumnType("NUMBER(6,2)")
                 .HasColumnName("TICKET_PRICE");
@@ -805,7 +811,7 @@ public partial class ModelContext : DbContext
 
         modelBuilder.Entity<VehicleOrder>(entity =>
         {
-            entity.HasKey(e => new { e.OrderId, e.TicketId }).HasName("ORDER_ID_AND_TICKET_ID_AS_PK_OF_VEHICLE_ORDER");
+            entity.HasKey(e => new { e.OrderId, e.TicketId, e.TicketUserName }).HasName("ORDER_ID_AND_TICKET_ID_AS_PK_OF_VEHICLE_ORDER");
 
             entity.ToTable("VEHICLE_ORDER");
 
@@ -815,9 +821,10 @@ public partial class ModelContext : DbContext
             entity.Property(e => e.TicketId)
                 .HasColumnType("NUMBER(38)")
                 .HasColumnName("TICKET_ID");
-            entity.Property(e => e.TicketNumber)
-                .HasColumnType("NUMBER(38)")
-                .HasColumnName("TICKET_NUMBER");
+            entity.Property(e => e.TicketUserName)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("TICKET_USER_NAME");
 
             entity.HasOne(d => d.Order).WithMany(p => p.VehicleOrders)
                 .HasForeignKey(d => d.OrderId)
