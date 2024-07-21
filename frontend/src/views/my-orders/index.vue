@@ -1,8 +1,20 @@
 <template>
   <el-tabs v-model="activeName" class="filter_box" @tab-click="handleClick">
     <el-tab-pane label="全部订单" name="first" class="filter_box_all">
+      <div>
+      <span class="word">订单号 </span>
+      <el-input
+        v-model="order_id_all_input"
+        style="width: 240px"
+        placeholder=" "
+        :prefix-icon="Search"
+      />
 
-      <span>订单类型 </span>
+      <el-button type="primary" class="button"> 搜索 </el-button>
+      </div>
+
+      <div>
+      <span class="word">订单类型 </span>
       <el-select
         v-model="value_all"
         placeholder="Select"
@@ -16,7 +28,7 @@
         />
       </el-select>
 
-      <span>订单号 </span>
+      <span class="word"> 旅客 </span>
       <el-input
         v-model="order_id_all_input"
         style="width: 240px"
@@ -24,15 +36,16 @@
         :prefix-icon="Search"
       />
 
-      <span> 旅客 </span>
+      <span class="word"> 导游 </span>
       <el-input
         v-model="passenger_name_all_input"
         style="width: 240px"
         placeholder=" "
         :prefix-icon="Search"
+        class="box"
       />
 
-      <span> 日期 </span>
+      <span class="word"> 日期 </span>
       <el-date-picker
         v-model="date_all_input"
         type="daterange"
@@ -40,13 +53,28 @@
         start-placeholder="开始时间"
         end-placeholder="结束时间"
         size= default
+        
       />
              
-      <el-button type="primary"> 筛选 </el-button>
+      <el-button type="primary" class="button"> 筛选 </el-button>
+    </div>
     </el-tab-pane>
 
-    <el-tab-pane label="待出行" name="second" class="filter_box_pending">
-      <span>订单类型 </span>
+    <el-tab-pane label="待完成" name="second" class="filter_box_pending">
+      <div>
+      <span class="word"> 订单号 </span>
+      <el-input
+        v-model="order_id_all_input"
+        style="width: 240px"
+        placeholder=" "
+        :prefix-icon="Search"
+      />
+
+      <el-button type="primary" class="button"> 搜索 </el-button>
+      </div>
+
+      <div>
+      <span class="word"> 订单类型 </span>
       <el-select
         v-model="value_pending"
         placeholder="Select"
@@ -60,7 +88,7 @@
         />
       </el-select>
 
-      <span>订单号 </span>
+      <span class="word"> 旅客 </span>
       <el-input
         v-model="order_id_pending_input"
         style="width: 240px"
@@ -68,7 +96,7 @@
         :prefix-icon="Search"
       />
 
-      <span> 旅客 </span>
+      <span class="word"> 导游 </span>
       <el-input
         v-model="passenger_name_pending_input"
         style="width: 240px"
@@ -76,7 +104,7 @@
         :prefix-icon="Search"
       />
 
-      <span> 日期 </span>
+      <span class="word"> 日期 </span>
       <el-date-picker
         v-model="date_pending_input"
         type="daterange"
@@ -86,11 +114,25 @@
         size= default
       />
              
-      <el-button type="primary"> 筛选 </el-button>
+      <el-button type="primary" class="button"> 筛选 </el-button>
+      </div>
     </el-tab-pane>
 
     <el-tab-pane label="已完成" name="third" class="filter_box_completed">
-      <span>订单类型 </span>
+      <div>
+      <span class="word"> 订单号 </span>
+      <el-input
+        v-model="order_id_all_input"
+        style="width: 240px"
+        placeholder=" "
+        :prefix-icon="Search"
+      />
+
+      <el-button type="primary" class="button"> 搜索 </el-button>
+      </div>
+
+      <div>
+      <span class="word"> 订单类型 </span>
       <el-select
         v-model="value_completed"
         placeholder="Select"
@@ -104,7 +146,7 @@
         />
       </el-select>
 
-      <span>订单号 </span>
+      <span class="word"> 旅客 </span>
       <el-input
         v-model="order_id_completed_input"
         style="width: 240px"
@@ -112,7 +154,7 @@
         :prefix-icon="Search"
       />
 
-      <span> 旅客 </span>
+      <span class="word"> 导游 </span>
       <el-input
         v-model="passenger_name_completed_input"
         style="width: 240px"
@@ -120,7 +162,7 @@
         :prefix-icon="Search"
       />
 
-      <span> 日期 </span>
+      <span class="word"> 日期 </span>
       <el-date-picker
         v-model="date_completed_input"
         type="daterange"
@@ -130,11 +172,25 @@
         size= default
       />
              
-      <el-button type="primary"> 筛选 </el-button>
+      <el-button type="primary" class="button"> 筛选 </el-button>
+      </div>
     </el-tab-pane>
 
     <el-tab-pane label="已取消" name="fourth" class="filter_box_canceled">
-      <span>订单类型 </span>
+      <div>
+      <span class="word"> 订单号 </span>
+      <el-input
+        v-model="order_id_all_input"
+        style="width: 240px"
+        placeholder=" "
+        :prefix-icon="Search"
+      />
+
+      <el-button type="primary" class="button"> 搜索 </el-button>
+      </div>
+
+      <div>
+      <span class="word"> 订单类型 </span>
       <el-select
         v-model="value_canceled"
         placeholder="Select"
@@ -148,7 +204,7 @@
         />
       </el-select>
 
-      <span>订单号 </span>
+      <span class="word"> 旅客 </span>
       <el-input
         v-model="order_id_canceled_input"
         style="width: 240px"
@@ -156,7 +212,7 @@
         :prefix-icon="Search"
       />
 
-      <span> 旅客 </span>
+      <span class="word"> 导游 </span>
       <el-input
         v-model="passenger_name_canceled_input"
         style="width: 240px"
@@ -164,7 +220,7 @@
         :prefix-icon="Search"
       />
 
-      <span> 日期 </span>
+      <span class="word"> 日期 </span>
       <el-date-picker
         v-model="date_canceled_input"
         type="daterange"
@@ -174,7 +230,8 @@
         size= default
       />
              
-      <el-button type="primary"> 筛选 </el-button>
+      <el-button type="primary" class="button"> 筛选 </el-button>
+      </div>
     </el-tab-pane>
   </el-tabs>
 
@@ -224,14 +281,20 @@
 
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
   .filter_box {
     margin: 20px;
   }
 
   .filter_box >>> .el-tabs__item {
   font-size: 18px; 
-}
+  }
+
+  .word,
+  .button {
+    margin-left: 20px;
+    margin-right: 10px;
+  }
 
   .filter_box_all,
   .filter_box_pending,
@@ -243,6 +306,9 @@
     gap: 10px;
     align-items: center;
   }
+
+
+  
   
 </style>
 
