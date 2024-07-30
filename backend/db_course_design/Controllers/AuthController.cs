@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EntityFramework.Models;
 using db_course_design.Common;
-namespace db_course_design.Controler
+namespace db_course_design.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -45,7 +45,7 @@ namespace db_course_design.Controler
         public async Task<IActionResult> UserLogin([FromBody] LoginRequest loginRequest)
         {
             var admin = await _context.Users
-                .FirstOrDefaultAsync(a => a.UserName == loginRequest.UserName 
+                .FirstOrDefaultAsync(a => a.UserName == loginRequest.UserName
                 && a.Password == SaltedPassword.HashPassword(loginRequest.Password,salt));
 
             if (admin == null)
