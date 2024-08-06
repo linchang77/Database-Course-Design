@@ -102,7 +102,6 @@ namespace db_course_design.Controler
             {
                 AdminName = registerRequest.UserName,
                 Password = SaltedPassword.HashPassword(registerRequest.Password, salt)
-
             };
 
             _context.Admins.Add(newAdmin);
