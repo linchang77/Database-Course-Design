@@ -1,10 +1,13 @@
 using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using db_course_design.Common;
+using db_course_design.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<OrderService>();
 /////////////////////////////////////////自己根据需要添加内容//////////////////////////////////////////////////////////////
 //添加DbContext
 builder.Services.AddDbContext<ModelContext>(options =>
