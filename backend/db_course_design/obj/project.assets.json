@@ -2028,11 +2028,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\linchang\\Desktop\\db_backend\\Database-Course-Design\\backend\\db_course_design\\db_course_design.csproj",
+      "projectUniqueName": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\db_course_design.csproj",
       "projectName": "db_course_design",
-      "projectPath": "C:\\Users\\linchang\\Desktop\\db_backend\\Database-Course-Design\\backend\\db_course_design\\db_course_design.csproj",
+      "projectPath": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\db_course_design.csproj",
       "packagesPath": "C:\\Users\\linchang\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\linchang\\Desktop\\db_backend\\Database-Course-Design\\backend\\db_course_design\\obj\\",
+      "outputPath": "C:\\Users\\linchang\\Desktop\\Database-Course-Design\\backend\\db_course_design\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\linchang\\AppData\\Roaming\\NuGet\\NuGet.Config",
