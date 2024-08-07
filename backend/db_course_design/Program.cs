@@ -32,6 +32,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-
-//≤‚ ‘
+//≤‚ ‘2.0
