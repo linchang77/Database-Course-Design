@@ -13,6 +13,8 @@ public partial class ScenicSpotOrder
 
     public decimal? TicketNumber { get; set; }
 
+    public DateTime TicketDate { get; set; }
+
     public virtual OrderDatum Order { get; set; } = null!;
 
     public virtual ScenicSpotTicket ScenicSpotTicket { get; set; } = null!;

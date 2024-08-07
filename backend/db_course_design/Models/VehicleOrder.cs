@@ -9,7 +9,7 @@ public partial class VehicleOrder
 
     public decimal TicketId { get; set; }
 
-    public decimal? TicketNumber { get; set; }
+    public string TicketUserName { get; set; } = null!;
 
     public virtual OrderDatum Order { get; set; } = null!;
 
