@@ -27,20 +27,4 @@ public class SaltedPassword
         string hashedInput = HashPassword(password, salt); // 使用相同的盐和密码进行哈希计算
         return hashedInput == hashedPassword; // 比较计算得到的哈希值与存储的哈希密码是否相等
     }
-
-    public static void Main()
-    {
-        // 注册新用户
-        string username = "john";
-        string password = "password123";
-        //string salt = GenerateSalt(); // 生成随机盐
-        string salt = "jleyrCCO8Z+JT5mez87yuw==";
-        string hashedPassword = HashPassword(password, salt); // 使用盐对密码进行哈希运算
-
-        // 模拟用户登录
-        string loginPassword = "password123";
-        bool isAuthenticated = VerifyPassword(loginPassword, salt, hashedPassword); // 验证密码是否匹配
-
-        Console.WriteLine("用户认证结果: " + isAuthenticated);
-    }
 }

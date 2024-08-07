@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("db_course_design")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d06166df04fd2ece585e9b9f30f14f6b3c9b1908")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b812b854125a162caf771b33089881478ca936af")]
 [assembly: System.Reflection.AssemblyProductAttribute("db_course_design")]
 [assembly: System.Reflection.AssemblyTitleAttribute("db_course_design")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
