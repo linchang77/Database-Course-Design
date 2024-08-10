@@ -2,10 +2,19 @@ using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using db_course_design.Common;
 using db_course_design.Services;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson; // Newtonsoft.Json替代默认的System.Text.Json，提供了AddNewtonsoftJson方法
+using Newtonsoft.Json;  // 引入Newtonsoft.Json命名空间
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        // 配置序列化设置
+        options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto; // 处理多态性
+        options.SerializerSettings.Formatting = Formatting.Indented; // 美化JSON输出
+    }); ;
 
 builder.Services.AddScoped<OrderService>();
 /////////////////////////////////////////自己根据需要添加内容//////////////////////////////////////////////////////////////
