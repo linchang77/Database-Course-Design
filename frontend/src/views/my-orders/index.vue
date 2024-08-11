@@ -292,8 +292,7 @@
 
   .word,
   .button {
-    margin-left: 20px;
-    margin-right: 10px;
+    margin-left: 15px;
   }
 
   .filter_box_all,
