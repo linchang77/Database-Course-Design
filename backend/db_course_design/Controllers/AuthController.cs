@@ -28,6 +28,23 @@ namespace db_course_design.Controler
         //获取上下文
         private readonly ModelContext _context;
 
+        [HttpGet("test-connection")]
+        public async Task<IActionResult> TestConnection()
+        {
+            try
+            {
+                // 尝试打开数据库连接
+                await _context.Database.CanConnectAsync();
+                return Ok("Database connection successful.");
+            }
+            catch (Exception ex)
+            {
+                // 记录错误
+                Console.WriteLine($"Database connection failed: {ex.Message}");
+                return StatusCode(500, "Database connection failed.");
+            }
+        }
+
         public AuthController(ModelContext context)
         {
             _context = context;
@@ -44,11 +61,11 @@ namespace db_course_design.Controler
         [HttpPost("login/user")]
         public async Task<IActionResult> UserLogin([FromBody] LoginRequest loginRequest)
         {
-            var admin = await _context.Users
+            var user = await _context.Users
                 .FirstOrDefaultAsync(a => a.UserName == loginRequest.UserName 
                 && a.Password == SaltedPassword.HashPassword(loginRequest.Password,salt));
 
-            if (admin == null)
+            if (user == null)
             {
                 return Ok(Result<string>.Error("Invalid credentials"));
             }
@@ -58,25 +75,35 @@ namespace db_course_design.Controler
         [HttpPost("login/admin")]
         public async Task<IActionResult> AdminLogin([FromBody] LoginRequest loginRequest)
         {
-            var admin = await _context.Admins
-                .FirstOrDefaultAsync(a => a.AdminName == loginRequest.UserName
-                && a.Password == SaltedPassword.HashPassword(loginRequest.Password, salt));
-            if (admin == null)
+            try
             {
-                return Ok(Result<string>.Error("Invalid credentials"));
+                var admin = await _context.Admins
+                .FirstOrDefaultAsync(a => a.AdminName == loginRequest.UserName
+                && a.Password == loginRequest.Password);//SaltedPassword.HashPassword(loginRequest.Password, salt));
+                if (admin == null)
+                {
+                    return Ok(Result<string>.Error("Invalid credentials"));
+                }
+
+                return Ok(Result<string>.Success("Admin login successful"));
+            }
+            catch (Exception ex)
+            {
+                // 记录异常详细信息
+                Console.WriteLine($"Login failed: {ex.Message}");
+                return StatusCode(500, Result<string>.Error("An error occurred while processing your request."));
             }
 
-            return Ok(Result<string>.Success("Admin login successful"));
         }
 
         [HttpPost("login/guide")]
         public async Task<IActionResult> GuideLogin([FromBody] LoginRequest loginRequest)
         {
-            var admin = await _context.Guides
+            var guide = await _context.Guides
                 .FirstOrDefaultAsync(a => a.GuideName == loginRequest.UserName
                 && a.Password == SaltedPassword.HashPassword(loginRequest.Password, salt));
 
-            if (admin == null)
+            if (guide == null)
             {
                 return Ok(Result<string>.Error("Invalid credentials"));
             }

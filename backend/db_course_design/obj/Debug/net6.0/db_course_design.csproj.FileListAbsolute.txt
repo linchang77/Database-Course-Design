@@ -219,3 +219,7 @@ C:\Users\linchang\Desktop\db_backend\Database-Course-Design\backend\db_course_de
 C:\Users\linchang\Desktop\db_backend\Database-Course-Design\backend\db_course_design\obj\Debug\net6.0\db_course_design.pdb
 C:\Users\linchang\Desktop\db_backend\Database-Course-Design\backend\db_course_design\obj\Debug\net6.0\db_course_design.genruntimeconfig.cache
 C:\Users\linchang\Desktop\db_backend\Database-Course-Design\backend\db_course_design\obj\Debug\net6.0\ref\db_course_design.dll
+C:\Users\linchang\Desktop\db_backend\Database-Course-Design\backend\db_course_design\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\linchang\Desktop\db_backend\Database-Course-Design\backend\db_course_design\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\linchang\Desktop\db_backend\Database-Course-Design\backend\db_course_design\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\linchang\Desktop\db_backend\Database-Course-Design\backend\db_course_design\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
