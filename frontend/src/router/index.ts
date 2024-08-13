@@ -8,6 +8,7 @@ const Layouts = () => import("@/layouts/index.vue")
  * 常驻路由
  * 除了 redirect/403/404/login 等隐藏页面，其他页面建议设置 Name 属性
  */
+
 export const constantRoutes: RouteRecordRaw[] = [
   {
     path: "/redirect",
@@ -78,11 +79,76 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: "/scene",
+    component: Layouts,
+    meta: {
+      hidden: true,
+   },
+    children:[
+      {
+        path: "shanghai",
+        component: () => import("@/views/scene/citys/shanghai.vue"),
+        name: "Shanghai",
+        meta: {
+           hidden: true,
+        }
+      },
+      {
+        path: "tokyo",
+        component: () => import("@/views/scene/citys/tokyo.vue"),
+        name: "Tokyo",
+        meta: {
+           hidden: true,
+        },
+      },
+      {
+        path: "cairo",
+        component: () => import("@/views/scene/citys/cairo.vue"),
+        name: "Cairo",
+        meta: {
+           hidden: true,
+        },
+      },
+      {
+        path: "paris",
+        component: () => import("@/views/scene/citys/paris.vue"),
+        name: "Paris",
+        meta: {
+           hidden: true,
+        },
+      },
+      {
+        path: "newyork",
+        component: () => import("@/views/scene/citys/newyork.vue"),
+        name: "Newyork",
+        meta: {
+           hidden: true,
+        },
+      },
+      {
+        path: "riodejaneiro",
+        component: () => import("@/views/scene/citys/riodejaneiro.vue"),
+        name: "Riodejaneiro",
+        meta: {
+           hidden: true,
+        },
+      },
+      {
+        path: "sydney",
+        component: () => import("@/views/scene/citys/sydney.vue"),
+        name: "Sydney",
+        meta: {
+           hidden: true,
+        },
+      }
+    ]
+  },
+  {
     path: "/",
     component: Layouts,
     children: [
       {
-        path: "/group-travel",
+        path: "group-travel",
         component: () => import("@/views/group-travel/index.vue"),
         name: "Group-travel",
         meta: {
@@ -98,7 +164,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     component: Layouts,
     children: [
       {
-        path: "/free-travel",
+        path: "free-travel",
         component: () => import("@/views/free-travel/index.vue"),
         name: "Free-travel",
         meta: {
@@ -114,7 +180,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     component: Layouts,
     children: [
       {
-        path: "/self-center",
+        path: "self-center",
         component: () => import("@/views/self-center/index.vue"),
         name: "Self-center",
         meta: {
@@ -130,7 +196,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     component: Layouts,
     children: [
       {
-        path: "/my-orders",
+        path: "my-orders",
         component: () => import("@/views/my-orders/index.vue"),
         name: "My-orders",
         meta: {

@@ -93,7 +93,7 @@ public partial class ModelContext : DbContext
                 .HasDefaultValueSql("null\n")
                 .HasColumnName("ADMIN_NAME");
             entity.Property(e => e.Password)
-                .HasMaxLength(50)
+                .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasDefaultValueSql("null\n")
                 .HasColumnName("PASSWORD");
@@ -234,7 +234,7 @@ public partial class ModelContext : DbContext
                 .HasColumnType("INTERVAL YEAR(2) TO MONTH")
                 .HasColumnName("GUIDE_SENIORITY");
             entity.Property(e => e.Password)
-                .HasMaxLength(50)
+                .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("PASSWORD");
             entity.Property(e => e.ProfilePicture)
@@ -759,34 +759,34 @@ public partial class ModelContext : DbContext
                 .HasPrecision(8)
                 .HasColumnName("USER_ID");
             entity.Property(e => e.Password)
-                .HasMaxLength(50)
+                .HasMaxLength(20)
                 .IsUnicode(false)
                 .ValueGeneratedOnAdd()
-                .HasDefaultValueSql("null\n")
+                .HasDefaultValueSql("''\n")
                 .HasColumnName("PASSWORD");
             entity.Property(e => e.ProfilePicture)
                 .HasMaxLength(40)
                 .IsUnicode(false)
                 .ValueGeneratedOnAdd()
-                .HasDefaultValueSql("null\n")
+                .HasDefaultValueSql("''\n")
                 .HasColumnName("PROFILE_PICTURE");
             entity.Property(e => e.RegistrationTime)
                 .ValueGeneratedOnAdd()
-                .HasDefaultValueSql("null\n")
+                .HasDefaultValueSql("to_date('2024/07/25 00:00:00', 'yyyy/mm/dd hh24:mi:ss')\n")
                 .HasColumnType("DATE")
                 .HasColumnName("REGISTRATION_TIME");
             entity.Property(e => e.UserGender)
                 .HasMaxLength(4)
                 .IsUnicode(false)
                 .ValueGeneratedOnAdd()
-                .HasDefaultValueSql("null\n")
+                .HasDefaultValueSql("'无'\n")
                 .IsFixedLength()
                 .HasColumnName("USER_GENDER");
             entity.Property(e => e.UserName)
-                .HasMaxLength(50)
+                .HasMaxLength(20)
                 .IsUnicode(false)
                 .ValueGeneratedOnAdd()
-                .HasDefaultValueSql("null\n")
+                .HasDefaultValueSql("''\n")
                 .HasColumnName("USER_NAME");
         });
 
