@@ -1,9 +1,13 @@
 <script lang="ts" setup>
 import { ref } from "vue"
 import { ElMenu, ElMenuItem, ElContainer, ElAside, ElMain } from "element-plus"
-import scene1 from "@/assets/scene/scene1.jpg"
-import scene2 from "@/assets/scene/scene2.jpg"
-import scene3 from "@/assets/scene/scene3.jpg"
+import cairo from "@/assets/scene/cairo.jpg"
+import newyork from "@/assets/scene/newyork.jpg"
+import paris from "@/assets/scene/paris.jpg"
+import shanghai from "@/assets/scene/shanghai.jpg"
+import sydney from "@/assets/scene/sydney.jpg"
+import tokyo from "@/assets/scene/tokyo.jpg"
+import riodejaneiro from "@/assets/scene/riodejaneiro.jpg"
 
 defineOptions({
   name: "Scene"
@@ -26,7 +30,7 @@ const handleSelect = (key: string) => {
 }
 
 const currentIndex = ref(0)
-const images = [scene1, scene2, scene3]
+const images = [shanghai, cairo, newyork, paris, sydney, tokyo, riodejaneiro]
 
 const nextImage = () => {
   currentIndex.value = (currentIndex.value + 1) % images.length
@@ -58,8 +62,8 @@ const prevImage = () => {
       <el-main>
         <!-- 使用 showImages 控制图片和滚动按钮的显示 -->
         <div v-if="showImages" class="image-gallery">
-          <a href="scene1.html">
-            <img :src="scene1" alt="Scene 1" class="scene-image1" />
+          <a href="http://localhost:3333/#/scene/shanghai">
+            <img :src="shanghai" alt="Scene 1" class="scene-image1" />
           </a>
         </div>
 
