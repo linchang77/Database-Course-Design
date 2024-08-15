@@ -4,3 +4,4 @@
 /db_course_design.sln
 !/db_course_design/Controllers/
 !/db_course_design/Models/
+!/db_course_design/Program.cs
