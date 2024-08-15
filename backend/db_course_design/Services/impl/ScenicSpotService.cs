@@ -2,6 +2,7 @@
 using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -108,6 +109,26 @@ namespace db_course_design.Services.impl
                     ScenicSpotTickets = s.ScenicSpotTickets
                 })
                 .ToListAsync();
+
+            return scenicSpots.Any() ? scenicSpots : null;
+        }
+
+        public async Task<IEnumerable<ScenicSpotResponse>> GetScenicSpotsByDistance(string city, int mindis, int maxdis)
+        {
+            var scenicSpots = await _context.ScenicSpots
+               .Where(s => s.CityName == city && Convert.ToDecimal(s.ScenicSpotLocation) >=mindis && Convert.ToDecimal(s.ScenicSpotLocation) <= maxdis)
+               .Select(s => new ScenicSpotResponse
+               {
+                   ScenicSpotId = s.ScenicSpotId,
+                   ScenicSpotName = s.ScenicSpotName,
+                   CityName = s.CityName,
+                   ScenicSpotGrade = s.ScenicSpotGrade,
+                   ScenicSpotIntroduction = s.ScenicSpotIntroduction,
+                   ScenicSpotLocation = s.ScenicSpotLocation,
+                   CityNameNavigation = s.CityNameNavigation,
+                   ScenicSpotTickets = s.ScenicSpotTickets
+               })
+               .ToListAsync();
 
             return scenicSpots.Any() ? scenicSpots : null;
         }

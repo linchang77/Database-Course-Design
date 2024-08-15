@@ -91,6 +91,18 @@ namespace db_course_design.Controllers
             return Ok(scenicSpots);
         }
 
+        [HttpGet("{city}/distance/{mindis},{maxdis}")]
+        public async Task<IActionResult> GetScenicSpotsByDistance(string city, int mindis,int maxdis)
+        {
+            var scenicSpots = await _scenicSpotService.GetScenicSpotsByDistance(city, mindis,maxdis);
+            if (scenicSpots == null || !scenicSpots.Any())
+            {
+                return NotFound();
+            }
+            return Ok(scenicSpots);
+        }
+
+
         [HttpDelete("{scenicSpotId}")]
         public async Task<IActionResult> DeleteScenicSpot(decimal scenicSpotId)
         {

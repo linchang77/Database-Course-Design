@@ -11,6 +11,7 @@ namespace db_course_design.Services
         Task<ScenicSpotResponse> GetScenicSpotByIdAsync(decimal scenicSpotId);
         Task<IEnumerable<ScenicSpotResponse>> GetScenicSpotsByNameAsync(string scenicSpotName);
         Task<IEnumerable<ScenicSpotResponse>> GetScenicSpotsByGradeAsync(string city, string grade);
+        Task<IEnumerable<ScenicSpotResponse>> GetScenicSpotsByDistance(string city, int mindis,int maxdis);
         Task<bool> DeleteScenicSpotAsync(decimal scenicSpotId);
         Task<ScenicSpotResponse> AddScenicSpotAsync(ScenicSpotRequest request);
     }
