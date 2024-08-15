@@ -31,6 +31,7 @@ const handleSelect = (key: string) => {
 
 const currentIndex = ref(0)
 const images = [shanghai, cairo, newyork, paris, sydney, tokyo, riodejaneiro]
+const images_herf = ["http://localhost:3333/#/scene/shanghai", "http://localhost:3333/#/scene/cairo", "http://localhost:3333/#/scene/newyork", "http://localhost:3333/#/scene/paris", "http://localhost:3333/#/scene/sydney", "http://localhost:3333/#/scene/tokyo", "http://localhost:3333/#/scene/riodejaneiro"]
 
 const nextImage = () => {
   currentIndex.value = (currentIndex.value + 1) % images.length
@@ -62,8 +63,8 @@ const prevImage = () => {
       <el-main>
         <!-- 使用 showImages 控制图片和滚动按钮的显示 -->
         <div v-if="showImages" class="image-gallery">
-          <a href="http://localhost:3333/#/scene/shanghai">
-            <img :src="shanghai" alt="Scene 1" class="scene-image1" />
+          <a :href="images_herf[currentIndex]">
+            <img :src="images[currentIndex]" alt="Scene 1" class="scene-image1" />
           </a>
         </div>
 
@@ -231,7 +232,7 @@ li {
 }
 .image-gallery {
   width: 808px;
-  height: 492px;
+  height: 292px;
   gap: 20px;
 }
 .scene-image-container {
@@ -242,22 +243,15 @@ li {
 }
 .scene-image1{
   width: 808px;
-  height: 492px;
+  height: 292px;
   display: block;
   border-radius: 15px;
   object-fit: contain;
 }
-.scene-image {
-  width: 256px;
-  height: 256px;
-  display: block;
-  border-radius: 20px;
-  object-fit: contain;
-}
 .scrollbar {
   display: flex;
-  margin-left: 30px;
-  gap: 20px;
+  margin-left: 10px;
+  gap: 10px;
   margin-top: 20px;
 }
 .scroll-button {
@@ -271,7 +265,7 @@ li {
   color: rgb(0, 157, 255);
 }
 .scroll-image {
-  width: 200px;
+  width: 220px;
   height: 200px;
   border-radius: 15px;
   object-fit: cover;
