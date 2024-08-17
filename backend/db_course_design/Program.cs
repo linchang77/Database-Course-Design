@@ -18,6 +18,8 @@ builder.Services.AddControllers()
     }); ;
 
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<IScenicSpotService, ScenicSpotService>();
+builder.Services.AddScoped<IVehicleService, VehicleService>();
 /////////////////////////////////////////自己根据需要添加内容//////////////////////////////////////////////////////////////
 //添加DbContext
 builder.Services.AddDbContext<ModelContext>(options =>
@@ -27,7 +29,7 @@ builder.Services.AddDbContext<ModelContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IScenicSpotService, ScenicSpotService>();
+
 
 var app = builder.Build();
 
