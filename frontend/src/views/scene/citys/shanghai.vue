@@ -1,30 +1,105 @@
 <script lang="ts" setup>
-import { ref } from "vue"
-
-defineOptions({
-  name: "Shanghai"
-})
+import { ref } from "vue";
+import axios from "axios";
 
 const currentPage = ref('home')
+const attractions = ref<Array<{ id: number, name: string, grade: string, description: string, distance: number }>>([]);
+
+const searchQuery = ref('');
+const starFilter = ref('全部');
+const distanceFilter = ref('全部');
 
 const navigateTo = (page: string) => {
   currentPage.value = page
 }
+const starOptions = ['全部', '1A', '2A', '3A', '4A', '5A'];
+const distanceOptions = ['全部', '2km内', '2-5km', '5-20km', '20km以上'];
 
-const starFilter = ref('全部')
-const distanceFilter = ref('全部')
+const fetchAttractions = () => {
+  axios.get(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent('上海')}`)
+    .then(response => {
+      attractions.value = response.data;
+    })
+    .catch(error => {
+      console.error(error);
+    });
+};
 
-const starOptions = ['全部', '1A', '2A', '3A', '4A', '5A']
-const distanceOptions = ['全部', '500m内', '500m-2km', '2km-5km', '5km以上']
+fetchAttractions();
+
+const searchAttraction = () => {
+  if (searchQuery.value) {
+    if (!isNaN(Number(searchQuery.value))) {
+      axios.get(`https://123.60.14.84/api/ScenicSpot/id/${searchQuery.value}`)
+        .then(response => {
+          attractions.value = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    } else {
+      axios.get(`https://123.60.14.84/api/ScenicSpot/name/${encodeURIComponent(searchQuery.value)}`)
+        .then(response => {
+          attractions.value = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  } else {
+    fetchAttractions();
+  }
+};
 
 const setStarFilter = (option: string) => {
-  starFilter.value = option
-}
+  starFilter.value = option;
+  if (option !== '全部') {
+    axios.get(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent('上海')}/grade/${option}`)
+      .then(response => {
+        attractions.value = response.data;
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  } else {
+    fetchAttractions();
+  }
+};
 
 const setDistanceFilter = (option: string) => {
-  distanceFilter.value = option
-}
+  distanceFilter.value = option;
+  let mindis = 0;
+  let maxdis = 0;
 
+  switch (option) {
+    case '2km内':
+      maxdis = 2000;
+      break;
+    case '2-5km':
+      mindis = 2000;
+      maxdis = 5000;
+      break;
+    case '5-20km':
+      mindis = 5000;
+      maxdis = 20000;
+      break;
+    case '20km以上':
+      mindis = 20000;
+      maxdis = 100000;
+      break;
+    default:
+      fetchAttractions();
+      return;
+  }
+
+  axios.get(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent('上海')}/distance/${mindis},${maxdis}`)
+    .then(response => {
+      attractions.value = response.data;
+    })
+    .catch(error => {
+      console.error(error);
+    });
+};
 </script>
 
 <template>
@@ -44,6 +119,10 @@ const setDistanceFilter = (option: string) => {
     </header>
 
     <div v-if="currentPage === 'attractions'" class="filters-container">
+      <div class="search-bar">
+        <input type="text" v-model="searchQuery" placeholder="输入景点名称或ID进行搜索">
+        <button @click="searchAttraction">搜索</button>
+      </div>
       <div class="filter-row">
         <span>星级：</span>
         <button 
@@ -67,7 +146,21 @@ const setDistanceFilter = (option: string) => {
     </div>
 
     <main class="main-content">
-      <img v-if="currentPage === 'home'" src="/images/shanghai.jpg" alt="Shanghai" class="home-image"/>
+      <div v-if="currentPage === 'home'">
+        <img src="/images/shanghai.jpg" alt="Shanghai" class="home-image"/>
+      </div>
+
+      <div v-if="currentPage === 'attractions'" class="attractions-grid">
+        <div v-for="attraction in attractions" :key="attraction.id" class="attraction-card">
+          <img :src="`/images/${attraction.name}.jpg`" alt="attraction.name" class="attraction-image">
+          <div class="attraction-info">
+            <h3>{{ attraction.name }}</h3>
+            <p>等级：{{ attraction.grade }}</p>
+            <p>{{ attraction.description }}</p>
+            <p>距离：{{ attraction.distance }}米</p>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 </template>
@@ -94,7 +187,7 @@ const setDistanceFilter = (option: string) => {
   font-size: 48px;
   font-weight: bold;
   margin-right: auto;
-  color:grey
+  color: grey;
 }
 
 .nav button {
@@ -114,9 +207,33 @@ const setDistanceFilter = (option: string) => {
 }
 
 .filters-container {
-  padding: 10px 20px;
+  padding: 20px;
   background-color: #f9f9f9;
   border-bottom: 1px solid #ddd;
+}
+
+.search-bar {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-bar button {
+  margin-left: 10px;
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .filter-row {
@@ -157,5 +274,37 @@ const setDistanceFilter = (option: string) => {
 .home-image {
   width: 100%;
   height: auto;
+}
+
+.attractions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.attraction-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.attraction-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.attraction-info h3 {
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.attraction-info p {
+  margin: 5px 0;
+  color: #555;
 }
 </style>
