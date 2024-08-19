@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.3.1",
-    "axios": "1.7.2",
+    "axios": "^1.7.2",
     "dayjs": "1.11.11",
     "element-plus": "2.7.3",
     "js-cookie": "3.0.5",
@@ -67,7 +67,7 @@
     "sass": "1.77.2",
     "typescript": "5.4.5",
     "unocss": "0.60.3",
-    "vite": "5.2.11",
+    "vite": "^5.2.11",
     "vite-plugin-svg-icons": "2.0.1",
     "vite-svg-loader": "5.1.0",
     "vitest": "1.6.0",
