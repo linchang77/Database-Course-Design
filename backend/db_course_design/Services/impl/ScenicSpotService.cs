@@ -173,6 +173,100 @@ namespace db_course_design.Services.impl
                 ScenicSpotLocation = scenicSpot.ScenicSpotLocation
             };
         }
+        // 获取当天的门票信息
+        public async Task<AdultChildTicketResponse> GetTodayTicketInfoAsync(string scenicSpotName)
+        {
+            var today = DateTime.Today;
 
+            var tickets = await _context.ScenicSpotTickets
+                .Where(t => t.ScenicSpot.ScenicSpotName == scenicSpotName && t.TicketDate == today)
+                .ToListAsync();
+
+            var adultTicket = tickets.FirstOrDefault(t => t.TicketType == "成人票");
+            var childTicket = tickets.FirstOrDefault(t => t.TicketType == "儿童票");
+
+            return new AdultChildTicketResponse
+            {
+                AdultTicket = adultTicket != null ? new ScenicSpotTicketResponse
+                {
+                    ScenicSpotId = adultTicket.ScenicSpotId,
+                    TicketType = adultTicket.TicketType,
+                    TicketPrice = adultTicket.TicketPrice,
+                    TicketRemaining = adultTicket.TicketRemaining,
+                    TicketDate = adultTicket.TicketDate
+                } : null,
+                ChildTicket = childTicket != null ? new ScenicSpotTicketResponse
+                {
+                    ScenicSpotId = childTicket.ScenicSpotId,
+                    TicketType = childTicket.TicketType,
+                    TicketPrice = childTicket.TicketPrice,
+                    TicketRemaining = childTicket.TicketRemaining,
+                    TicketDate = childTicket.TicketDate
+                } : null
+            };
+        }
+
+        // 获取特定日期的门票信息
+        public async Task<AdultChildTicketResponse> GetTicketInfoByDateAsync(string scenicSpotName, DateTime date)
+        {
+            var tickets = await _context.ScenicSpotTickets
+                .Where(t => t.ScenicSpot.ScenicSpotName == scenicSpotName && t.TicketDate == date)
+                .ToListAsync();
+
+            var adultTicket = tickets.FirstOrDefault(t => t.TicketType == "成人票");
+            var childTicket = tickets.FirstOrDefault(t => t.TicketType == "儿童票");
+
+            return new AdultChildTicketResponse
+            {
+                AdultTicket = adultTicket != null ? new ScenicSpotTicketResponse
+                {
+                    ScenicSpotId = adultTicket.ScenicSpotId,
+                    TicketType = adultTicket.TicketType,
+                    TicketPrice = adultTicket.TicketPrice,
+                    TicketRemaining = adultTicket.TicketRemaining,
+                    TicketDate = adultTicket.TicketDate
+                } : null,
+                ChildTicket = childTicket != null ? new ScenicSpotTicketResponse
+                {
+                    ScenicSpotId = childTicket.ScenicSpotId,
+                    TicketType = childTicket.TicketType,
+                    TicketPrice = childTicket.TicketPrice,
+                    TicketRemaining = childTicket.TicketRemaining,
+                    TicketDate = childTicket.TicketDate
+                } : null
+            };
+        }
+
+        // 购买门票
+        public async Task<bool> PurchaseTicketAsync(string scenicSpotName, string type)
+        {
+            var today = DateTime.Today;
+
+            var ticket = await _context.ScenicSpotTickets
+                .FirstOrDefaultAsync(t => t.ScenicSpot.ScenicSpotName == scenicSpotName && t.TicketType == type && t.TicketDate == today);
+
+            if (ticket == null || ticket.TicketRemaining <= 0)
+            {
+                return false; // 没有找到票或票数不足
+            }
+
+            // 减少剩余票数
+            ticket.TicketRemaining--;
+
+            // 创建订单
+            var order = new ScenicSpotOrder
+            {
+                ScenicSpotId = ticket.ScenicSpotId,
+                TicketType = type,
+                TicketNumber = 1,
+                TicketDate = today,
+                ScenicSpotTicket = ticket
+            };
+
+            _context.ScenicSpotOrders.Add(order);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

@@ -20,4 +20,27 @@ namespace db_course_design.DTOs
 
         public virtual ICollection<ScenicSpotTicket> ScenicSpotTickets { get; set; } = new List<ScenicSpotTicket>();
     }
+    public class ScenicSpotTicketResponse
+    {
+        public decimal ScenicSpotId { get; set; }
+
+        public string TicketType { get; set; } = null!;
+
+        public decimal? TicketPrice { get; set; }
+
+        public decimal? TicketRemaining { get; set; }
+
+        public DateTime TicketDate { get; set; }
+
+        public virtual ScenicSpot ScenicSpot { get; set; } = null!;
+
+        public virtual ICollection<ScenicSpotOrder> ScenicSpotOrders { get; set; } = new List<ScenicSpotOrder>();
+    }
+
+    public class AdultChildTicketResponse
+    {
+        public ScenicSpotTicketResponse AdultTicket;
+
+        public ScenicSpotTicketResponse ChildTicket;
+    }
 }
