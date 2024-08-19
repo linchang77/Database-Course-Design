@@ -10,7 +10,7 @@
         :prefix-icon="Search"
       />
 
-      <el-button type="primary" class="button"> 搜索 </el-button>
+      <el-button type="primary" class="button @click="search_all"> 搜索 </el-button>
       </div>
 
       <div>
@@ -56,7 +56,7 @@
         
       />
              
-      <el-button type="primary" class="button"> 筛选 </el-button>
+      <el-button type="primary" class="button" @click="filter_all"> 筛选 </el-button>
     </div>
     </el-tab-pane>
 
@@ -70,7 +70,7 @@
         :prefix-icon="Search"
       />
 
-      <el-button type="primary" class="button"> 搜索 </el-button>
+      <el-button type="primary" class="button" @click="search_pending"> 搜索 </el-button>
       </div>
 
       <div>
@@ -114,7 +114,7 @@
         size= default
       />
              
-      <el-button type="primary" class="button"> 筛选 </el-button>
+      <el-button type="primary" class="button" @click="filter_pending"> 筛选 </el-button>
       </div>
     </el-tab-pane>
 
@@ -128,7 +128,7 @@
         :prefix-icon="Search"
       />
 
-      <el-button type="primary" class="button"> 搜索 </el-button>
+      <el-button type="primary" class="button" @click="search_completed"> 搜索 </el-button>
       </div>
 
       <div>
@@ -172,7 +172,7 @@
         size= default
       />
              
-      <el-button type="primary" class="button"> 筛选 </el-button>
+      <el-button type="primary" class="button" @click="filter_completed"> 筛选 </el-button>
       </div>
     </el-tab-pane>
 
@@ -186,7 +186,7 @@
         :prefix-icon="Search"
       />
 
-      <el-button type="primary" class="button"> 搜索 </el-button>
+      <el-button type="primary" class="button" @click="search_canceled"> 搜索 </el-button>
       </div>
 
       <div>
@@ -230,17 +230,21 @@
         size= default
       />
              
-      <el-button type="primary" class="button"> 筛选 </el-button>
+      <el-button type="primary" class="button" @click="filter_canceled"> 筛选 </el-button>
       </div>
     </el-tab-pane>
   </el-tabs>
 
-  <el-pagination background layout="prev, pager, next" :total="1000" />
+  <el-pagination background layout="prev, pager, next" :total="100" />
 </template>
 
 
 <script lang="ts" setup>
+  //后端服务器端口，这次是3333
+  const baseURL = 'http://localhost:3333'
+
   import { ref } from 'vue'
+  import axios from 'axios'
   import { Search } from '@element-plus/icons-vue'
   //根据订单状态筛选
   import type { TabsPaneContext } from 'element-plus'
@@ -278,6 +282,25 @@
   const date_pending_input = ref('')
   const date_completed_input = ref('')
   const date_canceled_input = ref('')
+
+  //api部分
+  const search_all = async () => {
+  try {
+    const response = await axios.get(`Database-Course-Design\backend\db_course_design\Controllers\OrderController.cs${order_id_all_input.value}/order`);
+    console.log('Order:', response.data);
+  } catch (error) {
+    console.error('Error fetching order:', error);
+  }
+}
+
+const filterOrders = async () => {
+  try {
+    const response = await axios.get(`/api/Order/${passenger_name_all_input.value}/category/${value_all.value}`);
+    console.log('Filtered Orders:', response.data);
+  } catch (error) {
+    console.error('Error filtering orders:', error);
+  }
+}
 
 </script>
 
