@@ -39,9 +39,15 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
           ws: true,
           /** 是否允许跨域 */
           changeOrigin: true
+        },
+        '/api': {
+        target: 'https://123.60.14.84',
+        ws: true,
+        changeOrigin: true,
+        secure: false,
         }
       },
-      /** 预热常用文件，提高初始页面加载速度 */
+
       warmup: {
         clientFiles: ["./src/layouts/**/*.vue"]
       }

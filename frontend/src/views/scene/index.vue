@@ -21,7 +21,7 @@ const handleSelect = (key: string) => {
   if (selectedItem.value === key) {
     selectedItem.value = ""
     isAsideVisible.value = false
-    showImages.value = true  // 恢复显示图片和滚动按钮
+    showImages.value = true // 恢复显示图片和滚动按钮
   } else {
     selectedItem.value = key
     isAsideVisible.value = true
@@ -31,7 +31,15 @@ const handleSelect = (key: string) => {
 
 const currentIndex = ref(0)
 const images = [shanghai, cairo, newyork, paris, sydney, tokyo, riodejaneiro]
-const images_herf = ["http://localhost:3333/#/scene/shanghai", "http://localhost:3333/#/scene/cairo", "http://localhost:3333/#/scene/newyork", "http://localhost:3333/#/scene/paris", "http://localhost:3333/#/scene/sydney", "http://localhost:3333/#/scene/tokyo", "http://localhost:3333/#/scene/riodejaneiro"]
+const images_herf = [
+  "http://localhost:3333/#/scene/shanghai",
+  "http://localhost:3333/#/scene/cairo",
+  "http://localhost:3333/#/scene/newyork",
+  "http://localhost:3333/#/scene/paris",
+  "http://localhost:3333/#/scene/sydney",
+  "http://localhost:3333/#/scene/tokyo",
+  "http://localhost:3333/#/scene/riodejaneiro"
+]
 
 const nextImage = () => {
   currentIndex.value = (currentIndex.value + 1) % images.length
@@ -112,13 +120,13 @@ const prevImage = () => {
         </div>
 
         <div v-if="showImages" class="scrollbar">
-          <button @click="prevImage" class="scroll-button"><</button>
+          <button @click="prevImage" class="scroll-button"><<</button>
           <div class="scroll-images">
             <img :src="images[currentIndex]" alt="Scene" class="scroll-image" />
             <img :src="images[(currentIndex + 1) % images.length]" alt="Scene" class="scroll-image" />
             <img :src="images[(currentIndex + 2) % images.length]" alt="Scene" class="scroll-image" />
           </div>
-          <button @click="nextImage" class="scroll-button">></button>
+          <button @click="nextImage" class="scroll-button">>></button>
         </div>
       </el-main>
     </el-container>
@@ -126,12 +134,6 @@ const prevImage = () => {
 </template>
 
 <style scoped>
-/* 移除页面的滚动条 */
-.no-scroll {
-  overflow: hidden;
-  height: 130vh; /* 限制页面高度为视窗高度 */
-}
-
 /* 保持原有样式 */
 .el-container {
   height: 100%;
@@ -241,7 +243,7 @@ li {
   border-radius: 15px;
   gap: 30px;
 }
-.scene-image1{
+.scene-image1 {
   width: 808px;
   height: 292px;
   display: block;
