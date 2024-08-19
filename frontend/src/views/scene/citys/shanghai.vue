@@ -2,6 +2,9 @@
 import { ref } from "vue";
 import axios from "axios";
 
+defineOptions({
+  name: "Shanghai"
+})
 const currentPage = ref('home')
 const attractions = ref<Array<{ id: number, name: string, grade: string, description: string, distance: number }>>([]);
 
