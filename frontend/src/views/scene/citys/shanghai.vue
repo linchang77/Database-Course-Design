@@ -6,8 +6,17 @@ defineOptions({
   name: "Shanghai"
 });
 
+// 定义景点对象的接口
+interface Attraction {
+  scenicSpotId: string;
+  scenicSpotName: string;
+  scenicSpotGrade: string;
+  scenicSpotIntroduction: string;
+  scenicSpotLocation: string;
+}
+
 const currentPage = ref('home');
-const attractions = ref([]);
+const attractions = ref<Attraction[]>([]);
 
 const searchQuery = ref('');
 const starFilter = ref('全部');
@@ -21,7 +30,7 @@ const starOptions = ['全部', '1', '2', '3', '4', '5'];
 const distanceOptions = ['全部', '2km内', '2-5km', '5-20km', '20km以上'];
 
 const fetchAttractions = () => {
-  axios.get(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent('上海')}`)
+  axios.get<Attraction[]>(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent('上海')}`)
     .then(response => {
       let filteredAttractions = response.data;
 
@@ -67,7 +76,7 @@ fetchAttractions();
 const searchAttraction = () => {
   if (searchQuery.value) {
     if (!isNaN(Number(searchQuery.value))) {
-      axios.get(`https://123.60.14.84/api/ScenicSpot/id/${searchQuery.value}`)
+      axios.get<Attraction>(`https://123.60.14.84/api/ScenicSpot/id/${searchQuery.value}`)
         .then(response => {
           attractions.value = response.data ? [response.data] : [];
         })
@@ -79,9 +88,9 @@ const searchAttraction = () => {
           }
         });
     } else {
-      axios.get(`https://123.60.14.84/api/ScenicSpot/name/${encodeURIComponent(searchQuery.value)}`)
+      axios.get<Attraction[]>(`https://123.60.14.84/api/ScenicSpot/name/${encodeURIComponent(searchQuery.value)}`)
         .then(response => {
-          attractions.value = response.data ? [response.data] : [];
+          attractions.value = response.data ? response.data : [];
         })
         .catch(error => {
           if (error.response && error.response.status === 404) {
@@ -106,6 +115,7 @@ const setDistanceFilter = (option: string) => {
   fetchAttractions();
 };
 </script>
+
 
 <template>
   <div class="app-container">
@@ -162,7 +172,7 @@ const setDistanceFilter = (option: string) => {
           <img :src="`/images/${encodeURIComponent(attraction.scenicSpotName)}.jpg`" alt="attraction.scenicSpotName" class="attraction-image">
           <div class="attraction-info">
             <h3>{{ attraction.scenicSpotName }}</h3>
-            <p>等级：{{ attraction.scenicSpotGrade }}</p>
+            <p>{{ attraction.scenicSpotGrade }}A</p>
             <p>{{ attraction.scenicSpotIntroduction }}</p>
             <p>距离：{{ attraction.scenicSpotLocation }}公里</p>
           </div>
@@ -300,10 +310,10 @@ const setDistanceFilter = (option: string) => {
 
 .attraction-image {
   width: 100%;
-  height: 150px;
+  height: 250px;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .attraction-info {
@@ -313,13 +323,21 @@ const setDistanceFilter = (option: string) => {
 }
 
 .attraction-info h3 {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   font-size: 20px;
 }
 
 .attraction-info p {
   margin: 5px 0;
   color: #555;
+}
+
+.no-results {
+  grid-column: span 3;
+  text-align: center;
+  font-size: 18px;
+  color: #777;
+  margin-top: 20px;
 }
 
 .no-results {
