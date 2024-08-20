@@ -73,7 +73,7 @@ namespace db_course_design.Services.impl
                 .Join(_context.VehicleTickets, s => s.VehicleId, t => t.VehicleId, (s, t) => mapInfo(s, t))
                 .Where(i => i.ArrivalCity == arrivalCity
                        && i.DepartureCity == departureCity
-                       && i.DepartureTime.GetValueOrDefault().Date.Equals(departureTime.Date))
+                       && i.DepartureTime.Date.Equals(departureTime.Date))
                 .ToListAsync();
 
             return schedules;

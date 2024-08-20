@@ -28,8 +28,12 @@ namespace db_course_design.Controllers
         [HttpGet("info/{type},{arrivalCity},{departureCity},{departureTime}")]
         public async Task<IActionResult> GetVehicleInfoByFilters(string type, string arrivalCity, string departureCity, DateTime departureTime)
         {
+            //var schedules = new VehicleResponse
+            //{
+            //    VehicleId = "MU5780"
+            //};
             var schedules = await _vehicleService.GetVehicleInfoAsync(type, arrivalCity, departureCity, departureTime);
-            
+
             if (schedules == null || schedules.Count == 0)
                 return NotFound("No vehicle information found for the given criteria.");
             return Ok(schedules);
