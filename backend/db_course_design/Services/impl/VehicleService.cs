@@ -7,6 +7,52 @@ using db_course_design.Profiles;
 
 namespace db_course_design.Services.impl
 {
+    public class VehicleScheduleRequest
+    {
+        public string? ArrivalCity { get; set; }
+
+        public string VehicleId { get; set; } = null!;
+
+        public DateTime? DepartureTime { get; set; }
+
+        public DateTime? ArrivalTime { get; set; }
+
+        public string? VehicleType { get; set; }
+
+        public string? DepartureCity { get; set; }
+
+        public string? VehicleModel { get; set; }
+
+        public string? ArrivalStation { get; set; }
+
+        public string? DepartureStation { get; set; }
+    }
+
+    public class VehicleTicketRequest
+    {
+        public string? VehicleId { get; set; }
+
+        public string? TicketType { get; set; }
+
+        public decimal? TicketPrice { get; set; }
+
+        public DateTime? TicketDepartureTime { get; set; }
+
+        public DateTime? TicketArrivalTime { get; set; }
+
+        public string? TicketDepartureCity { get; set; }
+
+        public string? TicketArrivalCity { get; set; }
+
+        public decimal TicketId { get; set; }
+
+        public decimal? TicketRemaining { get; set; }
+
+        public string? TicketDepartureStation { get; set; }
+
+        public string? TicketArrivalStation { get; set; }
+    }
+
     public class VehicleService : IVehicleService
     {
         private readonly ModelContext _context;
@@ -33,26 +79,14 @@ namespace db_course_design.Services.impl
             return schedules;
         }
 
-        public async Task<List<VehicleOrderDetail>> GetVehicleOrdersAsync(int userId)
-        {
-            var orders = await _context.VehicleOrders
-                .Include(v => v.Order)
-                .Include(v => v.Ticket)
-                .ThenInclude(t => t.Vehicle)
-                .Where(v => v.Order.UserId == userId)
-                .Select(v => mapOrder(v))
-                .ToListAsync();
-
-            return orders;
-        }
-
-        public async Task<VehicleSchedule?> AddVehicleScheduleAsync(VehicleSchedule vehicleSchedule)
+        public async Task<VehicleSchedule?> AddVehicleScheduleAsync(VehicleScheduleRequest request)
         {
             try
             {
-                _context.VehicleSchedules.Add(vehicleSchedule);
+                var schedule = _mapper.Map<VehicleSchedule>(request);
+                _context.VehicleSchedules.Add(schedule);
                 await _context.SaveChangesAsync();
-                return vehicleSchedule;
+                return schedule;
             }
             catch
             {
@@ -60,27 +94,14 @@ namespace db_course_design.Services.impl
             }
         }
 
-        public async Task<VehicleTicket?> AddVehicleTicketAsync(VehicleTicket vehicleTicket)
+        public async Task<VehicleTicket?> AddVehicleTicketAsync(VehicleTicketRequest request)
         {
             try
             {
-                _context.VehicleTickets.Add(vehicleTicket);
+                var ticket = _mapper.Map<VehicleTicket>(request);
+                _context.VehicleTickets.Add(ticket);
                 await _context.SaveChangesAsync();
-                return vehicleTicket;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public async Task<VehicleOrder?> AddVehicleOrderAsync(VehicleOrder vehicleOrder)
-        {
-            try
-            {
-                _context.VehicleOrders.Add(vehicleOrder);
-                await _context.SaveChangesAsync();
-                return vehicleOrder;
+                return ticket;
             }
             catch
             {
@@ -112,37 +133,12 @@ namespace db_course_design.Services.impl
             return true;
         }
 
-        public async Task<bool> RemoveVehicleOrderAsync(int orderId, decimal ticketId, string ticketUserName)
-        {
-            var target = await _context.VehicleOrders.SingleOrDefaultAsync(v => v.OrderId == orderId
-                                                                           && v.TicketId == ticketId
-                                                                           && v.TicketUserName == ticketUserName);
-
-            if (target == null)
-                return false;
-
-            _context.VehicleOrders.Remove(target);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
         private VehicleResponse mapInfo(VehicleSchedule schedule, VehicleTicket ticket)
         {
             var info = _mapper.Map<VehicleResponse>(schedule);
 
             _mapper.Map(ticket, info);
             return info;
-        }
-
-        private VehicleOrderDetail mapOrder(VehicleOrder order)
-        {
-            var ticket = order.Ticket;
-            var schedule = ticket.Vehicle;
-            var detail = _mapper.Map<VehicleOrderDetail>(order);
-
-            _mapper.Map(ticket, detail);
-            _mapper.Map(schedule, detail);
-            return detail;
         }
     }
 }

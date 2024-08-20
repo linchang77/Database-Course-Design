@@ -13,7 +13,6 @@ namespace db_course_design.Controllers
         Vehicle/
             {type},{ArrivalCity},{DepartureCity},{DepartureTime}/
                 GET               - 获取该条件下所有的车次信息      
-                /Modeltypr/{model}
     */
     [Route("api/[controller]")]
     [ApiController]
@@ -36,8 +35,8 @@ namespace db_course_design.Controllers
             return Ok(schedules);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddVehicleSchedule([FromBody] VehicleSchedule vehicleSchedule)
+        [HttpPost("schedule")]
+        public async Task<IActionResult> AddVehicleSchedule([FromBody] VehicleScheduleRequest vehicleSchedule)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -49,8 +48,8 @@ namespace db_course_design.Controllers
             return CreatedAtAction("Get", new { id = target.VehicleId }, target);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddVehicleTicket([FromBody] VehicleTicket vehicleTicket)
+        [HttpPost("ticket")]
+        public async Task<IActionResult> AddVehicleTicket([FromBody] VehicleTicketRequest vehicleTicket)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
