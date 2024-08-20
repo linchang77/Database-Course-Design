@@ -4,27 +4,61 @@ import axios from "axios";
 
 defineOptions({
   name: "Shanghai"
-})
-const currentPage = ref('home')
-const attractions = ref<Array<{ id: number, name: string, grade: string, description: string, distance: number }>>([]);
+});
+
+const currentPage = ref('home');
+const attractions = ref([]);
 
 const searchQuery = ref('');
 const starFilter = ref('全部');
 const distanceFilter = ref('全部');
 
 const navigateTo = (page: string) => {
-  currentPage.value = page
-}
-const starOptions = ['全部', '1A', '2A', '3A', '4A', '5A'];
+  currentPage.value = page;
+};
+
+const starOptions = ['全部', '1', '2', '3', '4', '5'];
 const distanceOptions = ['全部', '2km内', '2-5km', '5-20km', '20km以上'];
 
 const fetchAttractions = () => {
   axios.get(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent('上海')}`)
     .then(response => {
-      attractions.value = response.data;
+      let filteredAttractions = response.data;
+
+      // 星级筛选
+      if (starFilter.value !== '全部') {
+        filteredAttractions = filteredAttractions.filter(attraction => 
+          attraction.scenicSpotGrade === starFilter.value
+        );
+      }
+
+      // 距离筛选
+      if (distanceFilter.value !== '全部') {
+        filteredAttractions = filteredAttractions.filter(attraction => {
+          const distance = parseFloat(attraction.scenicSpotLocation);
+          switch (distanceFilter.value) {
+            case '2km内':
+              return distance <= 2;
+            case '2-5km':
+              return distance > 2 && distance <= 5;
+            case '5-20km':
+              return distance > 5 && distance <= 20;
+            case '20km以上':
+              return distance > 20;
+            default:
+              return true;
+          }
+        });
+      }
+
+      attractions.value = filteredAttractions;
     })
     .catch(error => {
-      console.error(error);
+      if (error.response && error.response.status === 404) {
+        attractions.value = [];
+      } else {
+        console.error(error);
+      }
     });
 };
 
@@ -35,18 +69,26 @@ const searchAttraction = () => {
     if (!isNaN(Number(searchQuery.value))) {
       axios.get(`https://123.60.14.84/api/ScenicSpot/id/${searchQuery.value}`)
         .then(response => {
-          attractions.value = response.data;
+          attractions.value = response.data ? [response.data] : [];
         })
         .catch(error => {
-          console.error(error);
+          if (error.response && error.response.status === 404) {
+            attractions.value = [];
+          } else {
+            console.error(error);
+          }
         });
     } else {
       axios.get(`https://123.60.14.84/api/ScenicSpot/name/${encodeURIComponent(searchQuery.value)}`)
         .then(response => {
-          attractions.value = response.data;
+          attractions.value = response.data ? [response.data] : [];
         })
         .catch(error => {
-          console.error(error);
+          if (error.response && error.response.status === 404) {
+            attractions.value = [];
+          } else {
+            console.error(error);
+          }
         });
     }
   } else {
@@ -56,52 +98,12 @@ const searchAttraction = () => {
 
 const setStarFilter = (option: string) => {
   starFilter.value = option;
-  if (option !== '全部') {
-    axios.get(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent('上海')}/grade/${option}`)
-      .then(response => {
-        attractions.value = response.data;
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  } else {
-    fetchAttractions();
-  }
+  fetchAttractions();
 };
 
 const setDistanceFilter = (option: string) => {
   distanceFilter.value = option;
-  let mindis = 0;
-  let maxdis = 0;
-
-  switch (option) {
-    case '2km内':
-      maxdis = 2000;
-      break;
-    case '2-5km':
-      mindis = 2000;
-      maxdis = 5000;
-      break;
-    case '5-20km':
-      mindis = 5000;
-      maxdis = 20000;
-      break;
-    case '20km以上':
-      mindis = 20000;
-      maxdis = 100000;
-      break;
-    default:
-      fetchAttractions();
-      return;
-  }
-
-  axios.get(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent('上海')}/distance/${mindis},${maxdis}`)
-    .then(response => {
-      attractions.value = response.data;
-    })
-    .catch(error => {
-      console.error(error);
-    });
+  fetchAttractions();
 };
 </script>
 
@@ -152,15 +154,17 @@ const setDistanceFilter = (option: string) => {
       <div v-if="currentPage === 'home'">
         <img src="/images/shanghai.jpg" alt="Shanghai" class="home-image"/>
       </div>
-
       <div v-if="currentPage === 'attractions'" class="attractions-grid">
-        <div v-for="attraction in attractions" :key="attraction.id" class="attraction-card">
-          <img :src="`/images/${attraction.name}.jpg`" alt="attraction.name" class="attraction-image">
+        <div v-if="attractions.length === 0" class="no-results">
+          无结果
+        </div>
+        <div v-else v-for="attraction in attractions" :key="attraction.scenicSpotId" class="attraction-card">
+          <img :src="`/images/${encodeURIComponent(attraction.scenicSpotName)}.jpg`" alt="attraction.scenicSpotName" class="attraction-image">
           <div class="attraction-info">
-            <h3>{{ attraction.name }}</h3>
-            <p>等级：{{ attraction.grade }}</p>
-            <p>{{ attraction.description }}</p>
-            <p>距离：{{ attraction.distance }}米</p>
+            <h3>{{ attraction.scenicSpotName }}</h3>
+            <p>等级：{{ attraction.scenicSpotGrade }}</p>
+            <p>{{ attraction.scenicSpotIntroduction }}</p>
+            <p>距离：{{ attraction.scenicSpotLocation }}公里</p>
           </div>
         </div>
       </div>
@@ -281,7 +285,7 @@ const setDistanceFilter = (option: string) => {
 
 .attractions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
@@ -296,9 +300,16 @@ const setDistanceFilter = (option: string) => {
 
 .attraction-image {
   width: 100%;
-  height: auto;
+  height: 150px;
+  object-fit: cover;
   border-radius: 8px;
   margin-bottom: 10px;
+}
+
+.attraction-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .attraction-info h3 {
@@ -309,5 +320,13 @@ const setDistanceFilter = (option: string) => {
 .attraction-info p {
   margin: 5px 0;
   color: #555;
+}
+
+.no-results {
+  grid-column: span 3;
+  text-align: center;
+  font-size: 18px;
+  color: #777;
+  margin-top: 20px;
 }
 </style>
