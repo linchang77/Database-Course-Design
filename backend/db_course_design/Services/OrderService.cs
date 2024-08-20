@@ -233,5 +233,12 @@ namespace db_course_design.Services
             orders.AddRange(FilteredVehicleOrders);
             return orders;
         }
+        /*--创建一个订单--*/
+        public async Task<OrderDatum> CreateOrderAsync(OrderDatum orderData)
+        {
+            _context.OrderData.Add(orderData);
+            await _context.SaveChangesAsync();
+            return orderData;
+        }
     }
 }
