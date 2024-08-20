@@ -4,6 +4,7 @@ using db_course_design.DTOs;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using db_course_design.Profiles;
+using Microsoft.AspNetCore.Mvc;
 
 namespace db_course_design.Services.impl
 {
@@ -68,18 +69,25 @@ namespace db_course_design.Services.impl
 
         public async Task<List<VehicleResponse>> GetVehicleInfoAsync(string type, string arrivalCity, string departureCity, DateTime departureTime)
         {
-            var schedules = await _context.VehicleSchedules
+            var unmapped = await _context.VehicleSchedules
                 .Where(v => v.VehicleType == type)
-                .Join(_context.VehicleTickets, s => s.VehicleId, t => t.VehicleId, (s, t) => mapInfo(s, t))
-                .Where(i => i.ArrivalCity == arrivalCity
-                       && i.DepartureCity == departureCity
-                       && i.DepartureTime.Date.Equals(departureTime.Date))
+                .Join(_context.VehicleTickets, s => s.VehicleId, t => t.VehicleId, (s, t) => new
+                {
+                    Schedule = s,
+                    Ticket = t
+                })
+                .Where(i => i.Ticket.TicketArrivalCity == arrivalCity
+                       && i.Ticket.TicketDepartureCity == departureCity
+                       && i.Ticket.TicketDepartureTime.Value.Date.Equals(departureTime.Date))
                 .ToListAsync();
+            var schedules = unmapped
+                .Select(i => mapInfo(i.Schedule, i.Ticket))
+                .ToList();
 
             return schedules;
         }
 
-        public async Task<VehicleSchedule?> AddVehicleScheduleAsync(VehicleScheduleRequest request)
+        public async Task<VehicleSchedule?> AddVehicleScheduleAsync([FromBody] VehicleScheduleRequest request)
         {
             try
             {
@@ -94,7 +102,7 @@ namespace db_course_design.Services.impl
             }
         }
 
-        public async Task<VehicleTicket?> AddVehicleTicketAsync(VehicleTicketRequest request)
+        public async Task<VehicleTicket?> AddVehicleTicketAsync([FromBody] VehicleTicketRequest request)
         {
             try
             {

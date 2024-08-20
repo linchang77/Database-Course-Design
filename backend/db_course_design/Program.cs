@@ -35,10 +35,10 @@ builder.Services.AddScoped<IScenicSpotService, ScenicSpotService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 /////////////////////////////////////////自己根据需要添加内容//////////////////////////////////////////////////////////////
 //添加DbContext
+//builder.Services.AddDbContext<ModelContext>(options =>
+//    options.UseOracle("DATA SOURCE=123.60.14.84:1521/ORCL;TNS_ADMIN=C:\\\\\\\\Users\\\\\\\\LQS\\\\\\\\Oracle\\\\\\\\network\\\\\\\\admin;PERSIST SECURITY INFO=True;USER ID=SYSTEM;PASSWORD=summer_Dt514"));
 builder.Services.AddDbContext<ModelContext>(options =>
-    options.UseOracle("DATA SOURCE=123.60.14.84:1521/ORCL;TNS_ADMIN=C:\\\\\\\\Users\\\\\\\\LQS\\\\\\\\Oracle\\\\\\\\network\\\\\\\\admin;PERSIST SECURITY INFO=True;USER ID=SYSTEM;PASSWORD=summer_Dt514"));
-/*builder.Services.AddDbContext<ModelContext>(options =>
-    options.UseOracle(builder.Configuration.GetConnectionString("DefaultConnection")));*/
+    options.UseOracle(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
