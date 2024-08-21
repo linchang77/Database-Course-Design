@@ -1,4 +1,4 @@
-﻿namespace db_course_design.Returns
+﻿namespace db_course_design.DTOs
 {
     /*--封装订单返回属性的类--*/
     public class OrderResponse

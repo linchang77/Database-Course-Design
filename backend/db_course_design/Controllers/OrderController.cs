@@ -22,7 +22,6 @@ namespace db_course_design.Controllers
         TourOrder,
         VehicleOrder,
     }
-
     /*业务逻辑：
         订单管理界面
          可以看到所有与自己相关的订单(管理员是全部订单)，
@@ -51,6 +50,7 @@ namespace db_course_design.Controllers
                         DELETE    - 删除某个订单
                 date-range/
                     GET           - 按时间段筛选
+              
     */
     [ApiController]
     [Route("api/[controller]")]
@@ -130,6 +130,31 @@ namespace db_course_design.Controllers
                 return NotFound(new { Message = "No orders found in range " + start + "-" + end + " ." });
             }
             return Ok(orders);
+        }
+
+        /*--创建订单--*/
+        [HttpPost("creation")]
+        public async Task<ActionResult<OrderDatum>> CreateOrder([FromBody] CreateOrderRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest("Order data is required.");
+            }
+
+            // 将请求数据映射到 OrderDatum
+            var orderData = new OrderDatum
+            {
+                OrderType = request.OrderType,
+                OrderDate = request.OrderDate,
+                UserId = request.UserId,
+                Status = request.Status,
+                Price = request.Price
+            };
+
+            // 调用服务层来创建订单
+            var newOrder = await _orderService.CreateOrderAsync(orderData);
+
+            return CreatedAtAction(nameof(GetOrderById), new { orderId = newOrder.OrderId }, newOrder);
         }
     }
 }
