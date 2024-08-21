@@ -77,43 +77,43 @@ const prevImage = () => {
         </div>
 
         <div v-else-if="selectedItem === '1'" class="city-links">
-          <a href="http://localhost:3333/#/scene/shanghai">上海</a>
+          <router-link :to="{ path: '/scene/shanghai' }">上海</router-link>
           <a>北京</a>
           <a>天津</a>
           <a>广州</a>
         </div>
         <div v-else-if="selectedItem === '2'" class="city-links">
-          <a href="http://localhost:3333/#/scene/tokyo">东京</a>
+          <router-link :to="{ path: '/scene/tokyo' }">东京</router-link>
           <a>曼谷</a>
           <a>新加坡</a>
           <a>迪拜</a>
         </div>
         <div v-else-if="selectedItem === '3'" class="city-links">
-          <a href="http://localhost:3333/#/scene/cairo">开罗</a>
+          <router-link :to="{ path: '/scene/cairo' }">开罗</router-link>
           <a>开普敦</a>
           <a>约翰内斯堡</a>
           <a>马拉喀什</a>
         </div>
         <div v-else-if="selectedItem === '4'" class="city-links">
-          <a href="http://localhost:3333/#/scene/paris">巴黎</a>
+          <router-link :to="{ path: '/scene/paris' }">巴黎</router-link>
           <a>伦敦</a>
           <a>威尼斯</a>
           <a>罗马</a>
         </div>
         <div v-else-if="selectedItem === '5'" class="city-links">
-          <a href="http://localhost:3333/#/scene/newyork">纽约</a>
+          <router-link :to="{ path: '/scene/newyork' }">纽约</router-link>
           <a>多伦多</a>
           <a>洛杉矶</a>
           <a>温哥华</a>
         </div>
         <div v-else-if="selectedItem === '6'" class="city-links">
-          <a href="http://localhost:3333/#/scene/riodejaneiro">里约热内卢</a>
+          <router-link :to="{ path: '/scene/riodejaneiro' }">里约热内卢</router-link>
           <a>圣保罗</a>
           <a>基多</a>
           <a>圣地亚哥</a>
         </div>
         <div v-else-if="selectedItem === '7'" class="city-links">
-          <a href="http://localhost:3333/#/scene/sydney">悉尼</a>
+          <router-link :to="{ path: '/scene/sydney' }">悉尼</router-link>
           <a>墨尔本</a>
           <a>奥克兰</a>
           <a>皇后镇</a>

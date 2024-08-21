@@ -91,17 +91,15 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: "Shanghai",
         meta: {
           hidden: true
-        },
-        children: [
-          {
-            path: "tickets",
-            component: () => import("@/views/scene/citys/shanghai/scene_tickets.vue"),
-            name: "SceneTickets",
-            meta: {
-              hidden: true
-            }
-          }
-        ]
+        }
+      },
+      {
+        path: "shanghai/tickets",
+        component: () => import("@/views/scene/citys/city_shanghai/scene_tickets.vue"),
+        name: "SceneTickets",
+        meta: {
+          hidden: true
+        }
       },
       {
         path: "tokyo",
