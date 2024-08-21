@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using EntityFramework.Models;
 using db_course_design.Common;
 using db_course_design.Services;
 using db_course_design.Services.impl;
-using db_course_design.Returns;
-
+using db_course_design.DTOs;
 
 namespace db_course_design.Controllers
 {
