@@ -9,14 +9,16 @@ namespace db_course_design.Profiles
     {
         public VehicleProfile()
         {
-            CreateMap<VehicleSchedule, VehicleResponse>()
+            CreateMap<VehicleSchedule, VehicleScheduleResponse>();
+            CreateMap<VehicleTicket, VehicleTicketResponse>();
+            CreateMap<VehicleSchedule, VehicleInfoResponse>()
                 .ForMember(dest => dest.DepartureTime, opt => opt.Ignore())
                 .ForMember(dest => dest.ArrivalTime, opt => opt.Ignore())
                 .ForMember(dest => dest.DepartureCity, opt => opt.Ignore())
                 .ForMember(dest => dest.ArrivalCity, opt => opt.Ignore())
                 .ForMember(dest => dest.DepartureStation, opt => opt.Ignore())
                 .ForMember(dest => dest.ArrivalStation, opt => opt.Ignore());
-            CreateMap<VehicleTicket, VehicleResponse>()
+            CreateMap<VehicleTicket, VehicleInfoResponse>()
                 .ForMember(dest => dest.DepartureTime, opt => opt.MapFrom(src => src.TicketDepartureTime))
                 .ForMember(dest => dest.ArrivalTime, opt => opt.MapFrom(src => src.TicketArrivalTime))
                 .ForMember(dest => dest.DepartureCity, opt => opt.MapFrom(src => src.TicketDepartureCity))
