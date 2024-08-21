@@ -1,4 +1,10 @@
-/db_course_design/bin/
-/db_course_design/obj/
-/db_course_design/db_course_design.csproj.user
+/db_course_design/*
 /.vs
+!/db_course_design/common/
+!/db_course_design/Controllers/
+!/db_course_design/Models/
+!/db_course_design/DTOs/
+!/db_course_design/Services/
+!/db_course_design/Program.cs
+!/db_course_design/Profiles/
+!/db_course_design/db_course_design.csproj

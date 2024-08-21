@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\大二资料\\数据库课设\\RemoteBash\\backend\\db_course_design\\db_course_design.csproj": {}
+    "C:\\Users\\linchang\\Desktop\\db_backend\\Database-Course-Design\\backend\\db_course_design\\db_course_design.csproj": {}
   },
   "projects": {
-    "D:\\大二资料\\数据库课设\\RemoteBash\\backend\\db_course_design\\db_course_design.csproj": {
+    "C:\\Users\\linchang\\Desktop\\db_backend\\Database-Course-Design\\backend\\db_course_design\\db_course_design.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\大二资料\\数据库课设\\RemoteBash\\backend\\db_course_design\\db_course_design.csproj",
+        "projectUniqueName": "C:\\Users\\linchang\\Desktop\\db_backend\\Database-Course-Design\\backend\\db_course_design\\db_course_design.csproj",
         "projectName": "db_course_design",
-        "projectPath": "D:\\大二资料\\数据库课设\\RemoteBash\\backend\\db_course_design\\db_course_design.csproj",
-        "packagesPath": "C:\\Users\\LQS\\.nuget\\packages\\",
-        "outputPath": "D:\\大二资料\\数据库课设\\RemoteBash\\backend\\db_course_design\\obj\\",
+        "projectPath": "C:\\Users\\linchang\\Desktop\\db_backend\\Database-Course-Design\\backend\\db_course_design\\db_course_design.csproj",
+        "packagesPath": "C:\\Users\\linchang\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\linchang\\Desktop\\db_backend\\Database-Course-Design\\backend\\db_course_design\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\LQS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\linchang\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -35,6 +35,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -97,7 +102,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303\\RuntimeIdentifierGraph.json"
         }
       }
     }
