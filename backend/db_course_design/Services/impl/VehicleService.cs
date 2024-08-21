@@ -52,11 +52,21 @@ namespace db_course_design.Services.impl
         public string? TicketArrivalStation { get; set; }
     }
 
+    public class VehicleOrderRequest
+    {
+        public int OrderId { get; set; }
+
+        public decimal TicketId { get; set; }
+
+        public string TicketUserName { get; set; } = null!;
+    }
+
     public class VehicleService : IVehicleService
     {
         private readonly ModelContext _context;
         private readonly MapperConfiguration _config;
-        private readonly IMapper _mapper;
+
+        public IMapper _mapper { get; }
 
         public VehicleService(ModelContext context)
         {
@@ -65,25 +75,25 @@ namespace db_course_design.Services.impl
             _mapper = _config.CreateMapper();
         }
 
-        public async Task<VehicleScheduleResponse?> GetVehicleScheduleAsync(string vehicleId)
+        public async Task<VehicleSchedule?> GetVehicleScheduleAsync(string vehicleId)
         {
             var schedule = await _context.VehicleSchedules.FindAsync(vehicleId);
 
             if (schedule == null)
                 return null;
-            return _mapper.Map<VehicleScheduleResponse>(schedule);
+            return schedule;
         }
 
-        public async Task<VehicleTicketResponse?> GetVehicleTicketAsync(decimal ticketId)
+        public async Task<VehicleTicket?> GetVehicleTicketAsync(decimal ticketId)
         {
             var ticket = await _context.VehicleTickets.FindAsync(ticketId);
 
             if (ticket == null) 
                 return null;
-            return _mapper.Map<VehicleTicketResponse>(ticket);
+            return ticket;
         }
 
-        public async Task<List<VehicleTicketResponse>> GetVehicleTicketsAsync(string vehicleId)
+        public async Task<List<VehicleTicket>> GetVehicleTicketsAsync(string vehicleId)
         {
             var schedule =  await _context.VehicleSchedules
                 .Where(v => v.VehicleId == vehicleId)
@@ -91,11 +101,11 @@ namespace db_course_design.Services.impl
                 .FirstOrDefaultAsync();
 
             if (schedule == null)
-                return new List<VehicleTicketResponse>();
-            return schedule.VehicleTickets.Select(t => _mapper.Map<VehicleTicketResponse>(t)).ToList();
+                return new List<VehicleTicket>();
+            return schedule.VehicleTickets.ToList();
         }
 
-        public async Task<List<VehicleInfoResponse>> GetVehicleInfoAsync(string type, string arrivalCity, string departureCity, DateTime departureTime)
+        public async Task<List<VehicleResponse>> GetVehicleInfoAsync(string type, string arrivalCity, string departureCity, DateTime departureTime)
         {
             var unmapped = await _context.VehicleSchedules
                 .Where(v => v.VehicleType == type)
@@ -115,14 +125,14 @@ namespace db_course_design.Services.impl
             return schedules;
         }
 
-        public async Task<VehicleScheduleResponse?> AddVehicleScheduleAsync([FromBody] VehicleScheduleRequest request)
+        public async Task<VehicleSchedule?> AddVehicleScheduleAsync([FromBody] VehicleScheduleRequest request)
         {
             try
             {
                 var schedule = _mapper.Map<VehicleSchedule>(request);
                 _context.VehicleSchedules.Add(schedule);
                 await _context.SaveChangesAsync();
-                return _mapper.Map<VehicleScheduleResponse>(schedule);
+                return schedule;
             }
             catch
             {
@@ -130,14 +140,29 @@ namespace db_course_design.Services.impl
             }
         }
 
-        public async Task<VehicleTicketResponse?> AddVehicleTicketAsync([FromBody] VehicleTicketRequest request)
+        public async Task<VehicleTicket?> AddVehicleTicketAsync([FromBody] VehicleTicketRequest request)
         {
             try
             {
                 var ticket = _mapper.Map<VehicleTicket>(request);
                 _context.VehicleTickets.Add(ticket);
                 await _context.SaveChangesAsync();
-                return _mapper.Map<VehicleTicketResponse>(ticket);
+                return ticket;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<VehicleOrder?> AddVehicleOrderAsync(VehicleOrderRequest request)
+        {
+            try
+            {
+                var order = _mapper.Map<VehicleOrder>(request);
+                _context.VehicleOrders.Add(order);
+                await _context.SaveChangesAsync();
+                return order;
             }
             catch
             {
@@ -147,7 +172,7 @@ namespace db_course_design.Services.impl
 
         public async Task<bool> RemoveVehicleScheduleAsync(string vehicleId)
         {
-            var target = await _context.VehicleSchedules.SingleOrDefaultAsync(v => v.VehicleId == vehicleId);
+            var target = await _context.VehicleSchedules.FindAsync(vehicleId);
 
             if (target == null)
                 return false;
@@ -159,7 +184,7 @@ namespace db_course_design.Services.impl
 
         public async Task<bool> RemoveVehicleTicketAsync(decimal ticketId)
         {
-            var target = await _context.VehicleTickets.SingleOrDefaultAsync(v => v.TicketId == ticketId);
+            var target = await _context.VehicleTickets.FindAsync(ticketId);
 
             if (target == null)
                 return false;
@@ -169,9 +194,21 @@ namespace db_course_design.Services.impl
             return true;
         }
 
-        private VehicleInfoResponse mapInfo(VehicleSchedule schedule, VehicleTicket ticket)
+        public async Task<bool> RemoveVehicleOrderAsync(int orderId, decimal ticketId, string ticketUserName)
         {
-            var info = _mapper.Map<VehicleInfoResponse>(schedule);
+            var target = await _context.VehicleOrders.FindAsync(orderId, ticketId, ticketUserName);
+
+            if (target == null)
+                return false;
+
+            _context.VehicleOrders.Remove(target);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        private VehicleResponse mapInfo(VehicleSchedule schedule, VehicleTicket ticket)
+        {
+            var info = _mapper.Map<VehicleResponse>(schedule);
 
             _mapper.Map(ticket, info);
             return info;

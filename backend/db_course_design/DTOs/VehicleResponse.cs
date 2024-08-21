@@ -1,6 +1,6 @@
 ﻿namespace db_course_design.DTOs
 {
-    public class VehicleInfoResponse
+    public class VehicleResponse
     {
         public string VehicleId { get; set; }
         public string? VehicleType { get; set; }

@@ -25,7 +25,7 @@ namespace db_course_design.Controllers
             info/
                 {type},{ArrivalCity},{DepartureCity},{DepartureTime}/
                     GET               - 获取该条件下所有的车次信息
-      业务逻辑（管理交通工具班次和车票信息）
+      业务逻辑（管理交通工具班次和车票信息）：
          交通工具管理界面
     api/
         Vehicle/
@@ -37,7 +37,13 @@ namespace db_course_design.Controllers
                 POST                - 添加车票信息
                 {ticketId}/
                     DELETE          - 删除车票信息
-        
+      业务逻辑（车票购买）：
+         交通工具查询界面
+    api/
+        Vehicle/
+            ticket/
+                {vehicleId},{type},{name}/
+                    POST            - 以指定姓名购买指定班次的指定种类的票
     */
     [Route("api/[controller]")]
     [ApiController]
@@ -57,7 +63,7 @@ namespace db_course_design.Controllers
 
             if (schedule == null)
                 return NotFound("No vehicle schedule of " + vehicleId);
-            return Ok(schedule);
+            return Ok(_vehicleService._mapper.Map<VehicleScheduleRequest>(schedule));
         }
 
         [HttpGet("ticket/{ticketId}")]
@@ -67,7 +73,7 @@ namespace db_course_design.Controllers
 
             if (ticket == null)
                 return NotFound("No vehicle ticket with id " + ticketId);
-            return Ok(ticket);
+            return Ok(_vehicleService._mapper.Map<VehicleScheduleRequest>(ticket));
         }
 
         [HttpGet("tickets/{vehicleId}")]
@@ -77,7 +83,7 @@ namespace db_course_design.Controllers
 
             if (tickets == null || tickets.Count == 0)
                 return NotFound("No vehicle ticket for " + vehicleId);
-            return Ok(tickets);
+            return Ok(tickets.Select(t => _vehicleService._mapper.Map<VehicleTicketRequest>(t)).ToList());
         }
 
         [HttpGet("info/{type},{arrivalCity},{departureCity},{departureTime}")]
@@ -100,7 +106,7 @@ namespace db_course_design.Controllers
 
             if (target == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the vehicle schedule.");
-            return CreatedAtAction(nameof(GetVehicleInfoByFilters), target);
+            return CreatedAtAction(nameof(GetVehicleScheduleById), new { id = target.VehicleId }, target);
         }
 
         [HttpPost("ticket")]
@@ -113,7 +119,7 @@ namespace db_course_design.Controllers
 
             if (target == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the vehicle ticket.");
-            return CreatedAtAction(nameof(GetVehicleInfoByFilters), target);
+            return CreatedAtAction(nameof(GetVehicleTicketByTicketId), new { id = target.TicketId }, target);
         }
 
         [HttpDelete("schedule/{vehicleId}")]
@@ -134,6 +140,42 @@ namespace db_course_design.Controllers
             if (!deleted)
                 return NotFound("No vehicle ticket to be deleted.");
             return NoContent();
+        }
+
+        [HttpPost("ticket/{vehicleId},{type},{name}")]
+        public async Task<IActionResult> PurchaseTicket(string vehicleId, string type, string name)
+        {
+            var tickets = await _vehicleService.GetVehicleTicketsAsync(vehicleId);
+            VehicleTicket ticket;
+
+            if (tickets == null || tickets.Count == 0)
+                return BadRequest("No vehicle ticket for " + vehicleId);
+
+            try
+            {
+                ticket = tickets.SingleOrDefault(t => t.TicketType == type);
+            }
+            catch
+            {
+                return BadRequest("Unable to purchase the ticket. This type of ticket doesn't exist.");
+            }
+            
+            var orderDatum = new OrderDatum
+            {
+
+            };
+            var vehicleOrder = new VehicleOrderRequest
+            {
+                OrderId = orderDatum.OrderId,
+                TicketId = ticket.TicketId,
+                TicketUserName = name
+            };
+
+            var target2 = await _vehicleService.AddVehicleOrderAsync(vehicleOrder);
+
+            if (target2 == null)
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the vehicle order.");
+            return Ok("Ticket purchased successfully.");
         }
     }
 }
