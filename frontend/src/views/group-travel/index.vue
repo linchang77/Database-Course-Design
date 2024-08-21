@@ -45,6 +45,21 @@ const guide_input=ref("")
 const transportation_input = ref(['不限']);
 const scale_input=ref("不限")
 
+const tours = ref([
+  {
+    id: 1,
+    name: '欧洲德国+法国+意大利+瑞士12日',
+    image: 'https://th.bing.com/th/id/R.17730a406f552186470aedcba9c41e61?rik=TMTgDwanN3pRjg&riu=http%3a%2f%2fimg.pconline.com.cn%2fimages%2fupload%2fupc%2ftx%2fphotoblog%2f1411%2f14%2fc4%2f40930578_40930578_1415972407711.jpg&ehk=5CuF8G2FaQGc0cs8v7q0dnLuiUS5VMztT9vPlj9iyDg%3d&risl=&pid=ImgRaw&r=0',
+    description: '⭐巴黎两宫【卢浮宫+凡尔赛宫】含资深官导讲解+免排队服务<br>⭐罗马一段高速火车直接上威尼斯岛【感受火车穿越大海的不同风景】+升级一段包船前往圣马可岛开启威尼斯的摇曳之旅',
+    departure: '上海',
+    destination: '欧洲德国+法国+意大利+瑞士',
+    time: '2024/8/10-2024/8/21',
+    transportation: '飞机往返',
+    guide: 'kk',
+    price: 19836
+  } 
+])
+
 </script>
 
 <template>
@@ -121,10 +136,20 @@ const scale_input=ref("不限")
     </div>
   </div>
 
-  <div class="content" style="margin-top: 10px;">
-    <el-scrollbar height="600px">
-      <p v-for="item in 20" :key="item" class="scrollbar-demo-item">{{ item }}</p>
-    </el-scrollbar>
+  <div class="content" style="margin-top: 20px;">
+    <div v-for="tour in tours" :key="tour.id" class="scrollbar-item">
+      <img :src="tour.image" alt="tour image" style="margin-right: 15px; width: 200px; height: 150px">
+      <div class="tour-info">
+        <h3>{{ tour.name }}</h3>
+        <p>{{ tour.time }}</p>
+        <p>{{ tour.description }}</p>
+        <p>交通工具：{{ tour.transportation }}</p>
+        <p>导游：{{ tour.guide }}</p>
+      </div>
+      <div class="tour-price">
+        <h3>价格：{{ tour.price }}</h3>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -139,16 +164,30 @@ const scale_input=ref("不限")
     margin-left: 10px;
   }
 
-  .scrollbar-demo-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100px;
+  .scrollbar-item {
+    display: flex;/*使用flex布局*/
+    align-items: center; /*垂直居中对齐*/
+    justify-content: flex-start; /*水平左对齐*/
+    height: 180px;
     margin-left: 40px;
     margin-right: 50px;
-    text-align: center;
+    padding: 15px; /*添加内边距*/
+    text-align: left; /*确保文本左对齐*/
     border-radius: 4px;
     background: white;
     color: var(--el-color-primary);
-}
+  }
+
+  .tour-info {
+    flex: 0.95; /*占据剩余空间*/
+  }
+
+  .tour-info h3 {
+    margin: 10px 10px; /* 调整p标签的上下外边距，减少间隙 */
+  }
+
+  .tour-info p {
+    margin: 5px 10px; /* 调整p标签的上下外边距，减少间隙 */
+  }
+
 </style>
