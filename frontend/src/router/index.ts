@@ -95,7 +95,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       {
         path: "shanghai/tickets",
-        component: () => import("@/views/scene/citys/city_shanghai/scene_tickets.vue"),
+        component: () => import("@/views/scene/citys/city_shanghai/上海景点购票.vue"),
         name: "SceneTickets",
         meta: {
           hidden: true

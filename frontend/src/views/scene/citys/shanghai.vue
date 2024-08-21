@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue"
 import axios from "axios"
+import { useRouter } from "vue-router"
 
 defineOptions({
   name: "Shanghai"
@@ -15,6 +16,7 @@ interface Attraction {
   scenicSpotLocation: string
 }
 
+const router = useRouter()
 const currentPage = ref("home")
 const attractions = ref<Attraction[]>([])
 
@@ -117,6 +119,10 @@ const setDistanceFilter = (option: string) => {
   distanceFilter.value = option
   fetchAttractions()
 }
+
+const goToAttraction = (scenicSpotName: string) => {
+  router.push({ path: "shanghai/tickets", query: { name: scenicSpotName } })
+}
 </script>
 
 <template>
@@ -171,7 +177,13 @@ const setDistanceFilter = (option: string) => {
       </div>
       <div v-if="currentPage === 'attractions'" class="attractions-grid">
         <div v-if="attractions.length === 0" class="no-results">无结果</div>
-        <div v-else v-for="attraction in attractions" :key="attraction.scenicSpotId" class="attraction-card">
+        <div
+          v-else
+          v-for="attraction in attractions"
+          :key="attraction.scenicSpotId"
+          class="attraction-card"
+          @click="goToAttraction(attraction.scenicSpotName)"
+        >
           <img
             :src="`/images/${encodeURIComponent(attraction.scenicSpotName)}.jpg`"
             alt="attraction.scenicSpotName"
