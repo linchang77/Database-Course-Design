@@ -63,6 +63,8 @@ public partial class ModelContext : DbContext
 
     public virtual DbSet<VehicleOrder> VehicleOrders { get; set; }
 
+    public virtual DbSet<VehiclePassenger> VehiclePassengers { get; set; }
+
     public virtual DbSet<VehicleSchedule> VehicleSchedules { get; set; }
 
     public virtual DbSet<VehicleTicket> VehicleTickets { get; set; }
@@ -811,7 +813,7 @@ public partial class ModelContext : DbContext
 
         modelBuilder.Entity<VehicleOrder>(entity =>
         {
-            entity.HasKey(e => new { e.OrderId, e.TicketId, e.TicketUserName }).HasName("ORDER_ID_AND_TICKET_ID_AS_PK_OF_VEHICLE_ORDER");
+            entity.HasKey(e => new { e.OrderId }).HasName("ORDER_ID_AS_PK_OF_VEHICLE_ORDER");
 
             entity.ToTable("VEHICLE_ORDER");
 
@@ -821,10 +823,6 @@ public partial class ModelContext : DbContext
             entity.Property(e => e.TicketId)
                 .HasColumnType("NUMBER(38)")
                 .HasColumnName("TICKET_ID");
-            entity.Property(e => e.TicketUserName)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("TICKET_USER_NAME");
 
             entity.HasOne(d => d.Order).WithMany(p => p.VehicleOrders)
                 .HasForeignKey(d => d.OrderId)
@@ -833,6 +831,30 @@ public partial class ModelContext : DbContext
             entity.HasOne(d => d.Ticket).WithMany(p => p.VehicleOrders)
                 .HasForeignKey(d => d.TicketId)
                 .HasConstraintName("TICKET_ID_AS_FK_OF_VEHICLE_ORDER_REFERENCING_VEHICLE_TICKET");
+        });
+
+        modelBuilder.Entity<VehiclePassenger>(entity =>
+        {
+            entity.HasKey(e => new { e.OrderId, e.PassengerId }).HasName("ORDER_ID_AND_PASSENGER_ID_AS_PK_OF_VEHICLE_PASSENGER");
+
+            entity.ToTable("VEHICLE_PASSENGER");
+
+            entity.Property(e => e.OrderId)
+                .HasPrecision(10)
+                .HasColumnName("ORDER_ID");
+            entity.Property(e => e.PassengerId)
+                .HasMaxLength(18)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("PASSENGER_ID");
+            entity.Property(e => e.PassengerName)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("PASSENGER_NAME");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.Passengers)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("ORDER_ID_AS_FK_OF_VEHICLE_PASSENGER_REFERENCING_VEHICLE_ORDER");
         });
 
         modelBuilder.Entity<VehicleSchedule>(entity =>

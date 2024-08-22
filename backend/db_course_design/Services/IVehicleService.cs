@@ -15,11 +15,14 @@ namespace db_course_design.Services
         Task<List<VehicleResponse>> GetVehicleInfoAsync(string type, string arrivalCity, string departureCity, DateTime departureDate);
         Task<VehicleSchedule?> AddVehicleScheduleAsync(VehicleScheduleRequest request);
         Task<VehicleTicket?> AddVehicleTicketAsync(VehicleTicketRequest request);
-        Task<VehicleOrder?> AddVehicleOrderAsync(VehicleOrderRequest order);
+        Task<VehicleOrder?> AddVehicleOrderAsync(VehicleOrderRequest request);
+        Task<VehiclePassenger?> AddVehiclePassengerAsync(VehiclePassengerRequest request, int orderId);
         Task<bool> RemoveVehicleScheduleAsync(string vehicleId);
         Task<bool> RemoveVehicleTicketAsync(decimal ticketId);
-        Task<bool> RemoveVehicleOrderAsync(int orderId, decimal ticketId, string ticketUserName);
+        Task<bool> RemoveVehicleOrderAsync(int orderId);
+        Task<bool> RemoveVehiclePassengerAsync(int orderId, string passengerId);
         Task<OrderDatum?> AddOrderDatumAsync(int userId, decimal price);
+        Task<bool> RemoveOrderDatumAsync(int orderId);
     }
 
 }

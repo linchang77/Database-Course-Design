@@ -28,6 +28,7 @@ namespace db_course_design.Profiles
             CreateMap<VehicleScheduleRequest, VehicleSchedule>();
             CreateMap<VehicleTicketRequest, VehicleTicket>();
             CreateMap<VehicleOrderRequest, VehicleOrder>();
+            CreateMap<VehiclePassengerRequest, VehiclePassenger>();
         }
     }
 }

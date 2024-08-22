@@ -42,8 +42,12 @@ namespace db_course_design.Controllers
     api/
         Vehicle/
             ticket/
-                {userId},{vehicleId},{type},{name}/
-                    POST            - 以指定姓名购买指定班次的指定种类的票
+                {userId},{vehicleId},{type}/
+                    POST            - 购买指定班次的指定种类的票
+                {orderId},{passengerId}/
+                    DELETE          - 退订单个乘客的车票
+                {orderId}/
+                    DELETE          - 退订这一单所有的车票
     */
     [Route("api/[controller]")]
     [ApiController]
@@ -142,8 +146,8 @@ namespace db_course_design.Controllers
             return NoContent();
         }
 
-        [HttpPost("ticket/{userId},{vehicleId},{type},{name}")]
-        public async Task<IActionResult> PurchaseTicket(int userId, string vehicleId, string type, string name)
+        [HttpPost("ticket/{userId},{vehicleId},{type}")]
+        public async Task<IActionResult> PurchaseTicket(int userId, string vehicleId, string type, [FromBody] List<VehiclePassengerRequest> passengers)
         {
             var tickets = await _vehicleService.GetVehicleTicketsAsync(vehicleId);
             VehicleTicket? ticket;
@@ -175,13 +179,33 @@ namespace db_course_design.Controllers
             {
                 OrderId = orderDatum.OrderId,
                 TicketId = ticket.TicketId,
-                TicketUserName = name
             };
             var target = await _vehicleService.AddVehicleOrderAsync(vehicleOrder);
 
             if (target == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the vehicle order.");
             return Ok("Ticket purchased successfully.");
+        }
+
+        [HttpDelete("ticket/{orderId}/{passengerId}")]
+        public async Task<IActionResult> RefundTicketForOne(int orderId, string passengerId)
+        {
+            var deleted = await _vehicleService.RemoveVehiclePassengerAsync(orderId, passengerId);
+
+            if (!deleted)
+                return NotFound("No passenger to be deleted");
+            return NoContent();
+        }
+
+        [HttpDelete("ticket/{orderId}")]
+        public async Task<IActionResult> RefundTicketForAll(int orderId)
+        {
+            var datumDeleted = await _vehicleService.RemoveOrderDatumAsync(orderId);
+            var detailDeleted = await _vehicleService.RemoveVehicleOrderAsync(orderId);
+
+            if (!datumDeleted || !detailDeleted)
+                return NotFound("No order to be deleted.");
+            return NoContent();
         }
     }
 }

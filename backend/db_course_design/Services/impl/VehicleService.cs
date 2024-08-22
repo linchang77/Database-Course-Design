@@ -57,8 +57,13 @@ namespace db_course_design.Services.impl
         public int OrderId { get; set; }
 
         public decimal TicketId { get; set; }
+    }
 
-        public string TicketUserName { get; set; } = null!;
+    public class VehiclePassengerRequest
+    {
+        public string PassengerId { get; set; } = null!;
+
+        public string? PassengerName { get; set; }
     }
 
     public class VehicleService : IVehicleService
@@ -170,6 +175,22 @@ namespace db_course_design.Services.impl
             }
         }
 
+        public async Task<VehiclePassenger?> AddVehiclePassengerAsync(VehiclePassengerRequest request, int orderId)
+        {
+            try
+            {
+                var passenger = _mapper.Map<VehiclePassenger>(request);
+                passenger.OrderId = orderId;
+                _context.VehiclePassengers.Add(passenger);
+                await _context.SaveChangesAsync();
+                return passenger;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task<bool> RemoveVehicleScheduleAsync(string vehicleId)
         {
             var target = await _context.VehicleSchedules.FindAsync(vehicleId);
@@ -194,15 +215,29 @@ namespace db_course_design.Services.impl
             return true;
         }
 
-        public async Task<bool> RemoveVehicleOrderAsync(int orderId, decimal ticketId, string ticketUserName)
+        public async Task<bool> RemoveVehicleOrderAsync(int orderId)
         {
-            var target = await _context.VehicleOrders.FindAsync(orderId, ticketId, ticketUserName);
+            var target = await _context.VehicleOrders.FindAsync(orderId);
 
             if (target == null)
                 return false;
 
             _context.VehicleOrders.Remove(target);
             await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RemoveVehiclePassengerAsync(int orderId, string passengerId)
+        {
+            var target = await _context.VehiclePassengers.FindAsync(orderId, passengerId);
+
+            if (target == null)
+                return false;
+
+            _context.VehiclePassengers.Remove(target);
+            await _context.SaveChangesAsync();
+            if ((await _context.VehiclePassengers.CountAsync(p => p.OrderId == orderId)) <= 0)
+                await RemoveVehicleOrderAsync(orderId);
             return true;
         }
 
@@ -219,6 +254,11 @@ namespace db_course_design.Services.impl
             };
 
             return await orderService.CreateOrderAsync(order);
+        }
+
+        public async Task<bool> RemoveOrderDatumAsync(int orderId)
+        {
+            return true;
         }
 
         private VehicleResponse mapInfo(VehicleSchedule schedule, VehicleTicket ticket)
