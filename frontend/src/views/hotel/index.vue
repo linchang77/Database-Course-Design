@@ -5,30 +5,31 @@ import TimeSelector from "./components/TimeSelector.vue"
 import { useRouter } from 'vue-router'
 
 defineOptions({
-  name: "Airplane"
+  name: "Hotel"
 })
 
-const departure = ref('')
 const destination = ref('')
-const departureTime = ref('')
+const chekInTime = ref('')
+const chekOutTime = ref('')
 const router = useRouter()
-
-const setDeparture = (val : any) => {
-  departure.value = val[val.length - 1]
-}
 
 const setDestination = (val : any) => {
   destination.value = val[val.length - 1]
 }
 
 
-const setDepartureTime = (val : any) => {
-  departureTime.value = val
-  console.log(val)
+const setCheckInTime = (val : any) => {
+  chekInTime.value = val
+  console.log(val.getDate())
+}
+
+const setCheckOutTime = (val : any) => {
+  chekOutTime.value = val
+  console.log(val.getDate())
 }
 
 const searchTickets = () => {
-      console.log("出发地"+departure.value,'目的地'+destination.value,'时间'+departureTime.value)
+      console.log('目的地'+destination.value,'入住时间'+chekInTime.value,'退房时间'+chekOutTime.value)
       // router.push({
       //   name: 'TicketDetailsPage',
       //   query: {
@@ -40,18 +41,18 @@ const searchTickets = () => {
     }
 
 const isSearchDisabled = computed(() => {
-  return !departure.value || !destination.value || !departureTime.value
+  return !destination.value || !chekInTime.value || !chekOutTime.value
 })
 
 </script>
 
 <template>
   <div class="app-container">
-    <el-card header="机票查询">
+    <el-card header="酒店查询">
       <div class="index-container">
-        <PlaceSelector @updateValue="setDeparture">目的地</PlaceSelector>
-        <PlaceSelector @updateValue="setDestination">出发地</PlaceSelector>
-        <TimeSelector @updateValue='setDepartureTime'>请选择出发时间</TimeSelector>
+        <PlaceSelector @updateValue="setDestination">目的地</PlaceSelector>
+        <TimeSelector @updateValue='setCheckInTime'>请选择入住时间</TimeSelector>
+        <TimeSelector @updateValue='setCheckOutTime'>请选择退房时间</TimeSelector>
         <el-button type="primary" size="large" icon="search" :disabled="isSearchDisabled" @click="searchTickets">搜索</el-button>
       </div>
     </el-card>

@@ -323,7 +323,23 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       }
     ]
-  }
+  },
+  {
+    path: "/",
+    component: Layouts,
+    children: [
+      {
+        path: "hotel",
+        component: () => import("@/views/hotel/index.vue"),
+        name: "Hotel",
+        meta: {
+          title: "酒店",
+          svgIcon: "hotel",
+          affix: true
+        }
+      }
+    ]
+  },
 
   // {
   //   path: "/hook-demo",

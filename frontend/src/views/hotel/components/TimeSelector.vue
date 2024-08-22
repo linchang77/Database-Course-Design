@@ -33,9 +33,8 @@
 
   const handleChange = (value: any) => {
     if (value !== '' && value !== null && value !== undefined) {
-        const formattedDate = `${value.getFullYear()}-${value.getMonth() + 1}-${value.getDate()}`;
-        emit('updateValue', formattedDate);
-        console.log('Selected Date:', formattedDate);
+        emit('updateValue', value)
+        console.log('Selected Date:', value)
     } else {
         console.log('Date Cleared')
     }
