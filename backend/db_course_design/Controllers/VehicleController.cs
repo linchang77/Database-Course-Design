@@ -175,7 +175,7 @@ namespace db_course_design.Controllers
                 return BadRequest("Unable to purchase the ticket. This type of ticket has been sold out.");
             ticket.TicketRemaining--;
 
-            var orderDatum = await _vehicleService.AddOrderDatumAsync(userId, ticket.TicketPrice.Value);
+            var orderDatum = await _vehicleService.AddOrderDatumAsync(userId, ticket.TicketPrice.Value * passengers.Count);
 
             if (orderDatum == null) 
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the order datum.");

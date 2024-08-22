@@ -824,8 +824,8 @@ public partial class ModelContext : DbContext
                 .HasColumnType("NUMBER(38)")
                 .HasColumnName("TICKET_ID");
 
-            entity.HasOne(d => d.Order).WithMany(p => p.VehicleOrders)
-                .HasForeignKey(d => d.OrderId)
+            entity.HasOne(d => d.Order).WithOne(p => p.VehicleOrder)
+                .HasForeignKey<VehicleOrder>(d => d.OrderId)
                 .HasConstraintName("ORDER_ID_AS_FK_OF_VEHICLE_ORDER_REFERENCING_ORDER_DATA");
 
             entity.HasOne(d => d.Ticket).WithMany(p => p.VehicleOrders)

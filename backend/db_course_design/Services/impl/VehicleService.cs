@@ -229,12 +229,20 @@ namespace db_course_design.Services.impl
 
         public async Task<bool> RemoveVehiclePassengerAsync(int orderId, string passengerId)
         {
-            var target = await _context.VehiclePassengers.FindAsync(orderId, passengerId);
+            var passenger = await _context.VehiclePassengers.FindAsync(orderId, passengerId);
+            var order = await _context.VehicleOrders
+                .Where(o => o.OrderId == orderId)
+                .Include(o => o.Order)
+                .Include(o => o.Ticket)
+                .SingleOrDefaultAsync();
 
-            if (target == null)
+            if (passenger == null || order == null)
                 return false;
 
-            _context.VehiclePassengers.Remove(target);
+            Console.WriteLine(order.Order.ToString());
+
+            order.Order.Price -= order.Ticket.TicketPrice;
+            _context.VehiclePassengers.Remove(passenger);
             await _context.SaveChangesAsync();
             if ((await _context.VehiclePassengers.CountAsync(p => p.OrderId == orderId)) <= 0)
             {
