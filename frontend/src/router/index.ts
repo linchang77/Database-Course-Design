@@ -82,15 +82,23 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: "/scene",
     component: Layouts,
     meta: {
-      hidden: true,
-   },
-    children:[
+      hidden: true
+    },
+    children: [
       {
         path: "shanghai",
         component: () => import("@/views/scene/citys/shanghai.vue"),
         name: "Shanghai",
         meta: {
-           hidden: true,
+          hidden: true
+        }
+      },
+      {
+        path: "shanghai/tickets",
+        component: () => import("@/views/scene/citys/city_shanghai/上海景点购票.vue"),
+        name: "SceneTickets",
+        meta: {
+          hidden: true
         }
       },
       {
@@ -98,48 +106,48 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import("@/views/scene/citys/tokyo.vue"),
         name: "Tokyo",
         meta: {
-           hidden: true,
-        },
+          hidden: true
+        }
       },
       {
         path: "cairo",
         component: () => import("@/views/scene/citys/cairo.vue"),
         name: "Cairo",
         meta: {
-           hidden: true,
-        },
+          hidden: true
+        }
       },
       {
         path: "paris",
         component: () => import("@/views/scene/citys/paris.vue"),
         name: "Paris",
         meta: {
-           hidden: true,
-        },
+          hidden: true
+        }
       },
       {
         path: "newyork",
         component: () => import("@/views/scene/citys/newyork.vue"),
         name: "Newyork",
         meta: {
-           hidden: true,
-        },
+          hidden: true
+        }
       },
       {
         path: "riodejaneiro",
         component: () => import("@/views/scene/citys/riodejaneiro.vue"),
         name: "Riodejaneiro",
         meta: {
-           hidden: true,
-        },
+          hidden: true
+        }
       },
       {
         path: "sydney",
         component: () => import("@/views/scene/citys/sydney.vue"),
         name: "Sydney",
         meta: {
-           hidden: true,
-        },
+          hidden: true
+        }
       }
     ]
   },
@@ -315,7 +323,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       }
     ]
-  },
+  }
 
   // {
   //   path: "/hook-demo",

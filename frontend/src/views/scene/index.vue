@@ -21,7 +21,7 @@ const handleSelect = (key: string) => {
   if (selectedItem.value === key) {
     selectedItem.value = ""
     isAsideVisible.value = false
-    showImages.value = true  // 恢复显示图片和滚动按钮
+    showImages.value = true // 恢复显示图片和滚动按钮
   } else {
     selectedItem.value = key
     isAsideVisible.value = true
@@ -31,7 +31,15 @@ const handleSelect = (key: string) => {
 
 const currentIndex = ref(0)
 const images = [shanghai, cairo, newyork, paris, sydney, tokyo, riodejaneiro]
-const images_herf = ["http://localhost:3333/#/scene/shanghai", "http://localhost:3333/#/scene/cairo", "http://localhost:3333/#/scene/newyork", "http://localhost:3333/#/scene/paris", "http://localhost:3333/#/scene/sydney", "http://localhost:3333/#/scene/tokyo", "http://localhost:3333/#/scene/riodejaneiro"]
+const images_herf = [
+  "http://localhost:3333/#/scene/shanghai",
+  "http://localhost:3333/#/scene/cairo",
+  "http://localhost:3333/#/scene/newyork",
+  "http://localhost:3333/#/scene/paris",
+  "http://localhost:3333/#/scene/sydney",
+  "http://localhost:3333/#/scene/tokyo",
+  "http://localhost:3333/#/scene/riodejaneiro"
+]
 
 const nextImage = () => {
   currentIndex.value = (currentIndex.value + 1) % images.length
@@ -69,56 +77,56 @@ const prevImage = () => {
         </div>
 
         <div v-else-if="selectedItem === '1'" class="city-links">
-          <a href="http://localhost:3333/#/scene/shanghai">上海</a>
+          <router-link :to="{ path: '/scene/shanghai' }">上海</router-link>
           <a>北京</a>
           <a>天津</a>
           <a>广州</a>
         </div>
         <div v-else-if="selectedItem === '2'" class="city-links">
-          <a href="http://localhost:3333/#/scene/tokyo">东京</a>
+          <router-link :to="{ path: '/scene/tokyo' }">东京</router-link>
           <a>曼谷</a>
           <a>新加坡</a>
           <a>迪拜</a>
         </div>
         <div v-else-if="selectedItem === '3'" class="city-links">
-          <a href="http://localhost:3333/#/scene/cairo">开罗</a>
+          <router-link :to="{ path: '/scene/cairo' }">开罗</router-link>
           <a>开普敦</a>
           <a>约翰内斯堡</a>
           <a>马拉喀什</a>
         </div>
         <div v-else-if="selectedItem === '4'" class="city-links">
-          <a href="http://localhost:3333/#/scene/paris">巴黎</a>
+          <router-link :to="{ path: '/scene/paris' }">巴黎</router-link>
           <a>伦敦</a>
           <a>威尼斯</a>
           <a>罗马</a>
         </div>
         <div v-else-if="selectedItem === '5'" class="city-links">
-          <a href="http://localhost:3333/#/scene/newyork">纽约</a>
+          <router-link :to="{ path: '/scene/newyork' }">纽约</router-link>
           <a>多伦多</a>
           <a>洛杉矶</a>
           <a>温哥华</a>
         </div>
         <div v-else-if="selectedItem === '6'" class="city-links">
-          <a href="http://localhost:3333/#/scene/riodejaneiro">里约热内卢</a>
+          <router-link :to="{ path: '/scene/riodejaneiro' }">里约热内卢</router-link>
           <a>圣保罗</a>
           <a>基多</a>
           <a>圣地亚哥</a>
         </div>
         <div v-else-if="selectedItem === '7'" class="city-links">
-          <a href="http://localhost:3333/#/scene/sydney">悉尼</a>
+          <router-link :to="{ path: '/scene/sydney' }">悉尼</router-link>
           <a>墨尔本</a>
           <a>奥克兰</a>
           <a>皇后镇</a>
         </div>
 
         <div v-if="showImages" class="scrollbar">
-          <button @click="prevImage" class="scroll-button"><</button>
+          <button @click="prevImage" class="scroll-button"><<</button>
           <div class="scroll-images">
             <img :src="images[currentIndex]" alt="Scene" class="scroll-image" />
             <img :src="images[(currentIndex + 1) % images.length]" alt="Scene" class="scroll-image" />
             <img :src="images[(currentIndex + 2) % images.length]" alt="Scene" class="scroll-image" />
           </div>
-          <button @click="nextImage" class="scroll-button">></button>
+          <button @click="nextImage" class="scroll-button">>></button>
         </div>
       </el-main>
     </el-container>
@@ -126,12 +134,6 @@ const prevImage = () => {
 </template>
 
 <style scoped>
-/* 移除页面的滚动条 */
-.no-scroll {
-  overflow: hidden;
-  height: 130vh; /* 限制页面高度为视窗高度 */
-}
-
 /* 保持原有样式 */
 .el-container {
   height: 100%;
@@ -241,7 +243,7 @@ li {
   border-radius: 15px;
   gap: 30px;
 }
-.scene-image1{
+.scene-image1 {
   width: 808px;
   height: 292px;
   display: block;
