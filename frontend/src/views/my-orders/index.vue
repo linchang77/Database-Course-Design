@@ -70,12 +70,84 @@ interface VehicleOrder extends BaseOrder {
 type Order = GuideOrder | HotelOrder | ScenicOrder | TourOrder | VehicleOrder
 
 const orders = ref<Order[]>([])
+
+// 模拟订单数据
+const mockOrders: Order[] = [
+  {
+    orderId: 1,
+    orderType: "GuideOrder",
+    status: "Completed",
+    orderDate: "2024-08-01",
+    price: 1500,
+    service: "City Tour",
+    guideName: "John Doe",
+    guideGender: "Male",
+    serviceBeginDate: "2024-08-01",
+    serviceEndDate: "2024-08-02"
+  },
+  {
+    orderId: 2,
+    orderType: "HotelOrder",
+    status: "Pending",
+    orderDate: "2024-08-05",
+    price: 200,
+    cityName: "Beijing",
+    hotelName: "Grand Hotel",
+    checkInDate: "2024-08-10",
+    checkOutDate: "2024-08-12",
+    roomType: "Deluxe"
+  },
+  {
+    orderId: 3,
+    orderType: "ScenicOrder",
+    status: "Canceled",
+    orderDate: "2024-07-25",
+    price: 80,
+    cityName: "Shanghai",
+    scenicSpotName: "The Bund",
+    ticketType: "Adult",
+    ticketNumber: 2,
+    ticketDate: "2024-08-03"
+  },
+  {
+    orderId: 4,
+    orderType: "TourOrder",
+    status: "Completed",
+    orderDate: "2024-06-15",
+    price: 3000,
+    groupId: 101,
+    groupName: "Golden Circle Tour",
+    guideId: 55,
+    guideName: "Jane Smith",
+    guideGender: "Female",
+    startDate: "2024-06-20",
+    endDate: "2024-06-25"
+  },
+  {
+    orderId: 5,
+    orderType: "VehicleOrder",
+    status: "Pending",
+    orderDate: "2024-07-10",
+    price: 500,
+    vehicleId: "V12345",
+    vehicleType: "Flight",
+    ticketId: 789,
+    ticketUserName: "Alice Johnson",
+    ticketDepartureTime: "2024-07-15 08:00",
+    ticketArrivalTime: "2024-07-15 10:00",
+    ticketDepartureCity: "New York",
+    ticketArrivalCity: "Los Angeles",
+    ticketDepartureStation: "JFK",
+    ticketArrivalStation: "LAX"
+  }
+]
+
 const searchQuery = ref("")
 const categoryFilter = ref("")
 const statusFilter = ref("")
 const startDate = ref("")
 const endDate = ref("")
-const userId = 22 // 根据需求替换为实际的用户ID
+const userId = 1 // 根据需求替换为实际的用户ID
 
 // 参数类型定义
 interface Params {
@@ -95,36 +167,52 @@ const total = ref(0)
 // 获取订单列表
 const fetchOrders = () => {
   axios
-    .get(`https://123.60.14.84/api/Order/role`, {
+    .get(`https://123.60.14.84:11100/api/Order/role`, {
       params: {
-        role: "User", // 角色类型替换为实际角色
+        role: "guide", // 角色类型替换为实际角色
         Id: userId,
         page: params.value.page,
         pageSize: params.value.pageSize
       }
     })
     .then((response) => {
+      console.log("API Response:", response.data) // 调试输出查看返回的数据结构
       // 遍历返回的数据并根据 orderType 将不同类型的订单添加到 orders 数组中
-      orders.value = response.data.orders.map((order: any) => {
-        switch (order.orderType) {
-          case "GuideOrder":
-            return { ...order, ...order.GuideOrderDetail }
-          case "HotelOrder":
-            return { ...order, ...order.HotelOrderDetail }
-          case "ScenicOrder":
-            return { ...order, ...order.ScenicOrderDetail }
-          case "TourOrder":
-            return { ...order, ...order.TourOrderDetail }
-          case "VehicleOrder":
-            return { ...order, ...order.VehicleOrderDetail }
-          default:
-            return order
-        }
-      })
-      total.value = response.data.total
+      const orderData = response.data // 直接使用 response.data 作为订单数据
+      if (orderData && Array.isArray(orderData)) {
+        orders.value = orderData.map((order: any) => {
+          switch (order.orderType) {
+            case "GuideOrder":
+              return {
+                ...order,
+                service: order.service,
+                guideId: order.guideId,
+                guideName: order.guideName,
+                guideGender: order.guideGender,
+                serviceBeginDate: order.serviceBeginDate,
+                serviceEndDate: order.serviceEndDate
+              } as GuideOrder
+            case "HotelOrder":
+              return { ...order, ...order.HotelOrderDetail }
+            case "ScenicOrder":
+              return { ...order, ...order.ScenicOrderDetail }
+            case "TourOrder":
+              return { ...order, ...order.TourOrderDetail }
+            case "VehicleOrder":
+              return { ...order, ...order.VehicleOrderDetail }
+            default:
+              return order
+          }
+        })
+        total.value = response.data.total || 0
+      } else {
+        console.error("Orders data is missing or not an array.")
+        orders.value = [] // 确保 orders 不为空
+        total.value = 0
+      }
     })
     .catch((error) => {
-      console.error(error)
+      console.error("Error fetching orders:", error)
     })
 }
 
@@ -132,9 +220,9 @@ const fetchOrders = () => {
 const searchOrder = () => {
   if (searchQuery.value) {
     axios
-      .get(`https://123.60.14.84/api/Order/role/${searchQuery.value}`, {
+      .get(`https://123.60.14.84:11100/api/Order/role/${searchQuery.value}`, {
         params: {
-          role: "User",
+          role: "guide",
           Id: userId
         }
       })
@@ -153,7 +241,7 @@ const searchOrder = () => {
 const filterOrdersByCategory = () => {
   if (categoryFilter.value) {
     axios
-      .get(`https://123.60.14.84/api/Order/role/category/${categoryFilter.value}`, {
+      .get(`https://123.60.14.84:11100/api/Order/role/category/${categoryFilter.value}`, {
         params: {
           role: "User",
           Id: userId
@@ -235,6 +323,8 @@ const deleteOrder = (orderId: number) => {
 onMounted(() => {
   console.log("Component mounted, fetching orders...")
   fetchOrders()
+  // console.log("Component mounted, using mock orders...")
+  // orders.value = mockOrders
 })
 
 // tab切换处理
@@ -532,7 +622,7 @@ const date_canceled_input = ref("")
             <span>订单日期：{{ order.orderDate }}</span>
             <span>订单编号：{{ order.orderId }}</span>
             <span>订单类型：{{ order.orderType }}</span>
-            <span>订单状态：{{ order.status }}</span>
+            <span>订单状态：{{ fomartPayState(order.status) }}</span>
           </div>
           <div class="body">
             <div class="column orders">
@@ -547,49 +637,46 @@ const date_canceled_input = ref("")
                 </li>
               </ul>
               <ul v-if="order.orderType === 'HotelOrder'">
-                <p>酒店名称：{{ (order as HotelOrder).hotelName }}</p>
-                <p>所在城市：{{ (order as HotelOrder).cityName }}</p>
-                <p>入住日期：{{ (order as HotelOrder).checkInDate }}</p>
-                <p>退房日期：{{ (order as HotelOrder).checkOutDate }}</p>
-                <p>房型：{{ (order as HotelOrder).roomType }}</p>
+                <li>酒店名称：{{ (order as HotelOrder).hotelName }}</li>
+                <li>所在城市：{{ (order as HotelOrder).cityName }}</li>
+                <li>入住日期：{{ (order as HotelOrder).checkInDate }}</li>
+                <li>退房日期：{{ (order as HotelOrder).checkOutDate }}</li>
+                <li>房型：{{ (order as HotelOrder).roomType }}</li>
               </ul>
               <ul v-if="order.orderType === 'ScenicOrder'">
-                <p>门票类型: {{ (order as ScenicOrder).ticketType }}</p>
-                <p>门票数量: {{ (order as ScenicOrder).ticketNumber }}</p>
-                <p>游玩日期: {{ (order as ScenicOrder).ticketDate }}</p>
-                <p>景点名称：{{ (order as ScenicOrder).scenicSpotName }}</p>
-                <p>所在城市：{{ (order as ScenicOrder).cityName }}</p>
+                <li>门票类型: {{ (order as ScenicOrder).ticketType }}</li>
+                <li>门票数量: {{ (order as ScenicOrder).ticketNumber }}</li>
+                <li>游玩日期: {{ (order as ScenicOrder).ticketDate }}</li>
+                <li>景点名称：{{ (order as ScenicOrder).scenicSpotName }}</li>
+                <li>所在城市：{{ (order as ScenicOrder).cityName }}</li>
               </ul>
               <ul v-if="order.orderType === 'TourOrder'">
-                <li>
-                  <p>旅行团编号：{{ (order as TourOrder).groupId }}</p>
-                  <p>旅行目的地：{{ (order as TourOrder).groupName }}</p>
-                  <p>导游编号：{{ (order as TourOrder).guideId }}</p>
-                  <p>导游姓名：{{ (order as TourOrder).guideName }}</p>
-                  <p>导游性别：{{ (order as TourOrder).guideGender }}</p>
-                  <p>开始日期：{{ (order as TourOrder).startDate }}</p>
-                  <p>结束日期：{{ (order as TourOrder).endDate }}</p>
-                </li>
+                <li>旅行团编号：{{ (order as TourOrder).groupId }}</li>
+                <li>旅行目的地：{{ (order as TourOrder).groupName }}</li>
+                <li>导游编号：{{ (order as TourOrder).guideId }}</li>
+                <li>导游姓名：{{ (order as TourOrder).guideName }}</li>
+                <li>导游性别：{{ (order as TourOrder).guideGender }}</li>
+                <li>开始日期：{{ (order as TourOrder).startDate }}</li>
+                <li>结束日期：{{ (order as TourOrder).endDate }}</li>
               </ul>
               <ul v-if="order.orderType === 'VehicleOrder'">
-                <p>交通类型：{{ (order as VehicleOrder).vehicleType }}</p>
-                <p>出行票号：{{ (order as VehicleOrder).ticketId }}</p>
-                <p>出发时间：{{ (order as VehicleOrder).ticketDepartureTime }}</p>
-                <p>到达时间：{{ (order as VehicleOrder).ticketArrivalTime }}</p>
-                <p>出发城市：{{ (order as VehicleOrder).ticketDepartureCity }}</p>
-                <p>目的城市：{{ (order as VehicleOrder).ticketArrivalCity }}</p>
-                <p>起始站台：{{ (order as VehicleOrder).ticketDepartureStation }}</p>
-                <p>目的站台：{{ (order as VehicleOrder).ticketArrivalStation }}</p>
+                <li>交通类型：{{ (order as VehicleOrder).vehicleType }}</li>
+                <li>出行票号：{{ (order as VehicleOrder).ticketId }}</li>
+                <li>出发时间：{{ (order as VehicleOrder).ticketDepartureTime }}</li>
+                <li>到达时间：{{ (order as VehicleOrder).ticketArrivalTime }}</li>
+                <li>出发城市：{{ (order as VehicleOrder).ticketDepartureCity }}</li>
+                <li>目的城市：{{ (order as VehicleOrder).ticketArrivalCity }}</li>
+                <li>起始站台：{{ (order as VehicleOrder).ticketDepartureStation }}</li>
+                <li>目的站台：{{ (order as VehicleOrder).ticketArrivalStation }}</li>
               </ul>
             </div>
             <div class="column state">
-              <p>{{ fomartPayState(order.status) }}</p>
               <p>
                 <a href="javascript:;" class="green">查看详情</a>
               </p>
               <!-- 根据订单状态显示不同的操作按钮 -->
               <p v-if="order.status === 'Pending'">
-                <a href="javascript:;" class="green">取消订单</a>
+                <a href="javascript:;" class="del">取消订单</a>
               </p>
               <p v-if="order.status === 'Completed'">
                 <a href="javascript:;" class="green">查看评价</a>
@@ -597,7 +684,6 @@ const date_canceled_input = ref("")
             </div>
             <div class="column amount">
               <p class="red">¥{{ order.price?.toFixed(2) }}</p>
-              <p>在线支付</p>
             </div>
             <div class="column action">
               <el-button v-if="order.status === 'Pending'" type="primary" size="small"> 立即付款 </el-button>
@@ -609,7 +695,6 @@ const date_canceled_input = ref("")
               <p>
                 <a href="javascript:;">联系客服</a>
               </p>
-              <p v-if="order.status === 'Pending'"><a href="javascript:;">取消订单</a></p>
             </div>
           </div>
         </div>
@@ -632,13 +717,7 @@ const date_canceled_input = ref("")
 .filter_box {
   margin: 10px;
 }
-.filter_box {
-  margin: 10px;
-}
 
-.filter_box >>> .el-tabs__item {
-  font-size: 18px;
-}
 .filter_box >>> .el-tabs__item {
   font-size: 18px;
 }
@@ -652,15 +731,6 @@ const date_canceled_input = ref("")
   margin-left: 10px;
 }
 
-.filter_box_all,
-.filter_box_pending,
-.filter_box_completed,
-.filter_box_canceled {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
 .filter_box_all,
 .filter_box_pending,
 .filter_box_completed,
@@ -681,6 +751,7 @@ const date_canceled_input = ref("")
 
   .main-container {
     min-height: 500px;
+    padding: 10px 0; /* 调整整体容器的上下内边距 */
 
     .holder-container {
       min-height: 500px;
@@ -692,18 +763,23 @@ const date_canceled_input = ref("")
 }
 
 .order-item {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   border: 1px solid #dcdcdc;
+  background-color: #fff; /* 设置白色背景颜色 */
+  border-radius: 5px; /* 让订单项的边角稍微圆润 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
 
   .head {
     height: 50px;
     line-height: 50px;
-    background: #f5f5f5;
+    background: #f0f0f0; /* 提升背景色的对比度 */
     padding: 0 20px;
     overflow: hidden;
+    font-weight: bold; /* 加粗订单头部信息 */
 
     span {
       margin-right: 20px;
+      color: #333; /* 提升文字颜色对比度 */
 
       &.down-time {
         margin-right: 0;
@@ -716,29 +792,26 @@ const date_canceled_input = ref("")
 
         b {
           vertical-align: middle;
-          font-weight: normal;
+          font-weight: bold; /* 加粗时间信息 */
         }
       }
-    }
-
-    .del {
-      margin-right: 0;
-      float: right;
-      color: #999;
     }
   }
 
   .body {
     display: flex;
     align-items: stretch;
+    padding: 0px 20px; /* 增加内容区域的内边距，减少内容之间的行间距 */
 
     .column {
       border-left: 1px solid #f5f5f5;
       text-align: center;
-      padding: 20px;
+      padding: 10px;
 
       > p {
         padding-top: 10px;
+        margin-bottom: 5px; /* 缩小段落之间的间距 */
+        color: #555; /* 提升文字颜色对比度 */
       }
 
       &:first-child {
@@ -755,6 +828,7 @@ const date_canceled_input = ref("")
             border-bottom: 1px solid #f5f5f5;
             padding: 10px;
             display: flex;
+            align-items: center;
 
             &:last-child {
               border-bottom: none;
@@ -776,10 +850,11 @@ const date_canceled_input = ref("")
 
                 &.name {
                   height: 38px;
+                  font-weight: bold; /* 加粗名称信息 */
                 }
 
                 &.attr {
-                  color: #999;
+                  color: #888;
                   font-size: 12px;
 
                   span {
@@ -791,10 +866,14 @@ const date_canceled_input = ref("")
 
             .price {
               width: 100px;
+              font-weight: bold; /* 加粗价格信息 */
+              font-size: larger;
+              color: #cf4444; /* 使用红色强调价格信息 */
             }
 
             .count {
               width: 80px;
+              font-weight: bold; /* 加粗数量信息 */
             }
           }
         }
@@ -802,22 +881,39 @@ const date_canceled_input = ref("")
 
       &.state {
         width: 120px;
-
+        display: flex; /* 使用flex布局 */
+        flex-direction: column; /* 垂直排列子元素 */
+        justify-content: center; /* 子元素上下居中 */
+        padding-bottom: 5%;
         .green {
           color: #27ba9b;
+          font-weight: bold; /* 加粗状态信息 */
+        }
+        .del {
+          color: #ff4d4f; /* 使用鲜明的颜色显示删除操作 */
+          font-weight: bold;
+          cursor: pointer; /* 鼠标悬停时显示手型光标 */
         }
       }
 
       &.amount {
-        width: 200px;
-
+        width: 150px;
+        display: flex; /* 使用flex布局 */
+        flex-direction: column; /* 垂直排列子元素 */
+        justify-content: center; /* 子元素上下居中 */
+        padding-bottom: 5%;
         .red {
           color: #cf4444;
+          font-weight: bold; /* 加粗金额信息 */
+          font-size: larger;
         }
       }
 
       &.action {
         width: 140px;
+        display: flex; /* 使用flex布局 */
+        flex-direction: column; /* 垂直排列子元素 */
+        justify-content: center; /* 子元素上下居中 */
 
         a {
           display: block;
