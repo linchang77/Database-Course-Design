@@ -167,7 +167,11 @@ namespace db_course_design.Services.impl
                     VehicleType = o.Ticket.Vehicle.VehicleType,
                     TicketId = o.Ticket.TicketId,
                     TicketType = o.Ticket.TicketType,
-                    TicketUserName = o.TicketUserName,
+                    Passengers = o.Passengers.Select(p => new VehiclePassengerRequest
+                    {
+                        PassengerId = p.PassengerId,
+                        PassengerName = p.PassengerName
+                    }).ToList(),
                     TicketDepartureTime = o.Ticket.TicketDepartureTime,
                     TicketArrivalTime = o.Ticket.TicketArrivalTime,
                     TicketDepartureCity = o.Ticket.TicketDepartureCity,
@@ -254,7 +258,7 @@ namespace db_course_design.Services.impl
         {
             var targetOrder = await GetOrderByIdAsync(role, Id, orderId);
             if(targetOrder == null) {  return false; }
-            targetOrder.Status = "Cancel";
+            targetOrder.Status = "Cancelled";
             // 保存更改
             await _context.SaveChangesAsync();
             return true;

@@ -69,15 +69,15 @@ namespace db_course_design.Services.impl
     public class VehicleService : IVehicleService
     {
         private readonly ModelContext _context;
-        private readonly MapperConfiguration _config;
+        private readonly IOrderService _orderService;
 
         public IMapper _mapper { get; }
 
         public VehicleService(ModelContext context)
         {
             _context = context;
-            _config = new MapperConfiguration(cfg => cfg.AddProfile<VehicleProfile>());
-            _mapper = _config.CreateMapper();
+            _orderService = new OrderService(_context);
+            _mapper = (new MapperConfiguration(cfg => cfg.AddProfile<VehicleProfile>())).CreateMapper();
         }
 
         public async Task<VehicleSchedule?> GetVehicleScheduleAsync(string vehicleId)
@@ -237,13 +237,15 @@ namespace db_course_design.Services.impl
             _context.VehiclePassengers.Remove(target);
             await _context.SaveChangesAsync();
             if ((await _context.VehiclePassengers.CountAsync(p => p.OrderId == orderId)) <= 0)
+            {
                 await RemoveVehicleOrderAsync(orderId);
+                await RemoveOrderDatumAsync(orderId);
+            }         
             return true;
         }
 
         public async Task<OrderDatum?> AddOrderDatumAsync(int userId, decimal price)
         {
-            IOrderService orderService = new OrderService(_context);
             var order = new OrderDatum
             {
                 OrderType = "vehicle",
@@ -253,11 +255,23 @@ namespace db_course_design.Services.impl
                 Price = price
             };
 
-            return await orderService.CreateOrderAsync(order);
+            _context.OrderData.Add(order);
+            await _context.SaveChangesAsync();
+            return order;
         }
 
         public async Task<bool> RemoveOrderDatumAsync(int orderId)
         {
+            if (await _context.VehicleOrders.FindAsync(orderId) != null) 
+                return false;
+
+            var target = await _context.OrderData.FindAsync(orderId);
+
+            if (target == null)
+                return false;
+
+            target.Status = "Cancelled";
+            await _context.SaveChangesAsync();
             return true;
         }
 

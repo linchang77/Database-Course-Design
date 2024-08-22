@@ -31,23 +31,24 @@ namespace db_course_design.Controllers
         Vehicle/
             schedule/
                 POST                - 添加交通工具班次信息
-                {vehicleId}/
+                delete/{vehicleId}/
                     DELETE          - 删除交通工具班次信息
             ticket/
                 POST                - 添加车票信息
-                {ticketId}/
+                delete/{ticketId}/
                     DELETE          - 删除车票信息
       业务逻辑（车票购买）：
          交通工具查询界面
     api/
         Vehicle/
             ticket/
-                {userId},{vehicleId},{type}/
+                purchase/{userId},{vehicleId},{type}/
                     POST            - 购买指定班次的指定种类的票
-                {orderId},{passengerId}/
-                    DELETE          - 退订单个乘客的车票
-                {orderId}/
-                    DELETE          - 退订这一单所有的车票
+                refund/
+                    one/{orderId},{passengerId}/
+                        DELETE          - 退订单个乘客的车票
+                    all/{orderId}/
+                        DELETE          - 退订这一单所有的车票
     */
     [Route("api/[controller]")]
     [ApiController]
@@ -110,7 +111,9 @@ namespace db_course_design.Controllers
 
             if (target == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the vehicle schedule.");
-            return CreatedAtAction(nameof(GetVehicleScheduleById), new { id = target.VehicleId }, target);
+            return CreatedAtAction(nameof(GetVehicleScheduleById), 
+                                   new { vehicleId = target.VehicleId }, 
+                                   _vehicleService._mapper.Map<VehicleScheduleRequest>(target));
         }
 
         [HttpPost("ticket")]
@@ -123,10 +126,12 @@ namespace db_course_design.Controllers
 
             if (target == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the vehicle ticket.");
-            return CreatedAtAction(nameof(GetVehicleTicketByTicketId), new { id = target.TicketId }, target);
+            return CreatedAtAction(nameof(GetVehicleTicketByTicketId), 
+                                   new { ticketId = target.TicketId },
+                                   _vehicleService._mapper.Map<VehicleTicketRequest>(target));
         }
 
-        [HttpDelete("schedule/{vehicleId}")]
+        [HttpDelete("schedule/delete/{vehicleId}")]
         public async Task<IActionResult> DelVehicleSchedule(string vehicleId)
         {
             var deleted = await _vehicleService.RemoveVehicleScheduleAsync(vehicleId);
@@ -136,7 +141,7 @@ namespace db_course_design.Controllers
             return NoContent();
         }
 
-        [HttpDelete("ticket/{ticketId}")]
+        [HttpDelete("ticket/delete/{ticketId}")]
         public async Task<IActionResult> DelVehicleTicket(decimal ticketId)
         {
             var deleted = await _vehicleService.RemoveVehicleTicketAsync(ticketId);
@@ -146,7 +151,7 @@ namespace db_course_design.Controllers
             return NoContent();
         }
 
-        [HttpPost("ticket/{userId},{vehicleId},{type}")]
+        [HttpPost("ticket/purchase/{userId},{vehicleId},{type}")]
         public async Task<IActionResult> PurchaseTicket(int userId, string vehicleId, string type, [FromBody] List<VehiclePassengerRequest> passengers)
         {
             var tickets = await _vehicleService.GetVehicleTicketsAsync(vehicleId);
@@ -180,14 +185,20 @@ namespace db_course_design.Controllers
                 OrderId = orderDatum.OrderId,
                 TicketId = ticket.TicketId,
             };
-            var target = await _vehicleService.AddVehicleOrderAsync(vehicleOrder);
+            var orderTarget = await _vehicleService.AddVehicleOrderAsync(vehicleOrder);
 
-            if (target == null)
+            foreach (var passenger in passengers)
+            {
+                var passengerTarget = await _vehicleService.AddVehiclePassengerAsync(passenger, orderDatum.OrderId);
+                if (passengerTarget == null)
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the vehicle order.");
+            }
+            if (orderTarget == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the vehicle order.");
             return Ok("Ticket purchased successfully.");
         }
 
-        [HttpDelete("ticket/{orderId}/{passengerId}")]
+        [HttpDelete("ticket/refund/one/{orderId},{passengerId}")]
         public async Task<IActionResult> RefundTicketForOne(int orderId, string passengerId)
         {
             var deleted = await _vehicleService.RemoveVehiclePassengerAsync(orderId, passengerId);
@@ -197,11 +208,11 @@ namespace db_course_design.Controllers
             return NoContent();
         }
 
-        [HttpDelete("ticket/{orderId}")]
+        [HttpDelete("ticket/refund/all/{orderId}")]
         public async Task<IActionResult> RefundTicketForAll(int orderId)
         {
-            var datumDeleted = await _vehicleService.RemoveOrderDatumAsync(orderId);
             var detailDeleted = await _vehicleService.RemoveVehicleOrderAsync(orderId);
+            var datumDeleted = await _vehicleService.RemoveOrderDatumAsync(orderId);
 
             if (!datumDeleted || !detailDeleted)
                 return NotFound("No order to be deleted.");
