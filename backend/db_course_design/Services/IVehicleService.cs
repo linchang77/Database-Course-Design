@@ -19,6 +19,7 @@ namespace db_course_design.Services
         Task<bool> RemoveVehicleScheduleAsync(string vehicleId);
         Task<bool> RemoveVehicleTicketAsync(decimal ticketId);
         Task<bool> RemoveVehicleOrderAsync(int orderId, decimal ticketId, string ticketUserName);
+        Task<OrderDatum?> AddOrderDatumAsync(int userId, decimal price);
     }
 
 }

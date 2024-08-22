@@ -42,7 +42,7 @@ namespace db_course_design.Controllers
     api/
         Vehicle/
             ticket/
-                {vehicleId},{type},{name}/
+                {userId},{vehicleId},{type},{name}/
                     POST            - 以指定姓名购买指定班次的指定种类的票
     */
     [Route("api/[controller]")]
@@ -73,7 +73,7 @@ namespace db_course_design.Controllers
 
             if (ticket == null)
                 return NotFound("No vehicle ticket with id " + ticketId);
-            return Ok(_vehicleService._mapper.Map<VehicleScheduleRequest>(ticket));
+            return Ok(_vehicleService._mapper.Map<VehicleTicketRequest>(ticket));
         }
 
         [HttpGet("tickets/{vehicleId}")]
@@ -142,11 +142,11 @@ namespace db_course_design.Controllers
             return NoContent();
         }
 
-        [HttpPost("ticket/{vehicleId},{type},{name}")]
-        public async Task<IActionResult> PurchaseTicket(string vehicleId, string type, string name)
+        [HttpPost("ticket/{userId},{vehicleId},{type},{name}")]
+        public async Task<IActionResult> PurchaseTicket(int userId, string vehicleId, string type, string name)
         {
             var tickets = await _vehicleService.GetVehicleTicketsAsync(vehicleId);
-            VehicleTicket ticket;
+            VehicleTicket? ticket;
 
             if (tickets == null || tickets.Count == 0)
                 return BadRequest("No vehicle ticket for " + vehicleId);
@@ -154,26 +154,32 @@ namespace db_course_design.Controllers
             try
             {
                 ticket = tickets.SingleOrDefault(t => t.TicketType == type);
+                if (ticket == null)
+                    throw new Exception();
             }
             catch
             {
                 return BadRequest("Unable to purchase the ticket. This type of ticket doesn't exist.");
             }
-            
-            var orderDatum = new OrderDatum
-            {
 
-            };
+            if (ticket.TicketRemaining <= 0)
+                return BadRequest("Unable to purchase the ticket. This type of ticket has been sold out.");
+            ticket.TicketRemaining--;
+
+            var orderDatum = await _vehicleService.AddOrderDatumAsync(userId, ticket.TicketPrice.Value);
+
+            if (orderDatum == null) 
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the order datum.");
+
             var vehicleOrder = new VehicleOrderRequest
             {
                 OrderId = orderDatum.OrderId,
                 TicketId = ticket.TicketId,
                 TicketUserName = name
             };
+            var target = await _vehicleService.AddVehicleOrderAsync(vehicleOrder);
 
-            var target2 = await _vehicleService.AddVehicleOrderAsync(vehicleOrder);
-
-            if (target2 == null)
+            if (target == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the vehicle order.");
             return Ok("Ticket purchased successfully.");
         }

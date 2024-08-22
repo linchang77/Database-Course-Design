@@ -206,6 +206,21 @@ namespace db_course_design.Services.impl
             return true;
         }
 
+        public async Task<OrderDatum?> AddOrderDatumAsync(int userId, decimal price)
+        {
+            IOrderService orderService = new OrderService(_context);
+            var order = new OrderDatum
+            {
+                OrderType = "vehicle",
+                OrderDate = DateTime.Now,
+                UserId = userId,
+                Status = "Pending",
+                Price = price
+            };
+
+            return await orderService.CreateOrderAsync(order);
+        }
+
         private VehicleResponse mapInfo(VehicleSchedule schedule, VehicleTicket ticket)
         {
             var info = _mapper.Map<VehicleResponse>(schedule);

@@ -3,12 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using db_course_design.DTOs;
 using Microsoft.AspNetCore.Mvc;
 /*--订单管理的服务类，简化控制器逻辑--*/
-namespace db_course_design.Services
+namespace db_course_design.Services.impl
 {
-    public class OrderService
+    public class OrderService : IOrderService
     {
         /*--上下文连接数据库--*/
         private readonly ModelContext _context;
+
         public OrderService(ModelContext context)
         {
             _context = context;
@@ -31,7 +32,7 @@ namespace db_course_design.Services
             allOrders.AddRange(vehicleOrders);
             return allOrders;
         }
-        
+
         /*--按订单分类筛选--*/
         public async Task<List<GuideOrderDetail>> GetGuideOrdersAsync(int userId)
         {
@@ -192,7 +193,7 @@ namespace db_course_design.Services
         {
             var allOrders = await GetAllOrdersAsync(userId);
 
-            var targetOrder = allOrders.Where(o=>o.OrderId == orderId).FirstOrDefault();
+            var targetOrder = allOrders.Where(o => o.OrderId == orderId).FirstOrDefault();
             return targetOrder;
         }
 
@@ -200,7 +201,7 @@ namespace db_course_design.Services
         public async Task<bool> DelOrderByIdAsync(int userId, int orderId)
         {
             var targetOrder = await GetOrderByIdAsync(userId, orderId);
-            if(targetOrder == null) {  return false; }
+            if (targetOrder == null) { return false; }
             targetOrder.Status = "Cancel";
             // 保存更改
             await _context.SaveChangesAsync();
@@ -214,16 +215,16 @@ namespace db_course_design.Services
             var FilteredGuideOrders = guideOrders.Where(o => o.ServiceBeginDate >= start && o.ServiceEndDate <= end);
 
             var hotelOrders = await GetHotelOrdersAsync(userId);
-            var FilteredHotelOrders = hotelOrders.Where(o=>o.CheckInDate>=start && o.CheckOutDate<=end);
+            var FilteredHotelOrders = hotelOrders.Where(o => o.CheckInDate >= start && o.CheckOutDate <= end);
 
             var scenicOrders = await GetScenicOrdersAsync(userId);
-            var FilteredScenicOrders = scenicOrders.Where(o=>o.TicketDate >= start && o.TicketDate <= end);
+            var FilteredScenicOrders = scenicOrders.Where(o => o.TicketDate >= start && o.TicketDate <= end);
 
             var tourOrders = await GetTourOrdersAsync(userId);
-            var FilteredTourOrders = tourOrders.Where(o=>o.StartDate >= start && o.EndDate <= end);
+            var FilteredTourOrders = tourOrders.Where(o => o.StartDate >= start && o.EndDate <= end);
 
             var vehicleOrders = await GetVehicleOrdersAsync(userId);
-            var FilteredVehicleOrders = vehicleOrders.Where(o=>o.TicketDepartureTime >= start &&  o.TicketArrivalTime <= end);
+            var FilteredVehicleOrders = vehicleOrders.Where(o => o.TicketDepartureTime >= start && o.TicketArrivalTime <= end);
 
             var orders = new List<OrderResponse>();
             orders.AddRange(FilteredGuideOrders);
@@ -233,6 +234,7 @@ namespace db_course_design.Services
             orders.AddRange(FilteredVehicleOrders);
             return orders;
         }
+
         /*--创建一个订单--*/
         public async Task<OrderDatum> CreateOrderAsync(OrderDatum orderData)
         {
