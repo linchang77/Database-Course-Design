@@ -632,7 +632,13 @@ const date_canceled_input = ref("")
 .filter_box {
   margin: 10px;
 }
+.filter_box {
+  margin: 10px;
+}
 
+.filter_box >>> .el-tabs__item {
+  font-size: 18px;
+}
 .filter_box >>> .el-tabs__item {
   font-size: 18px;
 }
@@ -641,7 +647,20 @@ const date_canceled_input = ref("")
 .button {
   margin-left: 10px;
 }
+.word,
+.button {
+  margin-left: 10px;
+}
 
+.filter_box_all,
+.filter_box_pending,
+.filter_box_completed,
+.filter_box_canceled {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
 .filter_box_all,
 .filter_box_pending,
 .filter_box_completed,

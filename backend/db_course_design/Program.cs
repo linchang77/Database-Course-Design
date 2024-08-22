@@ -35,6 +35,8 @@ builder.Services.AddScoped<IScenicSpotService, ScenicSpotService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 /////////////////////////////////////////自己根据需要添加内容//////////////////////////////////////////////////////////////
 //添加DbContext
+//builder.Services.AddDbContext<ModelContext>(options =>
+//    options.UseOracle("DATA SOURCE=123.60.14.84:1521/ORCL;TNS_ADMIN=C:\\\\\\\\Users\\\\\\\\LQS\\\\\\\\Oracle\\\\\\\\network\\\\\\\\admin;PERSIST SECURITY INFO=True;USER ID=SYSTEM;PASSWORD=summer_Dt514"));
 builder.Services.AddDbContext<ModelContext>(options =>
     options.UseOracle(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -55,6 +57,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
