@@ -36,22 +36,20 @@ namespace db_course_design.Controllers
          订单所有属性以输入框中文字的形式呈现，可更改
          点保存键保存，点取消键退出，均返回订单管理界面
     api/
-        Order/
-            {userId}/
-                GET               - 获取所有与自己相关的订单
-                category/
+        Order/                  
+            role/                   - 包含:role&Id
+                GET                 - 获取所有与自己相关的订单
+                category    ------- 防止路由冲突
                     {orderType}/
-                        GET       - 按订单分类筛选
-                status/
+                        GET         - 按订单分类筛选
+                status
                     {statusType}/
-                        GET       - 按订单状态筛选
-                order/
-                    {orderId}/
-                        GET       - 按订单ID搜索
-                        DELETE    - 删除某个订单
-                date-range/
-                    GET           - 按时间段筛选
-              
+                        GET         - 按订单状态筛选
+                {orderId}/
+                    GET             - 按订单ID搜索
+                    DELETE          - 删除某个订单
+                date-range/         - 包含：start&end
+                    GET             - 按时间段筛选
     */
     [ApiController]
     [Route("api/[controller]")]
@@ -63,23 +61,23 @@ namespace db_course_design.Controllers
             _orderService = orderService;
         }
 
-        /*--获取所有userId的订单信息--*/
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetAllOrders(int userId)
+        /*--获取角色&Id相关的订单--*/
+        [HttpGet("role")]
+        public async Task<IActionResult> GetAllOrders(string role, int Id)
         {
-            var orders = await _orderService.GetAllOrdersAsync(userId);
+            var orders = await _orderService.GetAllOrdersAsync(role, Id);
             if (orders == null || !orders.Any())
             {
-                return NotFound(new { Message = "No orders found for the provided user ID." });
+                return NotFound(new { Message = "No orders found for the provided ID." });
             }
             return Ok(orders);
         }
 
         /*--按订单分类筛选--*/
-        [HttpGet("{userId}/category/{orderType}")]
-        public async Task<IActionResult> GetOrdersByCategory(int userId, string orderType)
+        [HttpGet("role/category/{orderType}")]
+        public async Task<IActionResult> GetOrdersByCategory(string role, int Id, string orderType)
         {
-            var orders = await _orderService.GetOrdersByCategoryAsync(userId, orderType);
+            var orders = await _orderService.GetOrdersByCategoryAsync(role, Id, orderType);
             if (orders == null || !orders.Any())
             {
                 return NotFound(new { Message = "No orders found in category " + orderType + "." });
@@ -88,10 +86,10 @@ namespace db_course_design.Controllers
         }
 
         /*--按订单状态筛选--*/
-        [HttpGet("{userId}/status/{statusType}")]
-        public async Task<IActionResult> GetOrdersByStatus(int userId, string statusType)
+        [HttpGet("role/status/{statusType}")]
+        public async Task<IActionResult> GetOrdersByStatus(string role, int Id, string statusType)
         {
-            var orders = await _orderService.GetOrdersByStatusAsync(userId, statusType);
+            var orders = await _orderService.GetOrdersByStatusAsync(role, Id, statusType);
             if (orders == null || !orders.Any())
             {
                 return NotFound(new { Message = "No orders found in status " + statusType + "." });
@@ -100,10 +98,10 @@ namespace db_course_design.Controllers
         }
 
         /*--按订单ID搜索--*/
-        [HttpGet("{userId}/order/{orderId}")]
-        public async Task<IActionResult> GetOrderById(int userId, int orderId)
+        [HttpGet("role/{orderId}")]
+        public async Task<IActionResult> GetOrderById(string role, int Id, int orderId)
         {
-            var order = await _orderService.GetOrderByIdAsync(userId, orderId);
+            var order = await _orderService.GetOrderByIdAsync(role, Id, orderId);
             if(order == null)
             {
                 return NotFound(new { Message = "Not found or you have no permission." });
@@ -112,20 +110,20 @@ namespace db_course_design.Controllers
         }
 
         /*--删除某个订单--*/
-        [HttpDelete("{userId}/order/{orderId}")]
-        public async Task<IActionResult> DelOrderById(int userId, int orderId)
+        [HttpDelete("role/{orderId}")]
+        public async Task<IActionResult> DelOrderById(string role, int Id, int orderId)
         {
-            bool flag = await _orderService.DelOrderByIdAsync(userId, orderId);
+            bool flag = await _orderService.DelOrderByIdAsync(role, Id, orderId);
             if(flag)
                 return Ok(new { Message = "订单号为"+ orderId + "的订单已取消." });
             return NotFound(new { Message = "Not found or you have no permission." });
         }
 
         /*--按时间段筛选--*/
-        [HttpGet("{userId}/date-range")]
-        public async Task<IActionResult> GetOrdersByTime(int userId, DateTime start, DateTime end)
+        [HttpGet("role/date-range")]
+        public async Task<IActionResult> GetOrdersByTime(string role, int Id, DateTime start, DateTime end)
         {
-            var orders = await _orderService.GetOrdersByTimeAsync(userId, start, end);
+            var orders = await _orderService.GetOrdersByTimeAsync(role, Id, start, end);
             if (orders == null || !orders.Any())
             {
                 return NotFound(new { Message = "No orders found in range " + start + "-" + end + " ." });

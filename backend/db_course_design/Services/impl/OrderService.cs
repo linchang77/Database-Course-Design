@@ -15,29 +15,52 @@ namespace db_course_design.Services.impl
             _context = context;
         }
 
-        /*--获取所有userId的订单信息--*/
-        public async Task<List<OrderResponse>> GetAllOrdersAsync(int userId)
+        /*--获取角色&Id相关的订单--*/
+        public async Task<List<OrderResponse>> GetAllOrdersAsync(string role, int Id)
         {
-            var guideOrders = await GetGuideOrdersAsync(userId);
-            var hotelOrders = await GetHotelOrdersAsync(userId);
-            var scenicOrders = await GetScenicOrdersAsync(userId);
-            var tourOrders = await GetTourOrdersAsync(userId);
-            var vehicleOrders = await GetVehicleOrdersAsync(userId);
-
             var allOrders = new List<OrderResponse>();
-            allOrders.AddRange(guideOrders);
-            allOrders.AddRange(hotelOrders);
-            allOrders.AddRange(scenicOrders);
-            allOrders.AddRange(tourOrders);
-            allOrders.AddRange(vehicleOrders);
+
+            if(role.Equals("user", StringComparison.OrdinalIgnoreCase))
+            {
+                var guideOrders = await GetGuideOrdersAsync(userId: Id);
+                var hotelOrders = await GetHotelOrdersAsync(Id);
+                var scenicOrders = await GetScenicOrdersAsync(Id);
+                var tourOrders = await GetTourOrdersAsync(userId: Id);
+                var vehicleOrders = await GetVehicleOrdersAsync(Id);
+
+                allOrders.AddRange(guideOrders);
+                allOrders.AddRange(hotelOrders);
+                allOrders.AddRange(scenicOrders);
+                allOrders.AddRange(tourOrders);
+                allOrders.AddRange(vehicleOrders);
+            }
+            else
+            {
+                var guideOrders = await GetGuideOrdersAsync(guideId: Id);
+                var tourOrders = await GetTourOrdersAsync(guideId: Id);
+
+                allOrders.AddRange(guideOrders);
+                allOrders.AddRange(tourOrders);
+            }
+
             return allOrders;
         }
 
         /*--按订单分类筛选--*/
-        public async Task<List<GuideOrderDetail>> GetGuideOrdersAsync(int userId)
+        public async Task<List<GuideOrderDetail>> GetGuideOrdersAsync(int? userId = null, int? guideId = null)
         {
-            var guideOrders = await _context.GuideOrders
-                .Where(o => o.Order.UserId == userId)
+            var query = _context.GuideOrders.AsQueryable();
+
+            if (userId.HasValue)
+            {
+                query = query.Where(o => o.Order.UserId == userId.Value);
+            }
+            if (guideId.HasValue)
+            {
+                query = query.Where(o => o.Order.GuideOrder.GuideId == guideId.Value);
+            }
+
+            var guideOrders = await query
                 .Select(o => new GuideOrderDetail
                 {
                     OrderId = o.OrderId,
@@ -54,7 +77,6 @@ namespace db_course_design.Services.impl
                 }).ToListAsync();
             return guideOrders;
         }
-
         public async Task<List<HotelOrderDetail>> GetHotelOrdersAsync(int userId)
         {
             var hotelOrders = await (from ho in _context.HotelOrders
@@ -98,10 +120,20 @@ namespace db_course_design.Services.impl
             return scenicOrders;
         }
 
-        public async Task<List<TourOrderDetail>> GetTourOrdersAsync(int userId)
+        public async Task<List<TourOrderDetail>> GetTourOrdersAsync(int? userId = null, int? guideId = null)
         {
-            var tourOrders = await _context.TourOrders
-                .Where(o => o.Order.UserId == userId)
+            var query = _context.TourOrders.AsQueryable();
+
+            if (userId.HasValue)
+            {
+                query = query.Where(o => o.Order.UserId == userId);
+            }
+            if (guideId.HasValue)
+            {
+                query = query.Where(o => o.Order.TourOrder.Group.GuideId == guideId);
+            }
+
+            var tourOrders = await query
                 .Select(o => new TourOrderDetail
                 {
                     OrderId = o.OrderId,
@@ -146,62 +178,82 @@ namespace db_course_design.Services.impl
             return vehicleOrders;
         }
 
-        public async Task<List<OrderResponse>> GetOrdersByCategoryAsync(int userId, string orderType)
+        public async Task<List<OrderResponse>> GetOrdersByCategoryAsync(string role, int Id, string orderType)
         {
-            if (orderType.Equals("GuideOrder", StringComparison.OrdinalIgnoreCase))
+            if(role.Equals("user", StringComparison.OrdinalIgnoreCase))
             {
-                var guideOrders = await GetGuideOrdersAsync(userId);
-                return guideOrders.Cast<OrderResponse>().ToList();
-            }
-            else if (orderType.Equals("HotelOrder", StringComparison.OrdinalIgnoreCase))
-            {
-                var hotelOrders = await GetHotelOrdersAsync(userId);
-                return hotelOrders.Cast<OrderResponse>().ToList();
-            }
-            else if (orderType.Equals("ScenicOrder", StringComparison.OrdinalIgnoreCase))
-            {
-                var scenicOrders = await GetScenicOrdersAsync(userId);
-                return scenicOrders.Cast<OrderResponse>().ToList();
-            }
-            else if (orderType.Equals("TourOrder", StringComparison.OrdinalIgnoreCase))
-            {
-                var tourOrders = await GetTourOrdersAsync(userId);
-                return tourOrders.Cast<OrderResponse>().ToList();
-            }
-            else if (orderType.Equals("VehicleOrder", StringComparison.OrdinalIgnoreCase))
-            {
-                var vehicleOrders = await GetVehicleOrdersAsync(userId);
-                return vehicleOrders.Cast<OrderResponse>().ToList();
+                if (orderType.Equals("GuideOrder", StringComparison.OrdinalIgnoreCase))
+                {
+                    var guideOrders = await GetGuideOrdersAsync(userId: Id);
+                    return guideOrders.Cast<OrderResponse>().ToList();
+                }
+                else if (orderType.Equals("HotelOrder", StringComparison.OrdinalIgnoreCase))
+                {
+                    var hotelOrders = await GetHotelOrdersAsync(Id);
+                    return hotelOrders.Cast<OrderResponse>().ToList();
+                }
+                else if (orderType.Equals("ScenicOrder", StringComparison.OrdinalIgnoreCase))
+                {
+                    var scenicOrders = await GetScenicOrdersAsync(Id);
+                    return scenicOrders.Cast<OrderResponse>().ToList();
+                }
+                else if (orderType.Equals("TourOrder", StringComparison.OrdinalIgnoreCase))
+                {
+                    var tourOrders = await GetTourOrdersAsync(userId: Id);
+                    return tourOrders.Cast<OrderResponse>().ToList();
+                }
+                else if (orderType.Equals("VehicleOrder", StringComparison.OrdinalIgnoreCase))
+                {
+                    var vehicleOrders = await GetVehicleOrdersAsync(Id);
+                    return vehicleOrders.Cast<OrderResponse>().ToList();
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid order category type.");
+                }
             }
             else
             {
-                throw new ArgumentException("Invalid order category type.");
+                if (orderType.Equals("GuideOrder", StringComparison.OrdinalIgnoreCase))
+                {
+                    var guideOrders = await GetGuideOrdersAsync(guideId: Id);
+                    return guideOrders.Cast<OrderResponse>().ToList();
+                }
+                else if (orderType.Equals("TourOrder", StringComparison.OrdinalIgnoreCase))
+                {
+                    var tourOrders = await GetTourOrdersAsync(guideId: Id);
+                    return tourOrders.Cast<OrderResponse>().ToList();
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid order category type.");
+                }
             }
         }
 
         /*--按订单状态筛选--*/
-        public async Task<List<OrderResponse>> GetOrdersByStatusAsync(int userId, string status)
+        public async Task<List<OrderResponse>> GetOrdersByStatusAsync(string role, int Id, string status)
         {
-            var allOrders = await GetAllOrdersAsync(userId);
+            var allOrders = await GetAllOrdersAsync(role, Id);
 
             var filteredOrders = allOrders.Where(o => o.Status.Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
             return filteredOrders;
         }
 
         /*--按订单ID搜索--*/
-        public async Task<OrderResponse> GetOrderByIdAsync(int userId, int orderId)
+        public async Task<OrderResponse> GetOrderByIdAsync(string role, int Id, int orderId)
         {
-            var allOrders = await GetAllOrdersAsync(userId);
+            var allOrders = await GetAllOrdersAsync(role, Id);
 
             var targetOrder = allOrders.Where(o => o.OrderId == orderId).FirstOrDefault();
             return targetOrder;
         }
 
-        /*--删除某个订单(改状态)--*/
-        public async Task<bool> DelOrderByIdAsync(int userId, int orderId)
+        /*--删除某个订单(其实是改状态属性)--*/
+        public async Task<bool> DelOrderByIdAsync(string role, int Id, int orderId)
         {
-            var targetOrder = await GetOrderByIdAsync(userId, orderId);
-            if (targetOrder == null) { return false; }
+            var targetOrder = await GetOrderByIdAsync(role, Id, orderId);
+            if(targetOrder == null) {  return false; }
             targetOrder.Status = "Cancel";
             // 保存更改
             await _context.SaveChangesAsync();
@@ -209,29 +261,45 @@ namespace db_course_design.Services.impl
         }
 
         /*--按时间段筛选--*/
-        public async Task<List<OrderResponse>> GetOrdersByTimeAsync(int userId, DateTime start, DateTime end)
+        public async Task<List<OrderResponse>> GetOrdersByTimeAsync(string role, int Id, DateTime start, DateTime end)
         {
-            var guideOrders = await GetGuideOrdersAsync(userId);
-            var FilteredGuideOrders = guideOrders.Where(o => o.ServiceBeginDate >= start && o.ServiceEndDate <= end);
-
-            var hotelOrders = await GetHotelOrdersAsync(userId);
-            var FilteredHotelOrders = hotelOrders.Where(o => o.CheckInDate >= start && o.CheckOutDate <= end);
-
-            var scenicOrders = await GetScenicOrdersAsync(userId);
-            var FilteredScenicOrders = scenicOrders.Where(o => o.TicketDate >= start && o.TicketDate <= end);
-
-            var tourOrders = await GetTourOrdersAsync(userId);
-            var FilteredTourOrders = tourOrders.Where(o => o.StartDate >= start && o.EndDate <= end);
-
-            var vehicleOrders = await GetVehicleOrdersAsync(userId);
-            var FilteredVehicleOrders = vehicleOrders.Where(o => o.TicketDepartureTime >= start && o.TicketArrivalTime <= end);
-
             var orders = new List<OrderResponse>();
-            orders.AddRange(FilteredGuideOrders);
-            orders.AddRange(FilteredHotelOrders);
-            orders.AddRange(FilteredScenicOrders);
-            orders.AddRange(FilteredTourOrders);
-            orders.AddRange(FilteredVehicleOrders);
+
+            if(role.Equals("user", StringComparison.OrdinalIgnoreCase))
+            {
+                var guideOrders = await GetGuideOrdersAsync(guideId: Id);
+                var FilteredGuideOrders = guideOrders.Where(o => o.ServiceBeginDate >= start && o.ServiceEndDate <= end);
+
+                var hotelOrders = await GetHotelOrdersAsync(Id);
+                var FilteredHotelOrders = hotelOrders.Where(o => o.CheckInDate >= start && o.CheckOutDate <= end);
+
+                var scenicOrders = await GetScenicOrdersAsync(Id);
+                var FilteredScenicOrders = scenicOrders.Where(o => o.TicketDate >= start && o.TicketDate <= end);
+
+                var tourOrders = await GetTourOrdersAsync(guideId: Id);
+                var FilteredTourOrders = tourOrders.Where(o => o.StartDate >= start && o.EndDate <= end);
+
+                var vehicleOrders = await GetVehicleOrdersAsync(Id);
+                var FilteredVehicleOrders = vehicleOrders.Where(o => o.TicketDepartureTime >= start && o.TicketArrivalTime <= end);
+
+                orders.AddRange(FilteredGuideOrders);
+                orders.AddRange(FilteredHotelOrders);
+                orders.AddRange(FilteredScenicOrders);
+                orders.AddRange(FilteredTourOrders);
+                orders.AddRange(FilteredVehicleOrders);
+            }
+            else
+            {
+                var guideOrders = await GetGuideOrdersAsync(guideId: Id);
+                var FilteredGuideOrders = guideOrders.Where(o => o.ServiceBeginDate >= start && o.ServiceEndDate <= end);
+
+                var tourOrders = await GetTourOrdersAsync(guideId: Id);
+                var FilteredTourOrders = tourOrders.Where(o => o.StartDate >= start && o.EndDate <= end);
+
+                orders.AddRange(FilteredGuideOrders);
+                orders.AddRange(FilteredTourOrders);
+            }
+
             return orders;
         }
 

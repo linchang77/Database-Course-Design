@@ -41,7 +41,7 @@ namespace db_course_design.Controllers
             增加一个景点订单，同时门票剩余票数减一
     [HttpGet("ticket/{scenicSpotName}")]                                       -获取该景点当天的门票信息
     [HttpGet("ticket/{scenicSpotName}/date/{date}")]                           -获取特定日期的门票信息
-    [HttpPost("ticket/{scenicSpotName}/date/{date}/purchase/type/{type}")]     -购买{ScenicSpotName}的 {type}门票（type只能是‘成人票’或者‘儿童票’）
+    [HttpPost("ticket/{scenicSpotName}/date/{date}/purchase/type/{type}/quantity/{quantity}")]     -购买{ScenicSpotName}的 {type}门票（type只能是‘成人票’或者‘儿童票’）
                           
     注意事项！！！
     目前用户信息还没做好 UserId填41  status填已购买   价格填0就行
@@ -177,7 +177,7 @@ namespace db_course_design.Controllers
         }
 
         // 购买门票
-        [HttpPost("ticket/{scenicSpotName}/date/{date}/purchase/type/{type}")]
+        [HttpPost("ticket/{scenicSpotName}/date/{date}/purchase/type/{type}/quantity/{quantity}")]
         public async Task<ActionResult> PurchaseTicket(string scenicSpotName, string type, DateTime date, CreateScenicSpotOrderRequest orderRequest)
         {
             if (type != "成人票" && type != "儿童票")
