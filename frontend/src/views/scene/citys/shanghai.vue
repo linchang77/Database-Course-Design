@@ -120,8 +120,11 @@ const setDistanceFilter = (option: string) => {
   fetchAttractions()
 }
 
-const goToAttraction = (scenicSpotName: string) => {
-  router.push({ path: "shanghai/tickets", query: { name: scenicSpotName } })
+const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, scenicSpotId: string) => {
+  router.push({
+    path: "shanghai/tickets",
+    query: { name: scenicSpotName, introduction: scenicSpotIntroduction, id: scenicSpotId }
+  })
 }
 </script>
 
@@ -182,7 +185,7 @@ const goToAttraction = (scenicSpotName: string) => {
           v-for="attraction in attractions"
           :key="attraction.scenicSpotId"
           class="attraction-card"
-          @click="goToAttraction(attraction.scenicSpotName)"
+          @click="goToAttraction(attraction.scenicSpotName, attraction.scenicSpotIntroduction, attraction.scenicSpotId)"
         >
           <img
             :src="`/images/${encodeURIComponent(attraction.scenicSpotName)}.jpg`"

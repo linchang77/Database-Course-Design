@@ -15,6 +15,6 @@ namespace db_course_design.Services
         Task<ScenicSpotResponse> AddScenicSpotAsync(ScenicSpotRequest request);
         Task<AdultChildTicketResponse> GetTodayTicketInfoAsync(string scenicSpotName);
         Task<AdultChildTicketResponse> GetTicketInfoByDateAsync(string scenicSpotName, DateTime date);
-        Task<bool> PurchaseTicketAsync(string scenicSpotName, string type, DateTime date, CreateScenicSpotOrderRequest orderRequest);
+        Task<bool> PurchaseTicketAsync(string scenicSpotName, string type, DateTime date, CreateScenicSpotOrderRequest orderRequest, int number=1);
     }
 }
