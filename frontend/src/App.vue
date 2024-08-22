@@ -10,6 +10,7 @@ const { initTheme } = useTheme()
 initTheme()
 
 /** 作者小心思 */
+/* 删除弹窗 start*/
 ElNotification({
   title: "Hello",
   type: "success",
@@ -19,6 +20,7 @@ ElNotification({
   duration: 0,
   position: "bottom-right"
 })
+/* 删除弹窗 end*/
 </script>
 
 <template>

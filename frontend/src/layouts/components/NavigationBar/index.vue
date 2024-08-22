@@ -57,12 +57,14 @@ const logout = () => {
         </div>
         <template #dropdown>
           <el-dropdown-menu>
+            <!--删除模版链接 start-->
             <a target="_blank" href="https://github.com/un-pany/v3-admin-vite">
               <el-dropdown-item>GitHub</el-dropdown-item>
             </a>
             <a target="_blank" href="https://gitee.com/un-pany/v3-admin-vite">
               <el-dropdown-item>Gitee</el-dropdown-item>
             </a>
+            <!--删除模版链接 end-->
             <el-dropdown-item divided @click="logout">
               <span style="display: block">退出登录</span>
             </el-dropdown-item>
