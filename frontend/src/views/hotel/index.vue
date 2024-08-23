@@ -25,17 +25,26 @@ const setCheckOutTime = (val : any) => {
   checkOutTime.value = val
 }
 
+const formatDate = (date: Date | null) => {
+  if (!date) return '';
+  return date.toISOString().split('T')[0]; // 仅保留日期部分
+};
+
+
 const searchTickets = () => {
-      console.log('目的地'+destination.value,'入住时间'+checkInTime.value,'退房时间'+checkOutTime.value)
-      // router.push({
-      //   name: 'TicketDetailsPage',
-      //   query: {
-      //     departure: departure.value,
-      //     destination: destination.value,
-      //     departureTime: departureTime.value
-      //   }
-      // })
+  const formattedCheckIn = formatDate(checkInTime.value);
+  const formattedCheckOut = formatDate(checkOutTime.value);
+
+  router.push({
+    name: 'Detail', 
+    query: {
+      destination: destination.value,
+      checkIn: formattedCheckIn,
+      checkOut: formattedCheckOut
     }
+  });
+}
+
 const numberOfNights = computed(() => {
   if (checkInTime.value && checkOutTime.value) {
     const timeDifference = checkOutTime.value.getTime() - checkInTime.value.getTime();
