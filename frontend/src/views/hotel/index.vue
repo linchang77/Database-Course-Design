@@ -9,27 +9,24 @@ defineOptions({
 })
 
 const destination = ref('')
-const chekInTime = ref('')
-const chekOutTime = ref('')
+const checkInTime = ref<Date | null>(null);
+const checkOutTime = ref<Date | null>(null);
 const router = useRouter()
 
 const setDestination = (val : any) => {
   destination.value = val[val.length - 1]
 }
 
-
 const setCheckInTime = (val : any) => {
-  chekInTime.value = val
-  console.log(val.getDate())
+  checkInTime.value = val
 }
 
 const setCheckOutTime = (val : any) => {
-  chekOutTime.value = val
-  console.log(val.getDate())
+  checkOutTime.value = val
 }
 
 const searchTickets = () => {
-      console.log('目的地'+destination.value,'入住时间'+chekInTime.value,'退房时间'+chekOutTime.value)
+      console.log('目的地'+destination.value,'入住时间'+checkInTime.value,'退房时间'+checkOutTime.value)
       // router.push({
       //   name: 'TicketDetailsPage',
       //   query: {
@@ -39,9 +36,16 @@ const searchTickets = () => {
       //   }
       // })
     }
+const numberOfNights = computed(() => {
+  if (checkInTime.value && checkOutTime.value) {
+    const timeDifference = checkOutTime.value.getTime() - checkInTime.value.getTime();
+    return timeDifference > 0 ? Math.ceil(timeDifference / (1000 * 60 * 60 * 24)) : 0;
+  }
+  return 0;
+});    
 
 const isSearchDisabled = computed(() => {
-  return !destination.value || !chekInTime.value || !chekOutTime.value
+  return !destination.value || !checkInTime.value || !checkOutTime.value
 })
 
 </script>
@@ -52,6 +56,7 @@ const isSearchDisabled = computed(() => {
       <div class="index-container">
         <PlaceSelector @updateValue="setDestination">目的地</PlaceSelector>
         <TimeSelector @updateValue='setCheckInTime'>请选择入住时间</TimeSelector>
+        <div class="date-container" :style="{ visibility: numberOfNights > 0 ? 'visible' : 'hidden' }">入住{{ numberOfNights }}晚</div>
         <TimeSelector @updateValue='setCheckOutTime'>请选择退房时间</TimeSelector>
         <el-button type="primary" size="large" icon="search" :disabled="isSearchDisabled" @click="searchTickets">搜索</el-button>
       </div>
@@ -68,5 +73,8 @@ const isSearchDisabled = computed(() => {
 }
 .index-container > * {
   margin: 0 5%;
+}
+.index-container .date-container{
+  margin: 0
 }
 </style>
