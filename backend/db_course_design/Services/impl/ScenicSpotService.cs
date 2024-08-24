@@ -1,10 +1,7 @@
-﻿using db_course_design.Returns;
+﻿using db_course_design.DTOs;
 using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using db_course_design.Common;
 
 namespace db_course_design.Services.impl
 {
@@ -172,6 +169,118 @@ namespace db_course_design.Services.impl
                 ScenicSpotIntroduction = scenicSpot.ScenicSpotIntroduction,
                 ScenicSpotLocation = scenicSpot.ScenicSpotLocation
             };
+        }
+        // 获取当天的门票信息
+        public async Task<AdultChildTicketResponse> GetTodayTicketInfoAsync(string scenicSpotName)
+        {
+            var today = DateTime.Today;
+
+            var tickets = await _context.ScenicSpotTickets
+                .Where(t => t.ScenicSpot.ScenicSpotName == scenicSpotName && t.TicketDate == today)
+                .ToListAsync();
+
+            var adultTicket = tickets.FirstOrDefault(t => t.TicketType == "成人票");
+            var childTicket = tickets.FirstOrDefault(t => t.TicketType == "儿童票");
+
+            return new AdultChildTicketResponse
+            {
+                AdultTicket = adultTicket != null ? new ScenicSpotTicketResponse
+                {
+                    ScenicSpotId = adultTicket.ScenicSpotId,
+                    TicketType = adultTicket.TicketType,
+                    TicketPrice = adultTicket.TicketPrice,
+                    TicketRemaining = adultTicket.TicketRemaining,
+                    TicketDate = adultTicket.TicketDate
+                } : null,
+                ChildTicket = childTicket != null ? new ScenicSpotTicketResponse
+                {
+                    ScenicSpotId = childTicket.ScenicSpotId,
+                    TicketType = childTicket.TicketType,
+                    TicketPrice = childTicket.TicketPrice,
+                    TicketRemaining = childTicket.TicketRemaining,
+                    TicketDate = childTicket.TicketDate
+                } : null
+            };
+        }
+
+        // 获取特定日期的门票信息
+        public async Task<AdultChildTicketResponse> GetTicketInfoByDateAsync(string scenicSpotName, DateTime date)
+        {
+            var tickets = await _context.ScenicSpotTickets
+                .Where(t => t.ScenicSpot.ScenicSpotName == scenicSpotName && t.TicketDate == date)
+                .ToListAsync();
+
+            var adultTicket = tickets.FirstOrDefault(t => t.TicketType == "成人票");
+            var childTicket = tickets.FirstOrDefault(t => t.TicketType == "儿童票");
+
+            return new AdultChildTicketResponse
+            {
+                AdultTicket = adultTicket != null ? new ScenicSpotTicketResponse
+                {
+                    ScenicSpotId = adultTicket.ScenicSpotId,
+                    TicketType = adultTicket.TicketType,
+                    TicketPrice = adultTicket.TicketPrice,
+                    TicketRemaining = adultTicket.TicketRemaining,
+                    TicketDate = adultTicket.TicketDate
+                } : null,
+                ChildTicket = childTicket != null ? new ScenicSpotTicketResponse
+                {
+                    ScenicSpotId = childTicket.ScenicSpotId,
+                    TicketType = childTicket.TicketType,
+                    TicketPrice = childTicket.TicketPrice,
+                    TicketRemaining = childTicket.TicketRemaining,
+                    TicketDate = childTicket.TicketDate
+                } : null
+            };
+        }
+
+        // 购买门票
+        public async Task<bool> PurchaseTicketAsync(string scenicSpotName, string type, DateTime date, CreateScenicSpotOrderRequest orderRequest)
+        {
+            // 查找符合条件的门票
+            var ticket = await _context.ScenicSpotTickets
+                .FirstOrDefaultAsync(t => t.ScenicSpot.ScenicSpotName == scenicSpotName && t.TicketType == type && t.TicketDate == date);
+
+            if (ticket == null || ticket.TicketRemaining <= 0)
+            {
+                return false; // 没有找到票或票数不足
+            }
+
+            // 减少剩余票数
+            ticket.TicketRemaining--;
+
+            // 创建 ScenicSpotOrder 实体
+            var scenicSpotOrder = new ScenicSpotOrder
+            {
+                ScenicSpotId = ticket.ScenicSpotId,
+                TicketType = type,
+                TicketNumber = 1,
+                TicketDate = date,
+                ScenicSpotTicket = ticket
+            };
+
+            // 创建 OrderDatum 实体
+            var orderDatum = new OrderDatum
+            {
+                OrderType = "scenic_spot",
+                OrderDate = orderRequest.OrderDate ?? DateTime.Now, // 如果未指定日期，使用当前日期
+                UserId = orderRequest.UserId,
+                Status = orderRequest.Status ?? "Pending", // 默认状态为 "Pending"
+                Price = ticket.TicketPrice, // 使用门票价格
+                ScenicSpotOrders = new List<ScenicSpotOrder> { scenicSpotOrder } // 将 ScenicSpotOrder 关联到 OrderDatum
+            };
+
+            // 将 OrderDatum 添加到上下文并保存，以生成 OrderId
+            _context.OrderData.Add(orderDatum);
+            await _context.SaveChangesAsync();
+
+            // 设置 ScenicSpotOrder 的外键 OrderId
+            scenicSpotOrder.OrderId = orderDatum.OrderId;
+
+            // 再次保存更改，以保存 ScenicSpotOrder 的 OrderId
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
     }

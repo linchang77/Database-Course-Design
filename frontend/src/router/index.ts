@@ -316,7 +316,23 @@ export const constantRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-
+  {
+    path: "/transport/airplane",
+    component: Layouts,
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: "order", // 新增的子路由
+        component: () => import("@/views/transport/airplane/OrderPage.vue"), // 注意这里引用的是 OrderPage.vue 的路径
+        name: "Order",
+        meta: {
+          hidden: true
+        }
+      }
+    ]
+  },
   // {
   //   path: "/hook-demo",
   //   component: Layouts,

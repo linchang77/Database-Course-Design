@@ -5,51 +5,94 @@ defineOptions({
   name: "Airplane"
 })
 
-//const text = ref("")
 
-// const flights = reactive([
-//   {
-//     "1234": {
-//       airline: "Airline Name",
-//       flightNo: "1234",
-//       departureTime: "12:00",
-//       departureAirport: "Departure Airport",
-//       arrivalTime: "12:30",
-//       arrivalAirport: "Arrival Airport",
-//       duration: "24小时60分钟",
-//       price: 2000
+import { ref, computed, onMounted } from "vue"
+import PlaceSelector from "./components/PlaceSelector.vue"
+import TimeSelector from "./components/TimeSelector.vue"
+import { useRouter } from "vue-router"
+
+const departure = ref("")
+const destination = ref("")
+const departureTime = ref("")
+const router = useRouter()
+
+const setDeparture = (val: any) => {
+  departure.value = val[val.length - 1]
+  console.log("departure.value:", departure.value)
+}
+
+const setDestination = (val: any) => {
+  destination.value = val[val.length - 1]
+  console.log("destination.value:", destination.value)
+}
+
+const setDepartureTime = (val: any) => {
+  departureTime.value = val
+  console.log("departureTime.value:", departureTime.value)
+}
+
+const isSearchDisabled = computed(() => {
+  return !departure.value || !destination.value || !departureTime.value
+})
+
+import axios from "axios"
+// {
+//     {
+//     "vehicleId": "1234",
+//     "vehicleType": "plane",
+//     "vehicleModel": "波音373(中)",
+//     "departureCity": "上海",
+//     "arrivalCity": "北京",
+//     "departureTime": "2024-08-18T08:10:00",
+//     "arrivalTime": "2024-08-18T10:35:00",
+//     "departureStation": "浦东国际机场T1",
+//     "arrivalStation": "大兴国际机场",
+//     "ticketId": 6.0,
+//     "ticketType": "经济舱",
+//     "ticketPrice": 1479.0,
+//     "ticketRemaining": 100.0
 //     }
 //   }
-// ])
-import { ref } from "vue"
-import axios from "axios"
 const searchResults = ref([
   {
-    "1234": {
-      vehicleId: 1234,
-      vehicleType: "Airplane",
-      departureCity: "上海",
-      arrivalCity: "北京",
-      departureTime: "2022-01-01 12:00:00",
-      arrivalTime: "2022-01-01 12:30:00",
-      departureStation: "上海虹桥国际机场",
-      arrivalStation: "BJS"
-    }
+    "vehicleId": "1234",
+    "vehicleType": "plane",
+    "vehicleModel": "波音373(中)",
+    "departureCity": "上海",
+    "arrivalCity": "北京",
+    "departureTime": "2024-08-18T08:10:00",
+    "arrivalTime": "2024-08-18T10:35:00",
+    "departureStation": "浦东国际机场T1",
+    "arrivalStation": "大兴国际机场",
+    "ticketId": 6.0,
+    "ticketType": "经济舱",
+    "ticketPrice": 1479.0,
+    "ticketRemaining": 100.0
   }
 ])
 
-// 模拟查询参数
-const queryParams = ref({
-  departureDate: "", // 出行日期
-  departureCity: "", // 出发城市
-  arrivalCity: "" // 到达城市
-})
+
+
+const passengerInfo = ref({
+  name: "",
+  phone: "",
+  idCard: ""
+});
+
+const orderInfo = ref({
+  flight: searchResults.value[0], // 默认使用第一个航班
+  price: 2000,
+  quantity: 1
+});
 
 async function fetchTickets() {
+  const url = `https://123.60.14.84/api/Vehicle/info/plane,${destination.value},${departure.value},${encodeURIComponent(departureTime.value)}`
+  console.log("url:", url)
   axios
-    .get(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent("上海")}`)
+    .get(url)
     .then((response) => {
       searchResults.value = response.data
+      console.log("searchResults:", response.data)
     })
     .catch((error) => {
       console.error(error)
@@ -59,78 +102,109 @@ async function fetchTickets() {
 function submit() {
   console.log(searchResults.value)
 }
+
+function submitOrder() {
+  console.log("Submitting order:", passengerInfo.value, orderInfo.value)
+  goToOrderPage() // 跳转到订单页面
+}
+
+function goToOrderPage() {
+  console.log(router.currentRoute.value)
+  router.push('/order');
+  console.log(router.currentRoute.value)
+}
+
 </script>
 
 <template>
-  <div class="flight-list">
-    <span>
-      <el-botton id="submit" type="primary" @click="submit">提交订单</el-botton>
-      <el-card class="flight-card" shadow="hover" v-for="flight in searchResults" :key="flight">
-        <div index="0" class="flight-item">
-          <div>
+  <div class="app">
+    <div class="app-container">
+      <el-card header="机票查询">
+        <div class="index-container">
+          <PlaceSelector @updateValue="setDestination">目的地</PlaceSelector>
+          <PlaceSelector @updateValue="setDeparture">出发地</PlaceSelector>
+          <TimeSelector @updateValue="setDepartureTime">请选择出发时间</TimeSelector>
+          <el-button type="primary" size="large" icon="search" :disabled="isSearchDisabled" @click="fetchTickets"
+            >搜索</el-button
+          >
+        </div>
+      </el-card>
+    </div>
+
+    <div class="flight-list">
+      <span>
+        <el-botton id="submit" type="primary" @click="submit">提交订单</el-botton>
+        <el-card class="flight-card" shadow="hover" v-for="(flight, index) in searchResults" :key="index">
+          <div index="0" class="flight-item">
             <div>
-              <div class="flight-item">
-                <div class="flight-box">
-                  <div class="flight-row">
-                    <div class="flight-airline">
-                      <!-- can be airline logo -->
-                      <div class="airline-name">
-                        <span>{{ flight[1234].vehicleId }}</span>
-                      </div>
-                      <div class="plane">
+              <div>
+                <div class="flight-item">
+                  <div class="flight-box">
+                    <div class="flight-row">
+                      <div class="flight-airline">
+                        <!-- can be airline logo -->
+                        <div class="airline-name">
+                          <span>{{ flight.vehicleId }}</span>
+                        </div>
                         <div class="plane">
-                          <span class="plane-No">
-                            1234
-                            <span class>机型</span>
-                          </span>
+                          <div class="plane">
+                            <span class="plane-No">
+
+                              <span class>{{ flight.vehicleModel }}</span>
+                            </span>
+                          </div>
                         </div>
                       </div>
+                      <div class="flight-detail">
+                        <div class="depart-box">
+                          <div class="time">{{ flight.departureTime.split("T")[1] }}</div>
+                          <div class="airport">
+                            <span>Departure</span>
+                            <span>Airport</span>
+                            <br />
+                            <span>{{ flight.departureCity }}</span>
+                          </div>
+                        </div>
+                        <div class="arrow-box">
+                          <i class="arrow-oneway">to</i>
+                        </div>
+                        <div class="arrive-box">
+                          <div class="time">{{ flight.arrivalTime.split("T")[1] }}</div>
+                          <div class="airport">
+                            <span>Arrival</span>
+                            <span>Airport</span>
+                            <br />
+                            <span>{{ flight.departureCity }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flight-duration">24小时60分钟</div>
                     </div>
-                    <div class="flight-detail">
-                      <div class="depart-box">
-                        <div class="time">12:00</div>
-                        <div class="airport">
-                          <span>Departure</span>
-                          <span>Airport</span>
-                        </div>
-                      </div>
-                      <div class="arrow-box">
-                        <i class="arrow-oneway">to</i>
-                      </div>
-                      <div class="arrive-box">
-                        <div class="time">12:30</div>
-                        <div class="airport">
-                          <span>Arrival</span>
-                          <span>Airport</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flight-duration">24小时60分钟</div>
                   </div>
+                  <div class="flight-price">{{ flight.ticketPrice }}</div>
+                  <el-button type="primary">
+                    <a href="http://localhost:3333/#/transport/airplane/order">购票</a>
+                  </el-button>
                 </div>
-                <div class="flight-price">¥2000</div>
-                <el-input-number
-                  step="1"
-                  step-strict="true"
-                  min="0"
-                  max="10"
-                  class="numOfTicket"
-                  placeholder="请输入数量"
-                  controls-position="right"
-                  size="mini"
-                  v-model="searchResults"
-                  >100
-                </el-input-number>
               </div>
             </div>
           </div>
-        </div>
-      </el-card>
-    </span>
+        </el-card>
+      </span>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.index-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.index-container > * {
+  margin: 0 5%;
+}
+
 #submit {
   margin-top: 20px;
   margin-bottom: 20px;
