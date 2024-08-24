@@ -352,6 +352,13 @@ const fomartPayState = (status: string) => {
 }
 
 // 更多筛选选项
+const status_options = [
+  { value: "全部订单", label: "全部订单" },
+  { value: "已支付", label: "已支付" },
+  { value: "待支付", label: "待支付" },
+  { value: "已取消", label: "已取消" },
+]
+
 const options = [
   { value: "全部订单", label: "全部订单" },
   { value: "酒店", label: "酒店" },
@@ -360,6 +367,11 @@ const options = [
   { value: "导游", label: "导游" },
   { value: "旅行团", label: "旅行团" }
 ]
+
+const order_id_input = ref("")
+const order_status_input = ref("全部订单")
+const order_type_input = ref("全部订单")
+const date_input = ref("")
 
 const value_all = ref("全部订单")
 const value_pending = ref("全部订单")
@@ -371,16 +383,6 @@ const order_id_pending_input = ref("")
 const order_id_completed_input = ref("")
 const order_id_canceled_input = ref("")
 
-const guide_name_all_input = ref("")
-const guide_name_pending_input = ref("")
-const guide_name_completed_input = ref("")
-const guide_name_canceled_input = ref("")
-
-const passenger_name_all_input = ref("")
-const passenger_name_pending_input = ref("")
-const passenger_name_completed_input = ref("")
-const passenger_name_canceled_input = ref("")
-
 const date_all_input = ref("")
 const date_pending_input = ref("")
 const date_completed_input = ref("")
@@ -389,6 +391,48 @@ const date_canceled_input = ref("")
 
 <template>
   <div class="order-container">
+    <div class="filter-box">
+      <span class="word"> 订单号 </span>
+      <el-input
+        v-model="order_id_input"
+        style="width: 240px"
+        placeholder="请输入订单号"
+        :prefix-icon="Search"
+      />
+
+      <span class="word"> 订单状态 </span>
+      <el-select
+        v-model="order_status_input"
+        placeholder="请选择订单状态"
+        style="width: 240px"
+        @change=""
+      >
+        <el-option v-for="item in status_options" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+
+      <span class="word"> 订单类型 </span>
+      <el-select
+        v-model="order_type_input"
+        placeholder="请选择订单类型"
+        style="width: 240px"
+        @change="filterOrdersByCategory"
+      >
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+
+      <span class="word"> 日期 </span>
+      <el-date-picker
+        v-model="date_input"
+        type="daterange"
+        range-separator="To"
+        start-placeholder="开始时间"
+        end-placeholder="结束时间"
+        size="default"
+        @change="filterByDate"
+      />
+
+      <el-button type="primary" class="button" @click="filterOrdersByStatus"> 筛选 </el-button>
+    </div>
     <!-- Tabs for filtering orders by status -->
     <el-tabs v-model="activeName" class="filter_box" @tab-click="handleClick">
       <el-tab-pane label="全部订单" name="first" class="filter_box_all">
@@ -413,23 +457,6 @@ const date_canceled_input = ref("")
           >
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
-
-          <span class="word"> 旅客 </span>
-          <el-input
-            v-model="passenger_name_all_input"
-            style="width: 240px"
-            placeholder="请输入旅客姓名"
-            :prefix-icon="Search"
-          />
-
-          <span class="word"> 导游 </span>
-          <el-input
-            v-model="guide_name_all_input"
-            style="width: 240px"
-            placeholder="请输入导游姓名"
-            :prefix-icon="Search"
-            class="box"
-          />
 
           <span class="word"> 日期 </span>
           <el-date-picker
@@ -470,22 +497,6 @@ const date_canceled_input = ref("")
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
 
-          <span class="word"> 旅客 </span>
-          <el-input
-            v-model="passenger_name_pending_input"
-            style="width: 240px"
-            placeholder="请输入旅客姓名"
-            :prefix-icon="Search"
-          />
-
-          <span class="word"> 导游 </span>
-          <el-input
-            v-model="guide_name_pending_input"
-            style="width: 240px"
-            placeholder="请输入导游姓名"
-            :prefix-icon="Search"
-          />
-
           <span class="word"> 日期 </span>
           <el-date-picker
             v-model="date_pending_input"
@@ -524,22 +535,6 @@ const date_canceled_input = ref("")
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
 
-          <span class="word"> 旅客 </span>
-          <el-input
-            v-model="passenger_name_completed_input"
-            style="width: 240px"
-            placeholder="请输入旅客姓名"
-            :prefix-icon="Search"
-          />
-
-          <span class="word"> 导游 </span>
-          <el-input
-            v-model="guide_name_completed_input"
-            style="width: 240px"
-            placeholder="请输入导游姓名"
-            :prefix-icon="Search"
-          />
-
           <span class="word"> 日期 </span>
           <el-date-picker
             v-model="date_completed_input"
@@ -577,22 +572,6 @@ const date_canceled_input = ref("")
           >
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
-
-          <span class="word"> 旅客 </span>
-          <el-input
-            v-model="passenger_name_canceled_input"
-            style="width: 240px"
-            placeholder="请输入旅客姓名"
-            :prefix-icon="Search"
-          />
-
-          <span class="word"> 导游 </span>
-          <el-input
-            v-model="guide_name_canceled_input"
-            style="width: 240px"
-            placeholder="请输入导游姓名"
-            :prefix-icon="Search"
-          />
 
           <span class="word"> 日期 </span>
           <el-date-picker
