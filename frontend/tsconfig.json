@@ -42,7 +42,7 @@
     "types/**/*.d.ts",
     "vite.config.ts",
     "vitest.config.ts"
-  ],
+, "src/views/scene/router_test.js"  ],
   /** 编译器默认排除的编译文件 */
   "exclude": ["node_modules", "dist"]
 }

@@ -1,4 +1,6 @@
-﻿namespace db_course_design.DTOs
+﻿using db_course_design.Services.impl;
+
+namespace db_course_design.DTOs
 {
     /*--封装订单返回属性的类--*/
     public class OrderResponse
@@ -51,7 +53,7 @@
         public string? VehicleType { get; set; }
         public decimal TicketId { get; set; }
         public string? TicketType { get; set; }
-        public string TicketUserName { get; set; } = null!;
+        public virtual ICollection<VehiclePassengerRequest> Passengers { get; set; } = new List<VehiclePassengerRequest>();
         public DateTime? TicketDepartureTime { get; set; }
         public DateTime? TicketArrivalTime { get; set; }
         public string? TicketDepartureCity { get; set; }

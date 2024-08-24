@@ -5,17 +5,17 @@ defineOptions({
   name: "Paris"
 })
 
-const currentPage = ref('home')
+const currentPage = ref("home")
 
 const navigateTo = (page: string) => {
   currentPage.value = page
 }
 
-const starFilter = ref('全部')
-const distanceFilter = ref('全部')
+const starFilter = ref("全部")
+const distanceFilter = ref("全部")
 
-const starOptions = ['全部', '1A', '2A', '3A', '4A', '5A']
-const distanceOptions = ['全部', '500m内', '500m-2km', '2km-5km', '5km以上']
+const starOptions = ["全部", "1A", "2A", "3A", "4A", "5A"]
+const distanceOptions = ["全部", "500m内", "500m-2km", "2km-5km", "5km以上"]
 
 const setStarFilter = (option: string) => {
   starFilter.value = option
@@ -24,7 +24,6 @@ const setStarFilter = (option: string) => {
 const setDistanceFilter = (option: string) => {
   distanceFilter.value = option
 }
-
 </script>
 
 <template>
@@ -33,12 +32,13 @@ const setDistanceFilter = (option: string) => {
       <div class="title">巴黎</div>
       <div class="title1">PARIS</div>
       <nav class="nav">
-        <button 
-          v-for="page in ['home', 'attractions', 'accommodation']" 
-          :key="page" 
-          :class="{ active: currentPage === page }" 
-          @click="navigateTo(page)">
-          {{ page === 'home' ? '首页' : page === 'attractions' ? '景点' : '住宿' }}
+        <button
+          v-for="page in ['home', 'attractions', 'accommodation']"
+          :key="page"
+          :class="{ active: currentPage === page }"
+          @click="navigateTo(page)"
+        >
+          {{ page === "home" ? "首页" : page === "attractions" ? "景点" : "住宿" }}
         </button>
       </nav>
     </header>
@@ -46,28 +46,30 @@ const setDistanceFilter = (option: string) => {
     <div v-if="currentPage === 'attractions'" class="filters-container">
       <div class="filter-row">
         <span>星级：</span>
-        <button 
-          v-for="option in starOptions" 
-          :key="option" 
-          :class="{ active: starFilter === option }" 
-          @click="setStarFilter(option)">
+        <button
+          v-for="option in starOptions"
+          :key="option"
+          :class="{ active: starFilter === option }"
+          @click="setStarFilter(option)"
+        >
           {{ option }}
         </button>
       </div>
       <div class="filter-row">
         <span>距离：</span>
-        <button 
-          v-for="option in distanceOptions" 
-          :key="option" 
-          :class="{ active: distanceFilter === option }" 
-          @click="setDistanceFilter(option)">
+        <button
+          v-for="option in distanceOptions"
+          :key="option"
+          :class="{ active: distanceFilter === option }"
+          @click="setDistanceFilter(option)"
+        >
           {{ option }}
         </button>
       </div>
     </div>
 
     <main class="main-content">
-      <img v-if="currentPage === 'home'" src="/images/paris.jpg" alt="Paris" class="home-image"/>
+      <img v-if="currentPage === 'home'" src="/images/paris.jpg" alt="Paris" class="home-image" />
     </main>
   </div>
 </template>
@@ -94,7 +96,7 @@ const setDistanceFilter = (option: string) => {
   font-size: 48px;
   font-weight: bold;
   margin-right: auto;
-  color:grey
+  color: grey;
 }
 
 .nav button {
@@ -104,7 +106,9 @@ const setDistanceFilter = (option: string) => {
   border: none;
   background-color: transparent;
   cursor: pointer;
-  transition: color 0.3s ease, border-bottom 0.3s ease;
+  transition:
+    color 0.3s ease,
+    border-bottom 0.3s ease;
 }
 
 .nav button:hover,
@@ -137,7 +141,9 @@ const setDistanceFilter = (option: string) => {
   border: 1px solid #ccc;
   background-color: white;
   cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .filter-row button.active {

@@ -63,6 +63,8 @@ public partial class ModelContext : DbContext
 
     public virtual DbSet<VehicleOrder> VehicleOrders { get; set; }
 
+    public virtual DbSet<VehiclePassenger> VehiclePassengers { get; set; }
+
     public virtual DbSet<VehicleSchedule> VehicleSchedules { get; set; }
 
     public virtual DbSet<VehicleTicket> VehicleTickets { get; set; }
@@ -523,6 +525,9 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("SCENIC_SPOT_NAME");
+            entity.Property(e => e.ScenicSpotRemoteness)
+                .HasColumnType("NUMBER(6,3)")
+                .HasColumnName("SCENIC_SPOT_REMOTENESS");
 
             entity.HasOne(d => d.CityNameNavigation).WithMany(p => p.ScenicSpots)
                 .HasForeignKey(d => d.CityName)
@@ -605,6 +610,9 @@ public partial class ModelContext : DbContext
             entity.Property(e => e.EndDate)
                 .HasColumnType("DATE")
                 .HasColumnName("END_DATE");
+            entity.Property(e => e.GoTicketId)
+                .HasColumnType("NUMBER(38)")
+                .HasColumnName("GO_TICKET_ID");
             entity.Property(e => e.GroupName)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -615,14 +623,49 @@ public partial class ModelContext : DbContext
             entity.Property(e => e.GuideId)
                 .HasPrecision(4)
                 .HasColumnName("GUIDE_ID");
+            entity.Property(e => e.ReturnTicketId)
+                .HasColumnType("NUMBER(38)")
+                .HasColumnName("RETURN_TICKET_ID");
             entity.Property(e => e.StartDate)
                 .HasColumnType("DATE")
                 .HasColumnName("START_DATE");
+
+            entity.HasOne(d => d.GoTicket).WithMany(p => p.TourGroupGoTickets)
+                .HasForeignKey(d => d.GoTicketId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("GO_TICKET_ID_AS_FK_OF_TOUR_GROUP_REFERENCING_VEHICLE_TICKET");
 
             entity.HasOne(d => d.Guide).WithMany(p => p.TourGroups)
                 .HasForeignKey(d => d.GuideId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("GUIDE_ID_AS_FK_OF_TOUR_GROUP_REFERENCING_GUIDE");
+
+            entity.HasOne(d => d.ReturnTicket).WithMany(p => p.TourGroupReturnTickets)
+                .HasForeignKey(d => d.ReturnTicketId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("RETURN_TICKET_ID_AS_FK_OF_TOUR_GROUP_REFERENCING_VEHICLE_TICKET");
+
+            entity.HasMany(d => d.Hotels).WithMany(p => p.Groups)
+                .UsingEntity<Dictionary<string, object>>(
+                    "TourHotel",
+                    r => r.HasOne<Hotel>().WithMany()
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("HOTEL_ID_AS_FK_OF_TOUR_HOTEL_REFERENCING_HOTEL"),
+                    l => l.HasOne<TourGroup>().WithMany()
+                        .HasForeignKey("GroupId")
+                        .HasConstraintName("GROUP_ID_AS_FK_OF_TOUR_HOTEL_REFERENCING_TOUR_GROUP"),
+                    j =>
+                    {
+                        j.HasKey("GroupId", "HotelId").HasName("GROUP_ID_AND_HOTEL_ID_AS_PK_OF_TOUR_HOTEL");
+                        j.ToTable("TOUR_HOTEL");
+                        j.IndexerProperty<byte>("GroupId")
+                            .HasPrecision(4)
+                            .HasColumnName("GROUP_ID");
+                        j.IndexerProperty<decimal>("HotelId")
+                            .HasColumnType("NUMBER(38)")
+                            .HasColumnName("HOTEL_ID");
+                    });
 
             entity.HasMany(d => d.Users).WithMany(p => p.Groups)
                 .UsingEntity<Dictionary<string, object>>(
@@ -669,15 +712,19 @@ public partial class ModelContext : DbContext
             entity.Property(e => e.ItineraryTime)
                 .HasColumnType("DATE")
                 .HasColumnName("ITINERARY_TIME");
-            entity.Property(e => e.Location)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("LOCATION");
+            entity.Property(e => e.ScenicSpotId)
+                .HasColumnType("NUMBER(38)")
+                .HasColumnName("SCENIC_SPOT_ID");
 
             entity.HasOne(d => d.Group).WithMany(p => p.TourItineraries)
                 .HasForeignKey(d => d.GroupId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("GROUP_ID_AS_FK_OF_TOUR_ITINERARY_REFERENCING_TOUR_GROUP");
+
+            entity.HasOne(d => d.ScenicSpot).WithMany(p => p.TourItineraries)
+                .HasForeignKey(d => d.ScenicSpotId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("SCENIC_SPOT_ID_AS_FK_OF_TOUR_ITINERARY_REFERENCING_SCENIC_SPOT");
         });
 
         modelBuilder.Entity<TourOrder>(entity =>
@@ -811,28 +858,50 @@ public partial class ModelContext : DbContext
 
         modelBuilder.Entity<VehicleOrder>(entity =>
         {
-            entity.HasKey(e => new { e.OrderId, e.TicketId, e.TicketUserName }).HasName("ORDER_ID_AND_TICKET_ID_AS_PK_OF_VEHICLE_ORDER");
+            entity.HasKey(e => e.OrderId).HasName("ORDER_ID_AS_PK_OF_VEHICLE_ORDER");
 
             entity.ToTable("VEHICLE_ORDER");
 
             entity.Property(e => e.OrderId)
                 .HasPrecision(10)
+                .ValueGeneratedNever()
                 .HasColumnName("ORDER_ID");
             entity.Property(e => e.TicketId)
                 .HasColumnType("NUMBER(38)")
                 .HasColumnName("TICKET_ID");
-            entity.Property(e => e.TicketUserName)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("TICKET_USER_NAME");
 
-            entity.HasOne(d => d.Order).WithMany(p => p.VehicleOrders)
-                .HasForeignKey(d => d.OrderId)
+            entity.HasOne(d => d.Order).WithOne(p => p.VehicleOrder)
+                .HasForeignKey<VehicleOrder>(d => d.OrderId)
                 .HasConstraintName("ORDER_ID_AS_FK_OF_VEHICLE_ORDER_REFERENCING_ORDER_DATA");
 
             entity.HasOne(d => d.Ticket).WithMany(p => p.VehicleOrders)
                 .HasForeignKey(d => d.TicketId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("TICKET_ID_AS_FK_OF_VEHICLE_ORDER_REFERENCING_VEHICLE_TICKET");
+        });
+
+        modelBuilder.Entity<VehiclePassenger>(entity =>
+        {
+            entity.HasKey(e => new { e.OrderId, e.PassengerId }).HasName("ORDER_ID_AND_PASSENGER_ID_AS_PK_OF_VEHICLE_PASSENGER");
+
+            entity.ToTable("VEHICLE_PASSENGER");
+
+            entity.Property(e => e.OrderId)
+                .HasPrecision(10)
+                .HasColumnName("ORDER_ID");
+            entity.Property(e => e.PassengerId)
+                .HasMaxLength(18)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("PASSENGER_ID");
+            entity.Property(e => e.PassengerName)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("PASSENGER_NAME");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.VehiclePassengers)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("ORDER_ID_AS_FK_OF_VEHICLE_PASSENGER_REFERENCING_VEHICLE_ORDER");
         });
 
         modelBuilder.Entity<VehicleSchedule>(entity =>

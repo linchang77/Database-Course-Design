@@ -13,9 +13,11 @@ public partial class TourItinerary
 
     public TimeSpan? ItineraryDuration { get; set; }
 
-    public string? Location { get; set; }
+    public decimal? ScenicSpotId { get; set; }
 
     public string? Activities { get; set; }
 
     public virtual TourGroup? Group { get; set; }
+
+    public virtual ScenicSpot? ScenicSpot { get; set; }
 }

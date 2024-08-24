@@ -31,6 +31,10 @@ public partial class VehicleTicket
 
     public virtual City? TicketDepartureCityNavigation { get; set; }
 
+    public virtual ICollection<TourGroup> TourGroupGoTickets { get; set; } = new List<TourGroup>();
+
+    public virtual ICollection<TourGroup> TourGroupReturnTickets { get; set; } = new List<TourGroup>();
+
     public virtual VehicleSchedule? Vehicle { get; set; }
 
     public virtual ICollection<VehicleOrder> VehicleOrders { get; set; } = new List<VehicleOrder>();

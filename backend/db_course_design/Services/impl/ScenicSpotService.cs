@@ -235,7 +235,7 @@ namespace db_course_design.Services.impl
         }
 
         // 购买门票
-        public async Task<bool> PurchaseTicketAsync(string scenicSpotName, string type, DateTime date, CreateScenicSpotOrderRequest orderRequest)
+        public async Task<bool> PurchaseTicketAsync(string scenicSpotName, string type, DateTime date, CreateScenicSpotOrderRequest orderRequest, int number = 1)
         {
             // 查找符合条件的门票
             var ticket = await _context.ScenicSpotTickets
@@ -247,14 +247,14 @@ namespace db_course_design.Services.impl
             }
 
             // 减少剩余票数
-            ticket.TicketRemaining--;
+            ticket.TicketRemaining-=number;
 
             // 创建 ScenicSpotOrder 实体
             var scenicSpotOrder = new ScenicSpotOrder
             {
                 ScenicSpotId = ticket.ScenicSpotId,
                 TicketType = type,
-                TicketNumber = 1,
+                TicketNumber = number,
                 TicketDate = date,
                 ScenicSpotTicket = ticket
             };
@@ -266,7 +266,7 @@ namespace db_course_design.Services.impl
                 OrderDate = orderRequest.OrderDate ?? DateTime.Now, // 如果未指定日期，使用当前日期
                 UserId = orderRequest.UserId,
                 Status = orderRequest.Status ?? "Pending", // 默认状态为 "Pending"
-                Price = ticket.TicketPrice, // 使用门票价格
+                Price = ticket.TicketPrice*number, // 使用门票价格
                 ScenicSpotOrders = new List<ScenicSpotOrder> { scenicSpotOrder } // 将 ScenicSpotOrder 关联到 OrderDatum
             };
 

@@ -17,7 +17,11 @@ public partial class ScenicSpot
 
     public string? ScenicSpotLocation { get; set; }
 
+    public decimal? ScenicSpotRemoteness { get; set; }
+
     public virtual City? CityNameNavigation { get; set; }
 
     public virtual ICollection<ScenicSpotTicket> ScenicSpotTickets { get; set; } = new List<ScenicSpotTicket>();
+
+    public virtual ICollection<TourItinerary> TourItineraries { get; set; } = new List<TourItinerary>();
 }
