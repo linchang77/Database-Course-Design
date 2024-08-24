@@ -16,5 +16,11 @@
         public string? Status { get; set; }
         public decimal? Price { get; set; }
     }
-
+    public class SearchTourGroupRequest
+    {
+        public string Departure { get; set; }
+        public string Destination { get; set; }
+        public DateTime? Departure_Time { get; set; }
+        public int Days_of_Travel { get; set; }
+    }
 }
