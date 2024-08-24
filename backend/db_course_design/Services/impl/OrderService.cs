@@ -167,7 +167,7 @@ namespace db_course_design.Services.impl
                     VehicleType = o.Ticket.Vehicle.VehicleType,
                     TicketId = o.Ticket.TicketId,
                     TicketType = o.Ticket.TicketType,
-                    Passengers = o.Passengers.Select(p => new VehiclePassengerRequest
+                    Passengers = o.VehiclePassengers.Select(p => new VehiclePassengerRequest
                     {
                         PassengerId = p.PassengerId,
                         PassengerName = p.PassengerName
