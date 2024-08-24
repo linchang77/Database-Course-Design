@@ -8,7 +8,7 @@
     public class Result<T>
     {
         /// <summary>
-        /// 编码：1成功，0和其它数字为失败
+        /// 编码：0成功，1和其它数字为失败
         /// </summary>
         public int code { get; set; }
 
@@ -29,7 +29,7 @@
         public static Result<T> Success()
         {
             var result = new Result<T>();
-            result.code = 1;
+            result.code = 0;
             return result;
         }
 
@@ -42,7 +42,7 @@
         {
             var result = new Result<T>();
             result.data = obj;
-            result.code = 1;
+            result.code = 0;
             return result;
         }
 
@@ -55,7 +55,7 @@
         {
             var result = new Result<T>();
             result.msg = msg;
-            result.code = 0;
+            result.code = 1;
             return result;
         }
     }
