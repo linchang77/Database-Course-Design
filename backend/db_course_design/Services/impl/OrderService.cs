@@ -95,6 +95,7 @@ namespace db_course_design.Services.impl
                                          CheckInDate = ho.CheckInDate,
                                          CheckOutDate = ho.CheckOutDate,
                                          RoomType = ho.HotelRoom.RoomType,
+                                         RoomNumber = ho.HotelRoom.RoomNumber,
                                      }).ToListAsync();
             return hotelOrders;
         }
@@ -271,7 +272,7 @@ namespace db_course_design.Services.impl
 
             if(role.Equals("user", StringComparison.OrdinalIgnoreCase))
             {
-                var guideOrders = await GetGuideOrdersAsync(guideId: Id);
+                var guideOrders = await GetGuideOrdersAsync(userId: Id);
                 var FilteredGuideOrders = guideOrders.Where(o => o.ServiceBeginDate >= start && o.ServiceEndDate <= end);
 
                 var hotelOrders = await GetHotelOrdersAsync(Id);
@@ -280,7 +281,7 @@ namespace db_course_design.Services.impl
                 var scenicOrders = await GetScenicOrdersAsync(Id);
                 var FilteredScenicOrders = scenicOrders.Where(o => o.TicketDate >= start && o.TicketDate <= end);
 
-                var tourOrders = await GetTourOrdersAsync(guideId: Id);
+                var tourOrders = await GetTourOrdersAsync(userId: Id);
                 var FilteredTourOrders = tourOrders.Where(o => o.StartDate >= start && o.EndDate <= end);
 
                 var vehicleOrders = await GetVehicleOrdersAsync(Id);
