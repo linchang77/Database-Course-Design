@@ -63,8 +63,20 @@ const handleLoginOrRegister = () => {
             role: selectedRole.value // 需要动态传递角色
           })
           .then(() => {
-            console.log(loginFormData);
-            router.push({ path: "/dashboard" });
+            switch(selectedRole.value)
+            {
+              case "visitor":
+                router.push({ path: "/dashboard" });
+                break;
+              case "guide":
+                router.push({ path: "/my-orders" });
+                break;
+              case "admin":
+                router.push({ path: "/scene" });
+                break;
+              default:
+                router.push({ path: "/" });
+            }
           })
           .catch(() => {
             loginFormData.password = "";
@@ -72,7 +84,6 @@ const handleLoginOrRegister = () => {
           .finally(() => {
             loading.value = false;
           });
-          console.log(loginFormData);
       } else {
         // 注册逻辑
         userStore
@@ -82,7 +93,20 @@ const handleLoginOrRegister = () => {
             role: selectedRole.value // 需要动态传递角色
           })
           .then(() => {
-            router.push({ path: "/dashboard" });
+            switch(selectedRole.value)
+            {
+              case "visitor":
+                router.push({ path: "/dashboard" });
+                break;
+              case "guide":
+                router.push({ path: "/my-orders" });
+                break;
+              case "admin":
+                router.push({ path: "/scene" });
+                break;
+              default:
+                router.push({ path: "/" });
+            }
           })
           .catch(() => {
             loginFormData.password = "";

@@ -12,11 +12,9 @@ import riodejaneiro from "@/assets/scene/riodejaneiro.jpg"
 defineOptions({
   name: "Scene"
 })
-
 const selectedItem = ref("")
 const isAsideVisible = ref(false)
 const showImages = ref(true) // 控制图片和滚动按钮显示的变量
-
 const handleSelect = (key: string) => {
   if (selectedItem.value === key) {
     selectedItem.value = ""
@@ -49,7 +47,6 @@ const prevImage = () => {
   currentIndex.value = (currentIndex.value - 1 + images.length) % images.length
 }
 </script>
-
 <template>
   <div class="no-scroll">
     <div>
