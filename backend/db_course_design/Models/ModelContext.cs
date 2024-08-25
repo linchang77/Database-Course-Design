@@ -610,6 +610,14 @@ public partial class ModelContext : DbContext
                 .HasPrecision(4)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("GROUP_ID");
+            entity.Property(e => e.Departure)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("DEPARTURE");
+            entity.Property(e => e.Destination)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("DESTINATION");
             entity.Property(e => e.EndDate)
                 .HasColumnType("DATE")
                 .HasColumnName("END_DATE");

@@ -1,4 +1,6 @@
-﻿using db_course_design.Services;
+﻿using db_course_design.Common;
+using db_course_design.DTOs;
+using db_course_design.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace db_course_design.Controllers
@@ -22,10 +24,39 @@ namespace db_course_design.Controllers
     [ApiController]
     public class TourGroupController : ControllerBase
     {
-        private readonly ITourGroupService _tourgroupeService;
-        public TourGroupController(ITourGroupService tourgroupeService)
+        private readonly ITourGroupService _tourGroupService;
+
+        public TourGroupController(ITourGroupService tourGroupService)
         {
-            _tourgroupeService = tourgroupeService;
+            _tourGroupService = tourGroupService;
+        }
+
+        /// <summary>
+        /// 获取符合筛选条件的旅行团产品
+        /// </summary>
+        /// <param name="request">筛选条件</param>
+        /// <returns>符合条件的旅行团列表</returns>
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<TourGroupResponse>>> SearchTourGroups([FromQuery] SearchTourGroupRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Departure) || string.IsNullOrWhiteSpace(request.Destination))
+            {
+                return BadRequest("出发地和目的地是必填项。");
+            }
+
+            var tourGroups = await _tourGroupService.SearchTourGroupsByCityAsync(request);
+            return Ok(tourGroups);
+        }
+
+        /// <summary>
+        /// 获取推荐的旅行团
+        /// </summary>
+        /// <returns>推荐的旅行团列表</returns>
+        [HttpGet("recommendedtours")]
+        public async Task<ActionResult<IEnumerable<TourGroupResponse>>> GetRecommendedTourGroups()
+        {
+            var recommendedGroups = await _tourGroupService.GetRecommendedTourGroupsAsync();
+            return Ok(recommendedGroups);
         }
     }
 }
