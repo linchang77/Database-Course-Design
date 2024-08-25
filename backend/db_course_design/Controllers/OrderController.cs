@@ -9,20 +9,6 @@ using db_course_design.Services.impl;
 
 namespace db_course_design.Controllers
 {
-    public enum UserType
-    {
-        User,
-        Guide,
-        Admin,
-    }
-    public enum OrderType
-    {
-        GuideOrder,
-        HotelOrder,
-        ScenicOrder,
-        TourOrder,
-        VehicleOrder,
-    }
     /*业务逻辑：
         订单管理界面
          可以看到所有与自己相关的订单(管理员是全部订单)，
