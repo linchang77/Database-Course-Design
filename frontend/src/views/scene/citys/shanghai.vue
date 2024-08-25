@@ -365,4 +365,12 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
   color: #777;
   margin-top: 20px;
 }
+
+.no-results {
+  grid-column: span 3;
+  text-align: center;
+  font-size: 18px;
+  color: #777;
+  margin-top: 20px;
+}
 </style>
