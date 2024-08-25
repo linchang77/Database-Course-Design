@@ -85,6 +85,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
   },
   {
     path: "/scene",
+    component: Layouts,
     meta: {
       hidden: true,
     },
