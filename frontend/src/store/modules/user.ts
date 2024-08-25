@@ -6,7 +6,6 @@ import { useSettingsStore } from "./settings";
 import { getToken, removeToken, setToken } from "@/utils/cache/cookies";
 import { resetRouter } from "@/router";
 import { loginApi, registerApi, getUserInfoApi } from "@/api/login";
-import { type LoginRequestData, type RegisterRequestData } from "@/api/login/types/login";
 import routeSettings from "@/config/route";
 
 export const useUserStore = defineStore("user", () => {
@@ -18,55 +17,74 @@ export const useUserStore = defineStore("user", () => {
   const settingsStore = useSettingsStore();
 
   /** 登录 */
-  const login = async ({ username, password , role}: { username: string, password: string, role: string }) => {
-    let apiEndpoint = "";
+/** 登录 */
+const login = async ({ username, password, role }: { username: string, password: string, role: string }) => {
+  let apiEndpoint = "";
 
-    // Determine API endpoint based on the role
-    switch (role) {
-      case "admin":
-        apiEndpoint = "login/admin";
-        break;
-      case "guide":
-        apiEndpoint = "login/guide";
-        break;
-      default:
-        apiEndpoint = "login/user";
-        break;
-    }
-    console.log("1");
-    const { data } = await loginApi({ username, password }, apiEndpoint);
-    setToken(data.token);
-    token.value = data.token;
-  };
+  // Determine API endpoint based on the role
+  switch (role) {
+    case "admin":
+      apiEndpoint = "login/admin";
+      break;
+    case "guide":
+      apiEndpoint = "login/guide";
+      break;
+    default:
+      apiEndpoint = "login/user";
+      break;
+  }
 
-  /** 注册 */
-  const register = async ({ username, password, role }: { username: string, password: string, role: string }) => {
-    let apiEndpoint = "";
+  const { data } = await loginApi({ username, password }, apiEndpoint);
+  setToken(data.token);
+  token.value = data.token;
 
-    // Determine API endpoint based on the role
-    switch (role) {
-      case "admin":
-        apiEndpoint = "register/admin";
-        break;
-      case "guide":
-        apiEndpoint = "register/guide";
-        break;
-      default:
-        apiEndpoint = "register/user";
-        break;
-    }
+  // Store username and role in localStorage
+  localStorage.setItem("username", username);
+  localStorage.setItem("role", role);
+};
 
-    const { data } = await registerApi({ username, password }, apiEndpoint);
-    setToken(data.token);
-    token.value = data.token;
-  };
+/** 注册 */
+const register = async ({ username, password, role }: { username: string, password: string, role: string }) => {
+  let apiEndpoint = "";
+
+  // Determine API endpoint based on the role
+  switch (role) {
+    case "admin":
+      apiEndpoint = "register/admin";
+      break;
+    case "guide":
+      apiEndpoint = "register/guide";
+      break;
+    default:
+      apiEndpoint = "register/user";
+      break;
+  }
+
+  const { data } = await registerApi({ username, password }, apiEndpoint);
+  setToken(data.token);
+  token.value = data.token;
+
+  // Store username and role in localStorage
+  localStorage.setItem("username", username);
+  localStorage.setItem("role", role);
+};
+
 
   /** 获取用户详情 */
-  const getInfo = async () => {
-    const { data } = await getUserInfoApi();
-    username.value = data.username;
-    roles.value = data.roles?.length > 0 ? data.roles : routeSettings.defaultRoles;
-  };
+/** 获取用户详情 */
+const getInfo = async () => {
+  const storedUsername = localStorage.getItem("username");
+  const storedRole = localStorage.getItem("role");
+
+  if (storedUsername && storedRole) {
+    username.value = storedUsername;
+    roles.value = [storedRole];
+  } else {
+    // Fallback if data is not found
+    username.value = "";
+    roles.value = routeSettings.defaultRoles;
+  }
+};
 
   /** 模拟角色变化 */
   const changeRoles = async (role: string) => {
@@ -77,13 +95,18 @@ export const useUserStore = defineStore("user", () => {
   };
 
   /** 登出 */
-  const logout = () => {
-    removeToken();
-    token.value = "";
-    roles.value = [];
-    resetRouter();
-    _resetTagsView();
-  };
+/** 登出 */
+const logout = () => {
+  removeToken();
+  token.value = "";
+  roles.value = [];
+  resetRouter();
+  _resetTagsView();
+
+  // Clear localStorage
+  localStorage.removeItem("username");
+  localStorage.removeItem("role");
+};
 
   /** 重置 Token */
   const resetToken = () => {
