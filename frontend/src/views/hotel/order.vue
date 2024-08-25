@@ -1,102 +1,95 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const hotelQuery = route.query.hotel as string | undefined;
+const selectedNumber = ref(0);
 
 interface Hotel {
+  id: number;
   name: string;
-  rating: string;
+  grade: string;
   location: string;
   description: string;
-  price: number;
+  roomType: string;
+  roomLeft: number;
+  roomPrice: number; 
+  imageUrl: string; 
 }
 
-const hotel = hotelQuery ? JSON.parse(hotelQuery) as Hotel : null;
+const hotel = ref<Hotel | null>(null);
 
-// Form fields
-const name = ref<string>('');
-const phoneNumber = ref<string>('');
+const isSubmitDisabled = computed(() => selectedNumber.value === 0);
 
-// Function to handle form submission
 const handleSubmit = () => {
-  // Save or process the user's input as needed
-  console.log('Name:', name.value);
-  console.log('Phone Number:', phoneNumber.value);
-
-  // Here you might send this data to a backend server or local storage
-  // Example: axios.post('/api/save-user-info', { name: name.value, phoneNumber: phoneNumber.value });
+  // axios.post('/api/save-user-info', { name: name.value, phoneNumber: phoneNumber.value });
 };
+
+onMounted(() => {
+  const hotelQuery = route.query.hotel as string | undefined;
+  if (hotelQuery) {
+    hotel.value = JSON.parse(decodeURIComponent(hotelQuery)) as Hotel;
+  }
+});
 </script>
 
 <template>
   <div class="app-container">
-      <el-card header="酒店结算">
-        <div class="hotel-detail" v-if="hotel">
-            <h2>{{ hotel.name }}</h2>
-            <p>等级: {{ hotel.rating }}</p>
-            <p>位置: {{ hotel.location }}</p>
-            <p>介绍: {{ hotel.description }}</p>
-            <p>价格: ¥{{ hotel.price }}</p>
+    <el-card header="酒店订单">
+      <div class="hotel-container" v-if="hotel">
+        <h2>订单详情</h2>
+        <div class="info-container">
+          <div class="info-1">
+            <p>酒店名称: {{ hotel.name }}</p>
+            <p>酒店地址: {{ hotel.location }}</p>
+            <p>房型: {{ hotel.roomType }}</p>
+            <p>价格: ¥{{ hotel.roomPrice }} /间</p>
+          </div>
+          <div class="info-2">
+            <div class="quantity-selector">
+              <el-input-number 
+                v-model="selectedNumber" 
+                :min="0" 
+                :max="hotel.roomLeft" 
+              />
+            </div>
+            <p>订单总价格: ¥{{ hotel.roomPrice * selectedNumber }}</p>
+            <button 
+            :disabled="isSubmitDisabled"
+            @click="handleSubmit"
+          >
+            提交订单
+          </button>
+          </div>
         </div>
-        <div class="user-info">
-            <h2>用户信息</h2>
-            <form @submit.prevent="handleSubmit">
-                <div class="form-group">
-                    <label for="name">姓名:</label>
-                    <input type="text" id="name" v-model="name" placeholder="请输入姓名" required />
-                </div>
-                <div class="form-group">
-                    <label for="phone">手机号:</label>
-                    <input type="tel" id="phone" v-model="phoneNumber" placeholder="请输入手机号" required />
-                </div>
-                <button type="submit">提交</button>
-            </form>
-        </div>
-      </el-card>
-    </div>
+      </div>
+    </el-card>
+  </div>
 </template>
 
 <style scoped>
-.order-container {
-  padding: 20px;
-}
-
-.hotel-detail {
+.hotel-container{
   border: 1px solid #ddd;
   padding: 15px;
   border-radius: 5px;
   max-width: 600px;
   margin: 0 auto;
 }
-
-.hotel-detail h2 {
-  margin-top: 0;
-  font-size: 2em;
+.info-container {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.hotel-detail p {
-  margin: 10px 0;
+.info-1 {
+  flex: 1;
 }
 
-.user-info {
-  margin-top: 20px;
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 5px;
-  max-width: 600px;
-  margin: 0 auto;
+.info-2 {
+  text-align: center;
 }
 
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-}
 
 input {
   width: 100%;
@@ -116,5 +109,15 @@ button {
 
 button:hover {
   background-color: #218838;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.quantity-selector input {
+  width: 80px;
+  margin-right: 10px;
 }
 </style>
