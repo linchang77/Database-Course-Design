@@ -11,6 +11,8 @@ public partial class HotelRoomType
 
     public decimal? RoomPrice { get; set; }
 
+    public decimal? RoomLeft { get; set; }
+
     public virtual Hotel Hotel { get; set; } = null!;
 
     public virtual ICollection<HotelRoom> HotelRooms { get; set; } = new List<HotelRoom>();
