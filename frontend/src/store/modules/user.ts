@@ -16,7 +16,6 @@ export const useUserStore = defineStore("user", () => {
   const tagsViewStore = useTagsViewStore();
   const settingsStore = useSettingsStore();
 
-  /** 登录 */
 /** 登录 */
 const login = async ({ username, password, role }: { username: string, password: string, role: string }) => {
   let apiEndpoint = "";
