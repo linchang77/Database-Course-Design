@@ -69,8 +69,6 @@ const register = async ({ username, password, role }: { username: string, passwo
   localStorage.setItem("role", role);
 };
 
-
-  /** 获取用户详情 */
 /** 获取用户详情 */
 const getInfo = async () => {
   const storedUsername = localStorage.getItem("username");
