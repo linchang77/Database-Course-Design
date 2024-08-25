@@ -45,7 +45,7 @@ namespace db_course_design.Services.impl
                     HotelId = (int)o.HotelId,
                     RoomType = o.RoomType,
                     RoomPrice = o.RoomPrice,
-                    RoomLeft = o.RoomLeft,
+                    RoomLeft = (int)o.RoomLeft,
                 }).ToListAsync();
             return RoomDetail;
         }
