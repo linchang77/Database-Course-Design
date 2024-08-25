@@ -9,15 +9,15 @@ namespace db_course_design.Services
 
         Task<UserProfileResponse?> GetUserProfileAsync(int id);
 
-        Task<GuideProfileResponse?> GetGuideProfileAsync(decimal id);
+        Task<GuideProfileResponse?> GetGuideProfileAsync(byte id);
 
-        Task<AdminProfileResponse?> GetAdminProfileAsync(byte id);
+        Task<AdminProfileResponse?> GetAdminProfileAsync(decimal id);
 
         Task<UserProfileResponse?> UpdateUserProfileAsync(int id, string item, object value);
 
-        Task<GuideProfileResponse?> UpdateGuideProfileAsync(int id, string item, object value);
+        Task<GuideProfileResponse?> UpdateGuideProfileAsync(byte id, string item, object value);
 
-        Task<AdminProfileResponse?> UpdateAdminProfileAsync(int id, string item, object value);
+        Task<AdminProfileResponse?> UpdateAdminProfileAsync(decimal id, string item, object value);
 
         Task<string?> AddUserPhoneNumberAsync(int id, string number);
 
@@ -25,16 +25,16 @@ namespace db_course_design.Services
 
         Task<string?> UpdateUserPhoneNumbersAsync(int id, string o, string n);
 
-        Task<string?> AddGuidePhoneNumberAsync(int id, string number);
+        Task<string?> AddGuidePhoneNumberAsync(byte id, string number);
 
-        Task<bool> DeleteGuidePhoneNumberAsync(int id, string number);
+        Task<bool> DeleteGuidePhoneNumberAsync(byte id, string number);
 
-        Task<string?> UpdateGuidePhoneNumberAsync(int id, string o, string n);
+        Task<string?> UpdateGuidePhoneNumberAsync(byte id, string o, string n);
 
-        Task<string?> AddGuideRegionAsync(int id, string region);
+        Task<string?> AddGuideRegionAsync(byte id, string region);
 
-        Task<bool> DeleteGuideRegionAsync(int id, string region);
+        Task<bool> DeleteGuideRegionAsync(byte id, string region);
 
-        Task<string?> UpdateGuideRegionAsync(int id, string o, string n);
+        Task<string?> UpdateGuideRegionAsync(byte id, string o, string n);
     }
 }
