@@ -69,7 +69,7 @@ const handleLoginOrRegister = () => {
                 router.push({ path: "/dashboard" });
                 break;
               case "guide":
-                router.push({ path: "/my-orders" });
+                router.push({ path: "/guide-travel" });
                 break;
               case "admin":
                 router.push({ path: "/scene" });
@@ -99,7 +99,7 @@ const handleLoginOrRegister = () => {
                 router.push({ path: "/dashboard" });
                 break;
               case "guide":
-                router.push({ path: "/my-orders" });
+                router.push({ path: "/guide-travel" });
                 break;
               case "admin":
                 router.push({ path: "/scene" });

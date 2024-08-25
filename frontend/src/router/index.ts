@@ -154,6 +154,25 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
+      roles: ["guide"]
+    },
+    children: [
+      {
+        path: "guide-travel",
+        component: () => import("@/views/guide-travel/index.vue"),
+        name: "Guide-travel",
+        meta: {
+          title: "带团游",
+          svgIcon: "guide-travel",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    meta:{
       roles: ["visitor","admin"]
     },
     children: [
