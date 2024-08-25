@@ -351,6 +351,15 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         }
       },
       {
+        path: "room",
+        component: () => import("@/views/hotel/room.vue"),
+        name: "Room",
+        meta: {
+          title: "酒店房型",
+          hidden: true
+        }
+      },
+      {
         path: "order",
         component: () => import("@/views/hotel/order.vue"),
         name: "Order",

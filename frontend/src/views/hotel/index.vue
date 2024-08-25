@@ -38,9 +38,9 @@ const searchTickets = () => {
   router.push({
     name: 'Detail', 
     query: {
-      destination: destination.value,
-      checkIn: formattedCheckIn,
-      checkOut: formattedCheckOut
+      destination: encodeURIComponent(destination.value),
+      checkIn: encodeURIComponent(formattedCheckIn),
+      checkOut: encodeURIComponent(formattedCheckOut)
     }
   });
 }
