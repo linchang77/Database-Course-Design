@@ -92,7 +92,6 @@ const getInfo = async () => {
   };
 
   /** 登出 */
-/** 登出 */
 const logout = () => {
   removeToken();
   token.value = "";

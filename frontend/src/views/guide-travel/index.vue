@@ -2,7 +2,7 @@
 import { ref } from "vue"
 
 defineOptions({
-  name: "Self-center"
+  name: "Guide-travel"
 })
 
 const text = ref("")
@@ -10,7 +10,7 @@ const text = ref("")
 
 <template>
   <div class="app-container">
-    <el-card header="个人信息">
+    <el-card header="带团游">
     </el-card>
   </div>
 </template>
