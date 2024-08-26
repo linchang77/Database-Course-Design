@@ -451,6 +451,9 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("ROOM_TYPE");
+            entity.Property(e => e.RoomLeft)
+                .HasColumnType("NUMBER(38)")
+                .HasColumnName("ROOM_LEFT");
             entity.Property(e => e.RoomPrice)
                 .HasColumnType("NUMBER(6,2)")
                 .HasColumnName("ROOM_PRICE");

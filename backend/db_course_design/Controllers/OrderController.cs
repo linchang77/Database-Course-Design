@@ -9,20 +9,6 @@ using db_course_design.Services.impl;
 
 namespace db_course_design.Controllers
 {
-    public enum UserType
-    {
-        User,
-        Guide,
-        Admin,
-    }
-    public enum OrderType
-    {
-        GuideOrder,
-        HotelOrder,
-        ScenicOrder,
-        TourOrder,
-        VehicleOrder,
-    }
     /*业务逻辑：
         订单管理界面
          可以看到所有与自己相关的订单(管理员是全部订单)，
@@ -47,7 +33,8 @@ namespace db_course_design.Controllers
                         GET         - 按订单状态筛选
                 {orderId}/
                     GET             - 按订单ID搜索
-                    DELETE          - 删除某个订单
+                    DELETE          - 取消某个订单(软删除)
+                    Patch           - 某个订单完成付款(更新资源的部分字段)
                 date-range/         - 包含：start&end
                     GET             - 按时间段筛选
     */
@@ -109,13 +96,23 @@ namespace db_course_design.Controllers
             return Ok(order);
         }
 
-        /*--删除某个订单--*/
+        /*--取消某个订单(软删除)--*/
         [HttpDelete("role/{orderId}")]
         public async Task<IActionResult> DelOrderById(string role, int Id, int orderId)
         {
-            bool flag = await _orderService.DelOrderByIdAsync(role, Id, orderId);
+            bool flag = await _orderService.StatusUpdateAsync(role, Id, orderId, "Cancelled");
             if(flag)
                 return Ok(new { Message = "订单号为"+ orderId + "的订单已取消." });
+            return NotFound(new { Message = "Not found or you have no permission." });
+        }
+
+        /*--某个订单完成付款(更新资源的部分字段)--*/
+        [HttpPatch("role/{orderId}")]
+        public async Task<IActionResult> OrderPayedStatus(string role, int Id, int orderId)
+        {
+            bool flag = await _orderService.StatusUpdateAsync(role, Id, orderId, "Completed");
+            if (flag)
+                return Ok(new { Message = "订单号为" + orderId + "的订单已支付." });
             return NotFound(new { Message = "Not found or you have no permission." });
         }
 
