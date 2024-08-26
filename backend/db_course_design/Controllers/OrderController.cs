@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using EntityFramework.Models;
 using db_course_design.Common;
-using System.Net.Sockets;
+using db_course_design.Services;
 using db_course_design.Services.impl;
+using db_course_design.DTOs;
+using EntityFramework.Models;
 
 namespace db_course_design.Controllers
 {
@@ -42,8 +40,8 @@ namespace db_course_design.Controllers
     [Route("api/[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly OrderService _orderService;
-        public OrderController(OrderService orderService)
+        private readonly IOrderService _orderService;
+        public OrderController(IOrderService orderService)
         {
             _orderService = orderService;
         }

@@ -152,6 +152,24 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/group-travel',
+    component: Layouts,
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: 'cities/shanghai',
+        component: () => import('@/views/group-travel/cities/shanghai.vue'), 
+        name: 'shanghai-group',
+        meta: {
+          hidden: true
+        }
+      }
+    ]
+  },
+  //csh end
+  {
     path: "/",
     component: Layouts,
     meta:{
