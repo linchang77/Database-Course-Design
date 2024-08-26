@@ -151,22 +151,20 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
+  // csh start
   {
-    path: '/group-travel',
+    path: "/group-travel",
     component: Layouts,
     meta: {
       hidden: true
     },
     children: [
-      {
-        path: 'cities/shanghai',
-        component: () => import('@/views/group-travel/cities/shanghai.vue'), 
-        name: 'shanghai-group',
-        meta: {
-          hidden: true
-        }
-      }
-    ]
+    {
+      path: "groups/detail",
+      component: () => import(`@/views/group-travel/groups/detail.vue`), 
+      name: "group-detail",
+    
+  }]
   },
   //csh end
   {
