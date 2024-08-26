@@ -30,9 +30,10 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IScenicSpotService, ScenicSpotService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 /////////////////////////////////////////自己根据需要添加内容//////////////////////////////////////////////////////////////
 //添加DbContext
 //builder.Services.AddDbContext<ModelContext>(options =>

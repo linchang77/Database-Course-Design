@@ -7,8 +7,6 @@ namespace db_course_design.DTOs
         public decimal Id { get; set; }
 
         public string? Name { get; set; }
-
-        public string? Password { get; set; }
     }
 
     public class UserProfileResponse : ProfileResponse 

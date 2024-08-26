@@ -23,7 +23,10 @@ namespace db_course_design.Services.impl
 
         public async Task<UserProfileResponse?> GetUserProfileAsync(int id)
         {
-            var profile = await _context.Users.FindAsync(id);
+            var profile = (await _context.Users
+                .Where(p => p.UserId == id)
+                .Include(p => p.UserPhoneNumbers)
+                .ToListAsync())[0];
 
             if (profile == null)
                 return null;
@@ -32,7 +35,11 @@ namespace db_course_design.Services.impl
 
         public async Task<GuideProfileResponse?> GetGuideProfileAsync(byte id)
         {
-            var profile = await _context.Guides.FindAsync(id);
+            var profile = (await _context.Guides
+                .Where(p => p.GuideId == id)
+                .Include(p => p.GuidePhoneNumbers)
+                .Include(p => p.GuideRegions)
+                .ToListAsync())[0];
 
             if (profile == null)
                 return null;
@@ -48,7 +55,7 @@ namespace db_course_design.Services.impl
             return _mapper.Map<AdminProfileResponse>(profile);
         }
 
-        public async Task<UserProfileResponse?> UpdateUserProfileAsync(int id, string item, object value)
+        public async Task<UserProfileResponse?> UpdateUserProfileAsync(int id, string item, string value)
         {
             try
             {
@@ -58,16 +65,13 @@ namespace db_course_design.Services.impl
                 switch (item)
                 {
                     case "name":
-                        target.UserName = (string?)value; 
-                        break;
-                    case "password":
-                        target.Password = (string?)value;
+                        target.UserName = value; 
                         break;
                     case "picture":
-                        target.ProfilePicture = (string?)value; 
+                        target.ProfilePicture = value; 
                         break;
                     case "gender":
-                        target.UserGender = (string?)value;
+                        target.UserGender = value;
                         break;
                     default:
                         return null;
@@ -81,7 +85,7 @@ namespace db_course_design.Services.impl
             }
         }
         
-        public async Task<GuideProfileResponse?> UpdateGuideProfileAsync(byte id, string item, object value)
+        public async Task<GuideProfileResponse?> UpdateGuideProfileAsync(byte id, string item, string value)
         {
             try
             {
@@ -91,22 +95,19 @@ namespace db_course_design.Services.impl
                 switch (item)
                 {
                     case "name":
-                        target.GuideName = (string?)value;
-                        break;
-                    case "password":
-                        target.Password = (string?)value;
+                        target.GuideName = value;
                         break;
                     case "picture":
-                        target.ProfilePicture = (string?)value;
+                        target.ProfilePicture = value;
                         break;
                     case "gender":
-                        target.GuideGender = (string?)value;
+                        target.GuideGender = value;
                         break;
                     case "intro":
-                        target.GuideIntroduction = (string?)value;
+                        target.GuideIntroduction = value;
                         break;
                     case "price":
-                        target.GuidePrice = (decimal?)value;
+                        target.GuidePrice = Convert.ToDecimal(value);
                         break;
                     default:
                         return null;
@@ -120,7 +121,7 @@ namespace db_course_design.Services.impl
             }
         }
 
-        public async Task<AdminProfileResponse?> UpdateAdminProfileAsync(decimal id, string item, object value)
+        public async Task<AdminProfileResponse?> UpdateAdminProfileAsync(decimal id, string item, string value)
         {
             try
             {
@@ -130,10 +131,7 @@ namespace db_course_design.Services.impl
                 switch (item)
                 {
                     case "name":
-                        target.AdminName = (string?)value;
-                        break;
-                    case "password":
-                        target.Password = (string?)value;
+                        target.AdminName = value;
                         break;
                     default:
                         return null;
@@ -178,18 +176,6 @@ namespace db_course_design.Services.impl
             return true;
         }
 
-        public async Task<string?> UpdateUserPhoneNumbersAsync(int id, string o, string n)
-        {
-            var record = await _context.UserPhoneNumbers.FindAsync(id, o);
-
-            if (record == null)
-                return null;
-
-            record.PhoneNumber = n;
-            await _context.SaveChangesAsync();
-            return record.PhoneNumber;
-        }
-
         public async Task<string?> AddGuidePhoneNumberAsync(byte id, string number)
         {
             try
@@ -211,7 +197,7 @@ namespace db_course_design.Services.impl
 
         public async Task<bool> DeleteGuidePhoneNumberAsync(byte id, string number)
         {
-            var record = await _context.GuidePhoneNumbers.FindAsync(id, number);
+            var record = await _context.GuidePhoneNumbers.FindAsync(number, id);
 
             if (record == null)
                 return false;
@@ -219,18 +205,6 @@ namespace db_course_design.Services.impl
             _context.GuidePhoneNumbers.Remove(record);
             await _context.SaveChangesAsync();
             return true;
-        }
-
-        public async Task<string?> UpdateGuidePhoneNumberAsync(byte id, string o, string n)
-        {
-            var record = await _context.GuidePhoneNumbers.FindAsync(id, o);
-
-            if (record == null)
-                return null;
-
-            record.PhoneNumber = n;
-            await _context.SaveChangesAsync();
-            return record.PhoneNumber;
         }
 
         public async Task<string?> AddGuideRegionAsync(byte id, string region)
@@ -262,18 +236,6 @@ namespace db_course_design.Services.impl
             _context.GuideRegions.Remove(record);
             await _context.SaveChangesAsync();
             return true;
-        }
-
-        public async Task<string?> UpdateGuideRegionAsync(byte id, string o, string n)
-        {
-            var record = await _context.GuideRegions.FindAsync(id, o);
-
-            if (record == null)
-                return null;
-
-            record.GuidedRegion = n;
-            await _context.SaveChangesAsync();
-            return record.GuidedRegion;
         }
     }
 }
