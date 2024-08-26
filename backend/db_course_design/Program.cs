@@ -31,6 +31,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IScenicSpotService, ScenicSpotService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<ITourGroupService, TourGroupService>();
