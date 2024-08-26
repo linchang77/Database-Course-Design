@@ -228,6 +228,42 @@ namespace db_course_design.Controler
             await _context.SaveChangesAsync();
             return Ok(Result<string>.Success("Password of guide " + id + " is successfully reset"));
         }
+        //通过username获取用户的id
+        [HttpGet("id/{username},{role}")]
+        public async Task<IActionResult> GetIdByName(string username, string role)
+        {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(role))
+            {
+                return BadRequest("用户名和角色是必填项。");
+            }
+
+            decimal? id =null;
+
+            switch (role.ToLower())
+            {
+                case "admin":
+                    var admin = await _context.Admins.FirstOrDefaultAsync(a => a.AdminName == username);
+                    id = admin?.AdminId;
+                    break;
+                case "guide":
+                    var guide = await _context.Guides.FirstOrDefaultAsync(g => g.GuideName == username);
+                    id = guide?.GuideId;
+                    break;
+                case "user":
+                    var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+                    id = user?.UserId;
+                    break;
+                default:
+                    return BadRequest("无效的角色。");
+            }
+
+            if (id == null)
+            {
+                return NotFound("未找到对应的用户。");
+            }
+
+            return Ok(Result<int>.Success((int)id.Value));
+        }
     }
 }
 
