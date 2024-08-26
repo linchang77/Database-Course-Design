@@ -10,19 +10,7 @@ const Layouts = () => import("@/layouts/index.vue")
  */
 
 export const constantRoutes: RouteRecordRaw[] = [
-  {
-    path: "/redirect",
-    component: Layouts,
-    meta: {
-      hidden: true
-    },
-    children: [
-      {
-        path: ":path(.*)",
-        component: () => import("@/views/redirect/index.vue")
-      }
-    ]
-  },
+  
   {
     path: "/403",
     component: () => import("@/views/error-page/403.vue"),
@@ -47,8 +35,22 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: "/",
+    redirect: "/self-center",
+  },
+]
+
+/**
+ * 动态路由
+ * 用来放置有权限 (Roles 属性) 的路由
+ * 必须带有 Name 属性
+ */
+export const dynamicRoutes: RouteRecordRaw[] = [
+  {
+    path: "/",
     component: Layouts,
-    redirect: "/dashboard",
+    meta:{
+      roles: ["visitor"]
+    },
     children: [
       {
         path: "dashboard",
@@ -57,7 +59,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         meta: {
           title: "首页",
           svgIcon: "dashboard",
-          affix: true
+          affix: true,
         }
       }
     ]
@@ -65,6 +67,9 @@ export const constantRoutes: RouteRecordRaw[] = [
   {
     path: "/",
     component: Layouts,
+    meta:{
+      roles: ["visitor","admin"]
+    },
     children: [
       {
         path: "scene",
@@ -82,78 +87,57 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: "/scene",
     component: Layouts,
     meta: {
-      hidden: true
+      hidden: true,
     },
     children: [
       {
         path: "shanghai",
         component: () => import("@/views/scene/citys/shanghai.vue"),
         name: "Shanghai",
-        meta: {
-          hidden: true
-        }
       },
       {
         path: "shanghai/tickets",
         component: () => import("@/views/scene/citys/city_shanghai/上海景点购票.vue"),
         name: "SceneTickets",
-        meta: {
-          hidden: true
-        }
       },
       {
         path: "tokyo",
         component: () => import("@/views/scene/citys/tokyo.vue"),
         name: "Tokyo",
-        meta: {
-          hidden: true
-        }
       },
       {
         path: "cairo",
         component: () => import("@/views/scene/citys/cairo.vue"),
         name: "Cairo",
-        meta: {
-          hidden: true
-        }
       },
       {
         path: "paris",
         component: () => import("@/views/scene/citys/paris.vue"),
         name: "Paris",
-        meta: {
-          hidden: true
-        }
       },
       {
         path: "newyork",
         component: () => import("@/views/scene/citys/newyork.vue"),
         name: "Newyork",
-        meta: {
-          hidden: true
-        }
       },
       {
         path: "riodejaneiro",
         component: () => import("@/views/scene/citys/riodejaneiro.vue"),
         name: "Riodejaneiro",
-        meta: {
-          hidden: true
-        }
       },
       {
         path: "sydney",
         component: () => import("@/views/scene/citys/sydney.vue"),
         name: "Sydney",
-        meta: {
-          hidden: true
-        }
       }
     ]
   },
   {
     path: "/",
     component: Layouts,
+    meta:{
+      roles: ["visitor","admin"]
+    },
     children: [
       {
         path: "group-travel",
@@ -168,8 +152,48 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/group-travel',
+    component: Layouts,
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: 'cities/shanghai',
+        component: () => import('@/views/group-travel/cities/shanghai.vue'), 
+        name: 'shanghai-group',
+        meta: {
+          hidden: true
+        }
+      }
+    ]
+  },
+  //csh end
+  {
     path: "/",
     component: Layouts,
+    meta:{
+      roles: ["guide"]
+    },
+    children: [
+      {
+        path: "guide-travel",
+        component: () => import("@/views/guide-travel/index.vue"),
+        name: "Guide-travel",
+        meta: {
+          title: "带团游",
+          svgIcon: "guide-travel",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    meta:{
+      roles: ["visitor","admin"]
+    },
     children: [
       {
         path: "free-travel",
@@ -202,6 +226,9 @@ export const constantRoutes: RouteRecordRaw[] = [
   {
     path: "/",
     component: Layouts,
+    meta:{
+      roles: ["visitor","guide"]
+    },
     children: [
       {
         path: "my-orders",
@@ -215,77 +242,44 @@ export const constantRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-  // {
-  //   path: "/unocss",
-  //   component: Layouts,
-  //   redirect: "/unocss/index",
-  //   children: [
-  //     {
-  //       path: "index",
-  //       component: () => import("@/views/unocss/index.vue"),
-  //       name: "UnoCSS",
-  //       meta: {
-  //         title: "UnoCSS",
-  //         svgIcon: "unocss"
-  //       }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: "/link",
-  //   meta: {
-  //     title: "外链",
-  //     svgIcon: "link"
-  //   },
-  //   children: [
-  //     {
-  //       path: "https://juejin.cn/post/7089377403717287972",
-  //       component: () => {},
-  //       name: "Link1",
-  //       meta: {
-  //         title: "中文文档"
-  //       }
-  //     },
-  //     {
-  //       path: "https://juejin.cn/column/7207659644487139387",
-  //       component: () => {},
-  //       name: "Link2",
-  //       meta: {
-  //         title: "新手教程"
-  //       }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: "/table",
-  //   component: Layouts,
-  //   redirect: "/table/element-plus",
-  //   name: "Table",
-  //   meta: {
-  //     title: "表格",
-  //     elIcon: "Grid"
-  //   },
-  //   children: [
-  //     {
-  //       path: "element-plus",
-  //       component: () => import("@/views/table/element-plus/index.vue"),
-  //       name: "ElementPlus",
-  //       meta: {
-  //         title: "Element Plus",
-  //         keepAlive: true
-  //       }
-  //     },
-  //     {
-  //       path: "vxe-table",
-  //       component: () => import("@/views/table/vxe-table/index.vue"),
-  //       name: "VxeTable",
-  //       meta: {
-  //         title: "Vxe Table",
-  //         keepAlive: true
-  //       }
-  //     }
-  //   ]
-  // },
+  {
+    path: "/",
+    component: Layouts,
+    meta:{
+      roles: ["admin"]
+    },
+    children: [
+      {
+        path: "orders-management",
+        component: () => import("@/views/orders-management/index.vue"),
+        name: "Orders-management",
+        meta: {
+          title: "订单管理",
+          svgIcon: "Orders-management",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    meta:{
+      roles: ["guide"]
+    },
+    children: [
+      {
+        path: "performance",
+        component: () => import("@/views/performance/index.vue"),
+        name: "Performance",
+        meta: {
+          title: "业绩",
+          svgIcon: "performance",
+          affix: true
+        }
+      }
+    ]
+  },
   {
     path: "/transport",
     component: Layouts,
@@ -293,7 +287,8 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: "Transport",
     meta: {
       title: "出行",
-      svgIcon: "transport"
+      svgIcon: "transport",
+      roles: ["visitor","admin"]
     },
     children: [
       {
@@ -324,83 +319,37 @@ export const constantRoutes: RouteRecordRaw[] = [
       }
     ]
   }
-
   // {
-  //   path: "/hook-demo",
+  //   path: "/permission",
   //   component: Layouts,
-  //   redirect: "/hook-demo/use-fetch-select",
-  //   name: "HookDemo",
+  //   redirect: "/permission/page",
+  //   name: "Permission",
   //   meta: {
-  //     title: "Hook",
-  //     elIcon: "Menu",
-  //     alwaysShow: true
+  //     title: "权限",
+  //     svgIcon: "lock",
+  //     roles: ["admin", "editor"], // 可以在根路由中设置角色
+  //     alwaysShow: true // 将始终显示根菜单
   //   },
   //   children: [
   //     {
-  //       path: "use-fetch-select",
-  //       component: () => import("@/views/hook-demo/use-fetch-select.vue"),
-  //       name: "UseFetchSelect",
+  //       path: "page",
+  //       component: () => import("@/views/permission/page.vue"),
+  //       name: "PagePermission",
   //       meta: {
-  //         title: "useFetchSelect"
+  //         title: "页面级",
+  //         roles: ["admin"] // 或者在子导航中设置角色
   //       }
   //     },
   //     {
-  //       path: "use-fullscreen-loading",
-  //       component: () => import("@/views/hook-demo/use-fullscreen-loading.vue"),
-  //       name: "UseFullscreenLoading",
+  //       path: "directive",
+  //       component: () => import("@/views/permission/directive.vue"),
+  //       name: "DirectivePermission",
   //       meta: {
-  //         title: "useFullscreenLoading"
-  //       }
-  //     },
-  //     {
-  //       path: "use-watermark",
-  //       component: () => import("@/views/hook-demo/use-watermark.vue"),
-  //       name: "UseWatermark",
-  //       meta: {
-  //         title: "useWatermark"
+  //         title: "按钮级" // 如果未设置角色，则表示：该页面不需要权限，但会继承根路由的角色
   //       }
   //     }
   //   ]
   // }
-]
-
-/**
- * 动态路由
- * 用来放置有权限 (Roles 属性) 的路由
- * 必须带有 Name 属性
- */
-export const dynamicRoutes: RouteRecordRaw[] = [
-  {
-    path: "/permission",
-    component: Layouts,
-    redirect: "/permission/page",
-    name: "Permission",
-    meta: {
-      title: "权限",
-      svgIcon: "lock",
-      roles: ["admin", "editor"], // 可以在根路由中设置角色
-      alwaysShow: true // 将始终显示根菜单
-    },
-    children: [
-      {
-        path: "page",
-        component: () => import("@/views/permission/page.vue"),
-        name: "PagePermission",
-        meta: {
-          title: "页面级",
-          roles: ["admin"] // 或者在子导航中设置角色
-        }
-      },
-      {
-        path: "directive",
-        component: () => import("@/views/permission/directive.vue"),
-        name: "DirectivePermission",
-        meta: {
-          title: "按钮级" // 如果未设置角色，则表示：该页面不需要权限，但会继承根路由的角色
-        }
-      }
-    ]
-  }
 ]
 
 const router = createRouter({

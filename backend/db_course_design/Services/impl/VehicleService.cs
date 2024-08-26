@@ -69,14 +69,12 @@ namespace db_course_design.Services.impl
     public class VehicleService : IVehicleService
     {
         private readonly ModelContext _context;
-        private readonly IOrderService _orderService;
 
         public IMapper _mapper { get; }
 
         public VehicleService(ModelContext context)
         {
             _context = context;
-            _orderService = new OrderService(_context);
             _mapper = (new MapperConfiguration(cfg => cfg.AddProfile<VehicleProfile>())).CreateMapper();
         }
 

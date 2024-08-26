@@ -254,13 +254,29 @@ namespace db_course_design.Services.impl
             return targetOrder;
         }
 
-        /*--删除某个订单(其实是改状态属性)--*/
-        public async Task<bool> DelOrderByIdAsync(string role, int Id, int orderId)
+        /*--状态修改函数--*/
+        public async Task<bool> StatusUpdateAsync(string role, int Id, int orderId, string status)
         {
             var targetOrder = await GetOrderByIdAsync(role, Id, orderId);
-            if(targetOrder == null) {  return false; }
-            targetOrder.Status = "Cancelled";
-            // 保存更改
+            if(targetOrder == null) 
+            {  
+                return false; 
+            }
+
+            // 修改状态
+            var StatusUpdate = await _context.OrderData.FindAsync(targetOrder.OrderId);
+            if (StatusUpdate != null)
+            {
+                if (status.Equals("Cancelled"))     // 至取消-用于取消订单请求
+                    StatusUpdate.Status = "Cancelled";
+                else if (status.Equals("Completed"))// 至完成-用于付款完成请求
+                    StatusUpdate.Status = "Completed";
+                else
+                    StatusUpdate.Status = "Pending";
+
+                _context.OrderData.Update(StatusUpdate);
+            }
+
             await _context.SaveChangesAsync();
             return true;
         }

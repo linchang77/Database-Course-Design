@@ -14,8 +14,8 @@ namespace db_course_design.Services
         Task<List<OrderResponse>> GetOrdersByStatusAsync(string role, int Id, string status);
         // 按订单ID搜索
         Task<OrderResponse> GetOrderByIdAsync(string role, int Id, int orderId);
-        // 删除某个订单(其实是改状态属性)
-        Task<bool> DelOrderByIdAsync(string role, int Id, int orderId);
+        // 状态修改函数
+        Task<bool> StatusUpdateAsync(string role, int Id, int orderId, string status);
         // 按时间段筛选
         Task<List<OrderResponse>> GetOrdersByTimeAsync(string role, int Id, DateTime start, DateTime end);
         // 创建一个订单
