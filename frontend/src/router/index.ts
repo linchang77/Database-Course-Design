@@ -247,6 +247,23 @@ export const dynamicRoutes: RouteRecordRaw[] = [
   {
     path: "/",
     component: Layouts,
+    children: [
+      {
+        path: "self-center",
+        component: () => import("@/views/self-center/index.vue"),
+        name: "Self-center",
+        meta: {
+          title: "个人中心",
+          svgIcon: "self-center",
+          affix: true
+        }
+      }
+    ]
+  },
+
+  {
+    path: "/",
+    component: Layouts,
     meta:{
       roles: ["visitor","guide"]
     },
@@ -293,6 +310,25 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         meta: {
           title: "订单管理",
           svgIcon: "Orders-management",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    meta:{
+      roles: ["admin"]
+    },
+    children: [
+      {
+        path: "users-management",
+        component: () => import("@/views/users-management/index.vue"),
+        name: "Users-management",
+        meta: {
+          title: "用户管理",
+          svgIcon: "Users-management",
           affix: true
         }
       }
