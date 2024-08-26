@@ -16,7 +16,7 @@ const loading = ref(false);
 const isLogin = ref(true);
 
 /** 角色选中状态 */
-const selectedRole = ref("visitor");
+const selectedRole = ref("user");
 
 
 /** 登录/注册表单校验规则 */
@@ -43,7 +43,7 @@ const toggleForm = () => {
 const loginFormData = reactive({
   username: "",
   password: "",
-  role:"visitor" // 默认为游客角色
+  role:"user" // 默认为游客角色
 });
 
 // 修改登录/注册逻辑
@@ -65,7 +65,7 @@ const handleLoginOrRegister = () => {
           .then(() => {
             switch(selectedRole.value)
             {
-              case "visitor":
+              case "user":
                 router.push({ path: "/dashboard" });
                 break;
               case "guide":
@@ -95,7 +95,7 @@ const handleLoginOrRegister = () => {
           .then(() => {
             switch(selectedRole.value)
             {
-              case "visitor":
+              case "user":
                 router.push({ path: "/dashboard" });
                 break;
               case "guide":
@@ -128,8 +128,8 @@ const handleLoginOrRegister = () => {
     <div class="login-card">
       <div class="role-selection">
         <button
-          :class="{ selected: selectedRole === 'visitor' }"
-          @click="selectRole('visitor')"
+          :class="{ selected: selectedRole === 'user' }"
+          @click="selectRole('user')"
         >
           游客
         </button>

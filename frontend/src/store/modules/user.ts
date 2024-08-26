@@ -82,7 +82,6 @@ const getInfo = async () => {
     roles.value = routeSettings.defaultRoles;
   }
 };
-
   /** 模拟角色变化 */
   const changeRoles = async (role: string) => {
     const newToken = "token-" + role;
@@ -90,7 +89,6 @@ const getInfo = async () => {
     setToken(newToken);
     window.location.reload();
   };
-
   /** 登出 */
 const logout = () => {
   removeToken();

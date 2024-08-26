@@ -49,7 +49,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor"]
+      roles: ["user"]
     },
     children: [
       {
@@ -68,7 +68,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor","admin"]
+      roles: ["user","admin"]
     },
     children: [
       {
@@ -175,7 +175,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor","admin"]
+      roles: ["user","admin"]
     },
     children: [
       {
@@ -229,7 +229,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor","admin"]
+      roles: ["user","admin"]
     },
     children: [
       {
@@ -265,7 +265,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor","guide"]
+      roles: ["user","guide"]
     },
     children: [
       {
@@ -349,6 +349,45 @@ export const dynamicRoutes: RouteRecordRaw[] = [
           title: "业绩",
           svgIcon: "performance",
           affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/transport",
+    component: Layouts,
+    redirect: "/transport/airplane",
+    name: "Transport",
+    meta: {
+      title: "出行",
+      svgIcon: "transport",
+      roles: ["user","admin"]
+    },
+    children: [
+      {
+        path: "airplane",
+        component: () => import("@/views/transport/airplane/index.vue"),
+        name: "Airplane",
+        meta: {
+          title: "飞机"
+        }
+      },
+      {
+        path: "bus",
+        component: () => import("@/views/transport/bus/index.vue"),
+        name: "Bus",
+        meta: {
+          title: "大巴",
+          keepAlive: true
+        }
+      },
+      {
+        path: "train",
+        component: () => import("@/views/transport/train/index.vue"),
+        name: "Train",
+        meta: {
+          title: "火车",
+          keepAlive: true
         }
       }
     ]
