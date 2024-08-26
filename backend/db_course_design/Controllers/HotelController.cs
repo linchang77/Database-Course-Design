@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using EntityFramework.Models;
 using db_course_design.Common;
-using System.Net.Sockets;
+using db_course_design.Services;
 using db_course_design.Services.impl;
 using db_course_design.DTOs;
+using EntityFramework.Models;
 
 namespace db_course_design.Controllers
 {
@@ -19,8 +16,8 @@ namespace db_course_design.Controllers
     [Route("api/[controller]")]
     public class HotelController : ControllerBase
     {
-        private readonly HotelService _hotelService;
-        public HotelController(HotelService hotelService)
+        private readonly IHotelService _hotelService;
+        public HotelController(IHotelService hotelService)
         {
             _hotelService = hotelService;
         }

@@ -4,7 +4,7 @@ const VITE_APP_TITLE = import.meta.env.VITE_APP_TITLE
 
 <template>
   <!--修改页脚-->
-  <footer class="layout-footer">MIT © 2021-PRESENT {{ VITE_APP_TITLE }}</footer>
+  <footer class="layout-footer"> {{ VITE_APP_TITLE }}</footer>
 </template>
 
 <style lang="scss" scoped>
