@@ -85,21 +85,16 @@ const startDate = ref("")
 const endDate = ref("")
 const userId = 22 // 根据需求替换为实际的用户ID
 const userRole = "user"
+const apiUrl = "https://123.60.14.84/api/Order"
 
 const total = ref(0)
-// const currentPage = ref(1)
-// const pageSize = ref(5)
 const showEmptyMessage = ref(false) // 新增，用于控制是否显示“暂无订单数据”
 
 // 获取订单列表
 const fetchOrders = () => {
   axios
-    .get(`https://123.60.14.84/api/Order/role`, {
+    .get(`${apiUrl}/${userRole}/${userId}`, {
       params: {
-        role: userRole, // 角色类型替换为实际角色
-        Id: userId,
-        // page: currentPage.value,
-        // pageSize: pageSize.value,
         orderType: categoryFilter.value || undefined,
         statusType: statusFilter.value || undefined,
         start: startDate.value || undefined,
@@ -171,9 +166,7 @@ async function searchOrder() {
 
   try {
     // 调用后端 API 获取订单详情
-    const response = await axios.get(`https://123.60.14.84/api/Order/role/${orderId}`, {
-      params: { role: userRole, Id: userId }
-    })
+    const response = await axios.get(`${apiUrl}/${userRole}/${userId}/${orderId}`, {})
     // 处理搜索结果
     console.log("Order Details:", response.data)
     orders.value = [response.data] // 将搜索结果设置为订单列表
@@ -215,12 +208,7 @@ const filterOrdersByCategory = () => {
   }
   if (categoryFilter.value) {
     axios
-      .get(`https://123.60.14.84/api/Order/role/category/${categoryFilter.value}`, {
-        params: {
-          role: userRole,
-          Id: userId
-        }
-      })
+      .get(`${apiUrl}/${userRole}/${userId}/category/${categoryFilter.value}`, {})
       .then((response) => {
         if (response.data && response.data.length > 0) {
           orders.value = response.data
@@ -254,19 +242,14 @@ const filterOrdersByStatus = () => {
       statusFilter.value = "Pending"
       break
     case "已取消":
-      statusFilter.value = "Canceled"
+      statusFilter.value = "Cancelled"
       break
     default:
       statusFilter.value = ""
   }
   if (statusFilter.value) {
     axios
-      .get(`https://123.60.14.84/api/Order/role/status/${statusFilter.value}`, {
-        params: {
-          role: userRole,
-          Id: userId
-        }
-      })
+      .get(`${apiUrl}/${userRole}/${userId}/status/${statusFilter.value}`, {})
       .then((response) => {
         if (response.data && response.data.length > 0) {
           orders.value = response.data
@@ -292,10 +275,8 @@ const filterByDate = () => {
   endDate.value = date_input.value[1]
   if (startDate.value && endDate.value) {
     axios
-      .get(`https://123.60.14.84/api/Order/role/date-range`, {
+      .get(`${apiUrl}/${userRole}/${userId}/date-range`, {
         params: {
-          role: userRole,
-          Id: userId,
           start: startDate.value,
           end: endDate.value
         }
@@ -322,13 +303,16 @@ const filterByDate = () => {
 // 取消订单
 async function deleteOrder(orderId: number) {
   try {
-    const response = await axios.delete(`https://123.60.14.84/api/Order/role/${orderId}`, {
-      params: { role: userRole, Id: userId }
+    const response = await axios.delete(`${apiUrl}/${userRole}/${userId}/${orderId}`, {
+      headers: {
+        "Content-Type": "application/json"
+      }
     })
     // 直接使用 axios 解析好的数据
     const data = response.data
     console.log(data.message) // 显示成功消息
     alert(`订单号${orderId}的订单已取消.`)
+    fetchOrders() // 刷新订单列表
   } catch (error) {
     // 判断错误类型并处理
     if (axios.isAxiosError(error)) {
@@ -354,6 +338,46 @@ async function deleteOrder(orderId: number) {
   }
 }
 
+// 标记订单为已付款
+async function PayOrder(orderId: number) {
+  const url = `${apiUrl}/${userRole}/${userId}/${orderId}`
+  try {
+    const response = await axios.patch(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+
+    if (response.status === 200) {
+      console.log(response.data.Message) // 显示成功消息
+      alert(`订单号为${orderId}的订单已支付.`)
+      fetchOrders() // 刷新订单列表
+    }
+  } catch (error) {
+    // 判断错误类型并处理
+    if (axios.isAxiosError(error)) {
+      // 处理响应错误
+      if (error.response) {
+        // 请求已发出，服务器响应状态码不在2xx范围内
+        console.error("Error:", error.response.data.Message)
+        alert(`取消订单失败: ${error.response.data.Message}`)
+      } else if (error.request) {
+        // 请求已发出，但没有收到响应
+        console.error("Error:", error.request)
+        alert("付款时发生错误。")
+      } else {
+        // 其他错误
+        console.error("Error:", error.message)
+        alert("付款时发生错误。")
+      }
+    } else {
+      // 非 axios 错误
+      console.error("Error:", error)
+      alert("取消订单时发生错误。")
+    }
+  }
+}
+
 // 初次加载时获取订单
 onMounted(() => {
   console.log("Component mounted, fetching orders...")
@@ -367,7 +391,7 @@ const formatPayState = (status: string) => {
   const stateMap: Record<string, string> = {
     Pending: "待支付",
     Completed: "已支付",
-    Canceled: "已取消"
+    Cancelled: "已取消"
   }
   return stateMap[status] || "未知状态"
 }
@@ -414,8 +438,8 @@ const openPayment = (orderId: number) => {
     type: "warning",
     callback: (action: Action) => {
       if (action === "confirm") {
-        // Call deleteOrder after the payment is confirmed
-        deleteOrder(orderId)
+        // Call payOrder after the payment is confirmed
+        PayOrder(orderId)
         ElMessage({
           type: "success",
           message: "付款成功！"
@@ -542,102 +566,105 @@ function formatDate(dateString?: string): string {
       />
 
       <el-button type="primary" class="button" @click="filterOrdersByStatus"> 筛选 </el-button>
+      <div style="margin-bottom: 10px" />
     </div>
 
     <!-- Main container for displaying orders -->
-    <div class="main-container">
-      <div class="holder-container" v-if="orders.length === 0 || showEmptyMessage">
-        <el-empty description="暂无订单数据" />
-      </div>
-      <div v-else>
-        <div class="number-of-order">
-          <span>共 {{ orders.length }} 条订单记录</span>
+    <el-scrollbar height="600px">
+      <div class="main-container">
+        <div class="holder-container" v-if="orders.length === 0 || showEmptyMessage">
+          <el-empty description="暂无订单数据" />
         </div>
-        <!-- 订单列表 -->
-        <div class="order-item" v-for="order in orders" :key="order.orderId">
-          <div class="head">
-            <span v-if="order.orderDate">订单日期：{{ formatDate(order.orderDate) }}</span>
-            <span v-else>订单日期：无</span>
+        <div v-else>
+          <div class="number-of-order">
+            <span>共 {{ orders.length }} 条订单记录</span>
+          </div>
+          <!-- 订单列表 -->
+          <div class="order-item" v-for="order in orders" :key="order.orderId">
+            <div class="head">
+              <span v-if="order.orderDate">订单日期：{{ formatDate(order.orderDate) }}</span>
+              <span v-else>订单日期：无</span>
 
-            <span>订单编号：{{ order.orderId }}</span>
-            <span>订单类型：{{ formatCategory(order.orderType) }}</span>
-            <span>订单状态：{{ formatPayState(order.status) }}</span>
-          </div>
-          <div class="body">
-            <div class="column orders">
-              <!-- 根据订单类型显示不同的订单详情 -->
-              <!-- 导游订单 -->
-              <ul v-if="order.orderType === 'GuideOrder'">
-                <li>服务内容：{{ (order as GuideOrder).service }}</li>
-                <li>导游姓名：{{ (order as GuideOrder).guideName }}</li>
-                <li>导游性别：{{ (order as GuideOrder).guideGender }}</li>
-                <li>
-                  服务时间：{{ formatDate((order as GuideOrder).serviceBeginDate) }} 至
-                  {{ formatDate((order as GuideOrder).serviceEndDate) }}
-                </li>
-              </ul>
-              <ul v-if="order.orderType === 'HotelOrder'">
-                <li>酒店名称：{{ (order as HotelOrder).hotelName }}</li>
-                <li>所在城市：{{ (order as HotelOrder).cityName }}</li>
-                <li>入住日期：{{ formatDate((order as HotelOrder).checkInDate) }}</li>
-                <li>退房日期：{{ formatDate((order as HotelOrder).checkOutDate) }}</li>
-                <li>房型：{{ (order as HotelOrder).roomType }}</li>
-              </ul>
-              <ul v-if="order.orderType === 'ScenicOrder'">
-                <li>门票类型: {{ (order as ScenicOrder).ticketType }}</li>
-                <li>门票数量: {{ (order as ScenicOrder).ticketNumber }}</li>
-                <li>游玩日期: {{ formatDate((order as ScenicOrder).ticketDate) }}</li>
-                <li>景点名称：{{ (order as ScenicOrder).scenicSpotName }}</li>
-                <li>所在城市：{{ (order as ScenicOrder).cityName }}</li>
-              </ul>
-              <ul v-if="order.orderType === 'TourOrder'">
-                <li>旅行团编号：{{ (order as TourOrder).groupId }}</li>
-                <li>旅行目的地：{{ (order as TourOrder).groupName }}</li>
-                <li>导游编号：{{ (order as TourOrder).guideId }}</li>
-                <li>导游姓名：{{ (order as TourOrder).guideName }}</li>
-                <li>导游性别：{{ (order as TourOrder).guideGender }}</li>
-                <li>开始日期：{{ formatDate((order as TourOrder).startDate) }}</li>
-                <li>结束日期：{{ formatDate((order as TourOrder).endDate) }}</li>
-              </ul>
-              <ul v-if="order.orderType === 'VehicleOrder'">
-                <li>交通类型：{{ (order as VehicleOrder).vehicleType }}</li>
-                <li>出行票号：{{ (order as VehicleOrder).ticketId }}</li>
-                <li>出发时间：{{ formatDate((order as VehicleOrder).ticketDepartureTime) }}</li>
-                <li>到达时间：{{ formatDate((order as VehicleOrder).ticketArrivalTime) }}</li>
-                <li>
-                  起始站台：{{ (order as VehicleOrder).ticketDepartureCity }}市-{{
-                    (order as VehicleOrder).ticketDepartureStation
-                  }}
-                </li>
-                <li>
-                  目的站台：{{ (order as VehicleOrder).ticketArrivalCity }}市-{{
-                    (order as VehicleOrder).ticketArrivalStation
-                  }}
-                </li>
-                <li v-for="passenger in (order as VehicleOrder).passengers" :key="passenger.passengerId">
-                  乘客：{{ passenger.passengerName }} (ID: {{ passenger.passengerId }})
-                </li>
-              </ul>
+              <span>订单编号：{{ order.orderId }}</span>
+              <span>订单类型：{{ formatCategory(order.orderType) }}</span>
+              <span>订单状态：{{ formatPayState(order.status) }}</span>
             </div>
-            <div class="column state">
-              <!-- 根据订单状态显示不同的操作按钮 -->
-              <p v-if="order.status === 'Pending'">
-                <a href="javascript:;" class="pay" @click="openPayment(order.orderId)">立即付款</a>
-              </p>
-              <p v-if="order.status === 'Pending'">
-                <a href="javascript:;" class="del" @click="openCancel(order.orderId)">取消订单</a>
-              </p>
-              <p v-if="order.status === 'Completed'">
-                <a href="javascript:;" class="del" @click="openRefund(order.orderId)">申请退款</a>
-              </p>
-            </div>
-            <div class="column amount">
-              <p class="red">¥{{ order.price?.toFixed(2) }}</p>
+            <div class="body">
+              <div class="column orders">
+                <!-- 根据订单类型显示不同的订单详情 -->
+                <!-- 导游订单 -->
+                <ul v-if="order.orderType === 'GuideOrder'">
+                  <li>服务内容：{{ (order as GuideOrder).service }}</li>
+                  <li>导游姓名：{{ (order as GuideOrder).guideName }}</li>
+                  <li>导游性别：{{ (order as GuideOrder).guideGender }}</li>
+                  <li>
+                    服务时间：{{ formatDate((order as GuideOrder).serviceBeginDate) }} 至
+                    {{ formatDate((order as GuideOrder).serviceEndDate) }}
+                  </li>
+                </ul>
+                <ul v-if="order.orderType === 'HotelOrder'">
+                  <li>酒店名称：{{ (order as HotelOrder).hotelName }}</li>
+                  <li>所在城市：{{ (order as HotelOrder).cityName }}</li>
+                  <li>入住日期：{{ formatDate((order as HotelOrder).checkInDate) }}</li>
+                  <li>退房日期：{{ formatDate((order as HotelOrder).checkOutDate) }}</li>
+                  <li>房型：{{ (order as HotelOrder).roomType }}</li>
+                </ul>
+                <ul v-if="order.orderType === 'ScenicOrder'">
+                  <li>门票类型: {{ (order as ScenicOrder).ticketType }}</li>
+                  <li>门票数量: {{ (order as ScenicOrder).ticketNumber }}</li>
+                  <li>游玩日期: {{ formatDate((order as ScenicOrder).ticketDate) }}</li>
+                  <li>景点名称：{{ (order as ScenicOrder).scenicSpotName }}</li>
+                  <li>所在城市：{{ (order as ScenicOrder).cityName }}</li>
+                </ul>
+                <ul v-if="order.orderType === 'TourOrder'">
+                  <li>旅行团编号：{{ (order as TourOrder).groupId }}</li>
+                  <li>旅行目的地：{{ (order as TourOrder).groupName }}</li>
+                  <li>导游编号：{{ (order as TourOrder).guideId }}</li>
+                  <li>导游姓名：{{ (order as TourOrder).guideName }}</li>
+                  <li>导游性别：{{ (order as TourOrder).guideGender }}</li>
+                  <li>开始日期：{{ formatDate((order as TourOrder).startDate) }}</li>
+                  <li>结束日期：{{ formatDate((order as TourOrder).endDate) }}</li>
+                </ul>
+                <ul v-if="order.orderType === 'VehicleOrder'">
+                  <li>交通类型：{{ (order as VehicleOrder).vehicleType }}</li>
+                  <li>出行票号：{{ (order as VehicleOrder).ticketId }}</li>
+                  <li>出发时间：{{ formatDate((order as VehicleOrder).ticketDepartureTime) }}</li>
+                  <li>到达时间：{{ formatDate((order as VehicleOrder).ticketArrivalTime) }}</li>
+                  <li>
+                    起始站台：{{ (order as VehicleOrder).ticketDepartureCity }}市-{{
+                      (order as VehicleOrder).ticketDepartureStation
+                    }}
+                  </li>
+                  <li>
+                    目的站台：{{ (order as VehicleOrder).ticketArrivalCity }}市-{{
+                      (order as VehicleOrder).ticketArrivalStation
+                    }}
+                  </li>
+                  <li v-for="passenger in (order as VehicleOrder).passengers" :key="passenger.passengerId">
+                    乘客：{{ passenger.passengerName }} (ID: {{ passenger.passengerId }})
+                  </li>
+                </ul>
+              </div>
+              <div class="column state">
+                <!-- 根据订单状态显示不同的操作按钮 -->
+                <p v-if="order.status === 'Pending'">
+                  <a href="javascript:;" class="pay" @click="openPayment(order.orderId)">立即付款</a>
+                </p>
+                <p v-if="order.status === 'Pending'">
+                  <a href="javascript:;" class="del" @click="openCancel(order.orderId)">取消订单</a>
+                </p>
+                <p v-if="order.status === 'Completed'">
+                  <a href="javascript:;" class="del" @click="openRefund(order.orderId)">申请退款</a>
+                </p>
+              </div>
+              <div class="column amount">
+                <p class="red">¥{{ order.price?.toFixed(2) }}</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </el-scrollbar>
   </div>
 </template>
 
@@ -694,6 +721,7 @@ function formatDate(dateString?: string): string {
   margin-left: 10px;
   font-size: smaller;
   margin-bottom: 10px;
+  margin-top: -10px;
   color: #888;
 }
 .order-item {
