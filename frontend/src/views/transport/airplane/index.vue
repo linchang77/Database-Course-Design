@@ -1,20 +1,16 @@
 <script lang="ts" setup>
-//import { reactive } from "vue"
-
 defineOptions({
   name: "Airplane"
 })
 
-
-import { ref, computed, onMounted } from "vue"
+import { ref, computed } from "vue"
 import PlaceSelector from "./components/PlaceSelector.vue"
 import TimeSelector from "./components/TimeSelector.vue"
-import { useRouter } from "vue-router"
-
+import { useSearchResultsStore } from "@/store/modules/searchResults"
+import { storeToRefs } from 'pinia'
 const departure = ref("")
 const destination = ref("")
 const departureTime = ref("")
-const router = useRouter()
 
 const setDeparture = (val: any) => {
   departure.value = val[val.length - 1]
@@ -36,8 +32,13 @@ const isSearchDisabled = computed(() => {
 })
 
 import axios from "axios"
-// {
-//     {
+
+const store = useSearchResultsStore()
+const { searchResults } = storeToRefs(store)
+// let searchResults = toRefs(useSearchResultsStore().searchResults)
+
+// const searchResults = ref([
+//   {
 //     "vehicleId": "1234",
 //     "vehicleType": "plane",
 //     "vehicleModel": "波音373(中)",
@@ -51,39 +52,8 @@ import axios from "axios"
 //     "ticketType": "经济舱",
 //     "ticketPrice": 1479.0,
 //     "ticketRemaining": 100.0
-//     }
 //   }
-const searchResults = ref([
-  {
-    "vehicleId": "1234",
-    "vehicleType": "plane",
-    "vehicleModel": "波音373(中)",
-    "departureCity": "上海",
-    "arrivalCity": "北京",
-    "departureTime": "2024-08-18T08:10:00",
-    "arrivalTime": "2024-08-18T10:35:00",
-    "departureStation": "浦东国际机场T1",
-    "arrivalStation": "大兴国际机场",
-    "ticketId": 6.0,
-    "ticketType": "经济舱",
-    "ticketPrice": 1479.0,
-    "ticketRemaining": 100.0
-  }
-])
-
-
-
-const passengerInfo = ref({
-  name: "",
-  phone: "",
-  idCard: ""
-});
-
-const orderInfo = ref({
-  flight: searchResults.value[0], // 默认使用第一个航班
-  price: 2000,
-  quantity: 1
-});
+// ])
 
 async function fetchTickets() {
   const url = `https://123.60.14.84/api/Vehicle/info/plane,${destination.value},${departure.value},${encodeURIComponent(departureTime.value)}`
@@ -91,7 +61,7 @@ async function fetchTickets() {
   axios
     .get(url)
     .then((response) => {
-      searchResults.value = response.data
+      store.setSearchResults(response.data)
       console.log("searchResults:", response.data)
     })
     .catch((error) => {
@@ -99,21 +69,10 @@ async function fetchTickets() {
     })
 }
 
-function submit() {
-  console.log(searchResults.value)
+function recordIndex(index: number) {
+  store.index = index
+  console.log("index:", store.index)
 }
-
-function submitOrder() {
-  console.log("Submitting order:", passengerInfo.value, orderInfo.value)
-  goToOrderPage() // 跳转到订单页面
-}
-
-function goToOrderPage() {
-  console.log(router.currentRoute.value)
-  router.push('/order');
-  console.log(router.currentRoute.value)
-}
-
 </script>
 
 <template>
@@ -133,7 +92,6 @@ function goToOrderPage() {
 
     <div class="flight-list">
       <span>
-        <el-botton id="submit" type="primary" @click="submit">提交订单</el-botton>
         <el-card class="flight-card" shadow="hover" v-for="(flight, index) in searchResults" :key="index">
           <div index="0" class="flight-item">
             <div>
@@ -149,7 +107,6 @@ function goToOrderPage() {
                         <div class="plane">
                           <div class="plane">
                             <span class="plane-No">
-
                               <span class>{{ flight.vehicleModel }}</span>
                             </span>
                           </div>
@@ -182,7 +139,7 @@ function goToOrderPage() {
                     </div>
                   </div>
                   <div class="flight-price">{{ flight.ticketPrice }}</div>
-                  <el-button type="primary">
+                  <el-button type="primary" @click="recordIndex(index)">
                     <a href="http://localhost:3333/#/transport/airplane/order">购票</a>
                   </el-button>
                 </div>

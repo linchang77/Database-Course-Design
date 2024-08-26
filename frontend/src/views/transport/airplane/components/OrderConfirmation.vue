@@ -1,25 +1,22 @@
 <template>
   <el-form :model="orderInfo" label-width="120px">
     <el-form-item label="航班ID">
-      <span>{{ orderInfo.flight.vehicleId }}</span>
+      <span>{{ flight.vehicleId }}</span>
     </el-form-item>
     <el-form-item label="出发地">
-      <span>{{ orderInfo.flight.departureCity }}</span>
+      <span>{{ flight.departureCity }}</span>
     </el-form-item>
     <el-form-item label="目的地">
-      <span>{{ orderInfo.flight.arrivalCity }}</span>
+      <span>{{ flight.arrivalCity }}</span>
     </el-form-item>
     <el-form-item label="出发时间">
-      <span>{{ orderInfo.flight.departureTime }}</span>
+      <span>{{ flight.departureTime }}</span>
     </el-form-item>
     <el-form-item label="到达时间">
-      <span>{{ orderInfo.flight.arrivalTime }}</span>
+      <span>{{ flight.arrivalTime }}</span>
     </el-form-item>
     <el-form-item label="票价">
-      <span>{{ orderInfo.price }}元</span>
-    </el-form-item>
-    <el-form-item label="数量">
-      <el-input-number v-model="orderInfo.quantity" :min="1" :max="10" />
+      <span>{{ flight.ticketPrice }}元</span>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="$emit('submit')">下一步</el-button>
@@ -31,11 +28,29 @@
 import { ref } from 'vue'
 import { defineEmits } from 'vue'
 
-const orderInfo = ref({
-  flight: searchResults.value[0],
-  price: 2000,
-  quantity: 1
-});
+type Flight = {
+  vehicleId: string;
+  vehicleType: string;
+  vehicleModel: string;
+  departureCity: string;
+  arrivalCity: string;
+  departureTime: string;
+  arrivalTime: string;
+  departureStation: string;
+  arrivalStation: string;
+  ticketId: number;
+  ticketType: string;
+  ticketPrice: number;
+  ticketRemaining: number;
+};
+
+const orderInfo = defineProps({
+  flight: {
+    type: Object as () => Flight,
+    required: true
+  }
+})
+console.log("Order", orderInfo.flight)
 
 defineEmits(['submit']);
 </script>
