@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue"
+import { defineProps, onMounted, ref } from "vue"
+import { ElMessage, ElMessageBox } from 'element-plus'
+import type { Action } from 'element-plus'
 import { Search } from "@element-plus/icons-vue"
 import axios from "axios"
 
@@ -52,6 +54,11 @@ interface TourOrder extends BaseOrder {
   endDate?: string
 }
 
+interface Passenger {
+  passengerId: string
+  passengerName: string
+}
+
 interface VehicleOrder extends BaseOrder {
   orderType: "VehicleOrder"
   vehicleId?: string
@@ -65,6 +72,7 @@ interface VehicleOrder extends BaseOrder {
   ticketArrivalCity?: string
   ticketDepartureStation?: string
   ticketArrivalStation?: string
+  passengers: Passenger[]
 }
 
 type Order = GuideOrder | HotelOrder | ScenicOrder | TourOrder | VehicleOrder
@@ -147,7 +155,7 @@ const categoryFilter = ref("")
 const statusFilter = ref("")
 const startDate = ref("")
 const endDate = ref("")
-const userId = 1 // 根据需求替换为实际的用户ID
+const userId = 22 // 根据需求替换为实际的用户ID
 
 // 参数类型定义
 interface Params {
@@ -169,7 +177,7 @@ const fetchOrders = () => {
   axios
     .get(`https://123.60.14.84:11100/api/Order/role`, {
       params: {
-        role: "guide", // 角色类型替换为实际角色
+        role: "user", // 角色类型替换为实际角色
         Id: userId,
         page: params.value.page,
         pageSize: params.value.pageSize
@@ -218,11 +226,12 @@ const fetchOrders = () => {
 
 // 按订单ID搜索订单
 const searchOrder = () => {
+  searchQuery.value = order_id_input.value
   if (searchQuery.value) {
     axios
-      .get(`https://123.60.14.84:11100/api/Order/role/${searchQuery.value}`, {
+      .get(`https://123.60.14.84:11100/api/Order/role/orderid/${searchQuery.value}`, {
         params: {
-          role: "guide",
+          role: "user",
           Id: userId
         }
       })
@@ -237,8 +246,31 @@ const searchOrder = () => {
   }
 }
 
-// 按订单分类筛选订单
+// 按订单分类筛选订单ok
 const filterOrdersByCategory = () => {
+  categoryFilter.value = order_type_input.value
+  switch (order_type_input.value) {
+    case '全部订单':
+      categoryFilter.value = ''
+      break
+    case '导游':
+      categoryFilter.value = 'GuideOrder'
+      break
+    case '酒店':
+      categoryFilter.value = 'HotelOrder'
+      break
+    case '景点':
+      categoryFilter.value = 'ScenicOrder'
+      break
+    case '出行':
+      categoryFilter.value = 'VehicleOrder'
+      break
+    case '旅行团':
+      categoryFilter.value = 'TourOrder'
+      break
+    default:
+      categoryFilter.value = ''
+  }
   if (categoryFilter.value) {
     axios
       .get(`https://123.60.14.84:11100/api/Order/role/category/${categoryFilter.value}`, {
@@ -258,8 +290,24 @@ const filterOrdersByCategory = () => {
   }
 }
 
-// 按订单状态筛选订单
+// 按订单状态筛选订单ok
 const filterOrdersByStatus = () => {
+  switch (order_status_input.value) {
+    case '全部订单':
+      statusFilter.value = ''
+      break
+    case '已支付':
+      statusFilter.value = 'completed'
+      break
+    case '待支付':
+      statusFilter.value = 'pending'
+      break
+    case '已取消':
+      statusFilter.value = 'canceled'
+      break
+    default:
+      statusFilter.value = ''
+  }
   if (statusFilter.value) {
     axios
       .get(`https://123.60.14.84/api/Order/role/status/${statusFilter.value}`, {
@@ -279,8 +327,10 @@ const filterOrdersByStatus = () => {
   }
 }
 
-// 按时间段筛选订单
+// 按时间段筛选订单ok
 const filterByDate = () => {
+  startDate.value = date_input.value[0]
+  endDate.value = date_input.value[1]
   if (startDate.value && endDate.value) {
     axios
       .get(`https://123.60.14.84/api/Order/role/date-range`, {
@@ -302,7 +352,7 @@ const filterByDate = () => {
   }
 }
 
-// 删除订单
+// 取消订单
 const deleteOrder = (orderId: number) => {
   axios
     .delete(`https://123.60.14.84/api/Order/role/${orderId}`, {
@@ -344,9 +394,22 @@ const pageChange = (page: number) => {
 // 格式化订单状态显示
 const fomartPayState = (status: string) => {
   const stateMap: Record<string, string> = {
-    Pending: "待完成",
-    Completed: "已完成",
+    Pending: "待支付",
+    Completed: "已支付",
+    completed: "已支付",// 因为还没加约束所以加了这个
     Canceled: "已取消"
+  }
+  return stateMap[status] || "未知状态"
+}
+
+// 格式化订单分类显示
+const fomartCategory = (status: string) => {
+  const stateMap: Record<string, string> = {
+    GuideOrder: "导游",
+    HoterlOrder: "酒店",
+    ScenicOrder: "景点",
+    TourOrder: "旅行团",
+    VehicleOrder: "出行"
   }
   return stateMap[status] || "未知状态"
 }
@@ -387,6 +450,74 @@ const date_all_input = ref("")
 const date_pending_input = ref("")
 const date_completed_input = ref("")
 const date_canceled_input = ref("")
+
+
+// 确认付款弹窗
+const openPayment = () => {
+  ElMessageBox.confirm('确认要付款吗？', '付款确认', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning',
+    callback: (action: Action) => {
+      if (action === 'confirm') {
+        ElMessage({
+          type: 'success',
+          message: '付款成功！'
+        })
+      } else {
+        ElMessage({
+          type: 'info',
+          message: '付款已取消'
+        })
+      }
+    }
+  })
+}
+
+// 确认取消订单弹窗
+const openCancel = () => {
+  ElMessageBox.confirm('确认要取消订单吗？', '取消订单确认', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning',
+    callback: (action: Action) => {
+      if (action === 'confirm') {
+        ElMessage({
+          type: 'success',
+          message: '取消订单成功！'
+        })
+      } else {
+        ElMessage({
+          type: 'info',
+          message: '取消订单已取消'
+        })
+      }
+    }
+  })
+}
+
+//确认退款弹窗
+const openRefund = () => {
+  ElMessageBox.confirm('确认要退款吗？', '退款确认', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning',
+    callback: (action: Action) => {
+      if (action === 'confirm') {
+        ElMessage({
+          type: 'success',
+          message: '退款成功！'
+        })
+      } else {
+        ElMessage({
+          type: 'info',
+          message: '退款已取消'
+        })
+      }
+    }
+  })
+}
+
 </script>
 
 <template>
@@ -398,6 +529,7 @@ const date_canceled_input = ref("")
         style="width: 240px"
         placeholder="请输入订单号"
         :prefix-icon="Search"
+        @change="searchOrder"
       />
 
       <span class="word"> 订单状态 </span>
@@ -405,7 +537,7 @@ const date_canceled_input = ref("")
         v-model="order_status_input"
         placeholder="请选择订单状态"
         style="width: 240px"
-        @change=""
+        @change="filterOrdersByStatus"
       >
         <el-option v-for="item in status_options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
@@ -474,45 +606,7 @@ const date_canceled_input = ref("")
       </el-tab-pane>
 
       <!-- Other tabs similar to the first one with different inputs and bindings -->
-      <el-tab-pane label="待完成" name="second" class="filter_box_pending">
-        <div>
-          <span class="word"> 订单号 </span>
-          <el-input
-            v-model="order_id_pending_input"
-            style="width: 240px"
-            placeholder="请输入订单号"
-            :prefix-icon="Search"
-          />
-          <el-button type="primary" class="button" @click="searchOrder"> 搜索 </el-button>
-        </div>
-
-        <div>
-          <span class="word"> 订单类型 </span>
-          <el-select
-            v-model="value_pending"
-            placeholder="请选择订单类型"
-            style="width: 240px"
-            @change="filterOrdersByCategory"
-          >
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-
-          <span class="word"> 日期 </span>
-          <el-date-picker
-            v-model="date_pending_input"
-            type="daterange"
-            range-separator="To"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            size="default"
-            @change="filterByDate"
-          />
-
-          <el-button type="primary" class="button" @click="filterOrdersByStatus"> 筛选 </el-button>
-        </div>
-      </el-tab-pane>
-
-      <el-tab-pane label="已完成" name="third" class="filter_box_completed">
+      <el-tab-pane label="已支付" name="second" class="filter_box_pending">
         <div>
           <span class="word"> 订单号 </span>
           <el-input
@@ -538,6 +632,44 @@ const date_canceled_input = ref("")
           <span class="word"> 日期 </span>
           <el-date-picker
             v-model="date_completed_input"
+            type="daterange"
+            range-separator="To"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            size="default"
+            @change="filterByDate"
+          />
+
+          <el-button type="primary" class="button" @click="filterOrdersByStatus"> 筛选 </el-button>
+        </div>
+      </el-tab-pane>
+
+      <el-tab-pane label="待支付" name="third" class="filter_box_completed">
+        <div>
+          <span class="word"> 订单号 </span>
+          <el-input
+            v-model="order_id_pending_input"
+            style="width: 240px"
+            placeholder="请输入订单号"
+            :prefix-icon="Search"
+          />
+          <el-button type="primary" class="button" @click="searchOrder"> 搜索 </el-button>
+        </div>
+
+        <div>
+          <span class="word"> 订单类型 </span>
+          <el-select
+            v-model="value_pending"
+            placeholder="请选择订单类型"
+            style="width: 240px"
+            @change="filterOrdersByCategory"
+          >
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+
+          <span class="word"> 日期 </span>
+          <el-date-picker
+            v-model="date_pending_input"
             type="daterange"
             range-separator="To"
             start-placeholder="开始时间"
@@ -598,9 +730,11 @@ const date_canceled_input = ref("")
         <!-- 订单列表 -->
         <div class="order-item" v-for="order in orders" :key="order.orderId">
           <div class="head">
-            <span>订单日期：{{ order.orderDate }}</span>
+            <span v-if="order.orderDate">订单日期：{{ new Date(order.orderDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) }}</span>
+            <span v-else>订单日期：无</span>
+
             <span>订单编号：{{ order.orderId }}</span>
-            <span>订单类型：{{ order.orderType }}</span>
+            <span>订单类型：{{ fomartCategory(order.orderType) }}</span>
             <span>订单状态：{{ fomartPayState(order.status) }}</span>
           </div>
           <div class="body">
@@ -614,6 +748,7 @@ const date_canceled_input = ref("")
                 <li>
                   服务时间：{{ (order as GuideOrder).serviceBeginDate }} 至 {{ (order as GuideOrder).serviceEndDate }}
                 </li>
+
               </ul>
               <ul v-if="order.orderType === 'HotelOrder'">
                 <li>酒店名称：{{ (order as HotelOrder).hotelName }}</li>
@@ -643,37 +778,25 @@ const date_canceled_input = ref("")
                 <li>出行票号：{{ (order as VehicleOrder).ticketId }}</li>
                 <li>出发时间：{{ (order as VehicleOrder).ticketDepartureTime }}</li>
                 <li>到达时间：{{ (order as VehicleOrder).ticketArrivalTime }}</li>
-                <li>出发城市：{{ (order as VehicleOrder).ticketDepartureCity }}</li>
-                <li>目的城市：{{ (order as VehicleOrder).ticketArrivalCity }}</li>
-                <li>起始站台：{{ (order as VehicleOrder).ticketDepartureStation }}</li>
-                <li>目的站台：{{ (order as VehicleOrder).ticketArrivalStation }}</li>
+                <li>起始站台：{{ (order as VehicleOrder).ticketDepartureCity }}市-{{ (order as VehicleOrder).ticketDepartureStation }}</li>
+                <li>目的站台：{{ (order as VehicleOrder).ticketArrivalCity }}市-{{ (order as VehicleOrder).ticketArrivalStation }}</li>
+                <li v-for="passenger in (order as VehicleOrder).passengers" >
+                乘客：{{ passenger.passengerName }} (ID: {{ passenger.passengerId }})
+                </li>
               </ul>
             </div>
             <div class="column state">
-              <p>
-                <a href="javascript:;" class="green">查看详情</a>
-              </p>
               <!-- 根据订单状态显示不同的操作按钮 -->
               <p v-if="order.status === 'Pending'">
-                <a href="javascript:;" class="del">取消订单</a>
+                <p><a href="javascript:;" class="pay" @click="openPayment">立即付款</a></p>
+                <p><a href="javascript:;" class="del" @click="openCancel">取消订单</a></p>
               </p>
-              <p v-if="order.status === 'Completed'">
-                <a href="javascript:;" class="green">查看评价</a>
+              <p v-if="order.status === 'completed'">
+                <a href="javascript:;" class="del" @click="openRefund">申请退款</a>
               </p>
             </div>
             <div class="column amount">
               <p class="red">¥{{ order.price?.toFixed(2) }}</p>
-            </div>
-            <div class="column action">
-              <el-button v-if="order.status === 'Pending'" type="primary" size="small"> 立即付款 </el-button>
-              <el-button v-if="order.status === 'Completed'" type="primary" size="small"> 确认订单 </el-button>
-              <p><a href="javascript:;">查看详情</a></p>
-              <p>
-                <a href="javascript:;">再次预订</a>
-              </p>
-              <p>
-                <a href="javascript:;">联系客服</a>
-              </p>
             </div>
           </div>
         </div>
@@ -705,7 +828,7 @@ const date_canceled_input = ref("")
 .button {
   margin-left: 10px;
 }
-.word,
+.word,4
 .button {
   margin-left: 10px;
 }
@@ -864,14 +987,11 @@ const date_canceled_input = ref("")
         flex-direction: column; /* 垂直排列子元素 */
         justify-content: center; /* 子元素上下居中 */
         padding-bottom: 5%;
-        .green {
-          color: #27ba9b;
-          font-weight: bold; /* 加粗状态信息 */
+        .pay:hover {
+          color: #3498db;
         }
-        .del {
+        .del:hover {
           color: #ff4d4f; /* 使用鲜明的颜色显示删除操作 */
-          font-weight: bold;
-          cursor: pointer; /* 鼠标悬停时显示手型光标 */
         }
       }
 
@@ -882,24 +1002,9 @@ const date_canceled_input = ref("")
         justify-content: center; /* 子元素上下居中 */
         padding-bottom: 5%;
         .red {
-          color: #cf4444;
+          color: #3498db;
           font-weight: bold; /* 加粗金额信息 */
           font-size: larger;
-        }
-      }
-
-      &.action {
-        width: 140px;
-        display: flex; /* 使用flex布局 */
-        flex-direction: column; /* 垂直排列子元素 */
-        justify-content: center; /* 子元素上下居中 */
-
-        a {
-          display: block;
-
-          &:hover {
-            color: #27ba9b;
-          }
         }
       }
     }
