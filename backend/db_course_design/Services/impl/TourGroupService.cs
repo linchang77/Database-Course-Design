@@ -90,5 +90,57 @@ namespace db_course_design.Services.impl
                 }).ToList()
             });
         }
+
+        public async Task<bool> PurchaseTourGroupOrderAsync(PurchaseTourOrderRequest request, int number = 1)
+        {
+            if (request == null || request.GroupId == null || request.UserId == null)
+            {
+                throw new ArgumentException("旅行团ID和用户ID是必填项。");
+            }
+            byte groupId = (byte)request.GroupId.Value;
+            // 查找对应的旅行团
+            var tourGroup = await _context.TourGroups
+                .Include(t => t.GoTicket)
+                .Include(t => t.ReturnTicket)
+                .FirstOrDefaultAsync(t => t.GroupId == request.GroupId);
+
+            if (tourGroup == null)
+            {
+                throw new ArgumentException("未找到对应的旅行团。");
+            }
+
+            // 创建订单数据
+            var orderDatum = new OrderDatum
+            {
+                OrderType = "tour_group",
+                OrderDate = DateTime.UtcNow,
+                UserId = request.UserId,
+                Status = "Pending",
+                Price = tourGroup.GroupPrice,
+            };
+
+            // 将 OrderDatum 添加到上下文并保存，以生成 OrderId
+            _context.OrderData.Add(orderDatum);
+            await _context.SaveChangesAsync();
+
+            // 创建旅行团订单
+            var tourOrder = new TourOrder
+            {
+                GroupId = groupId,
+                OrderNumber = number,
+                OrderId = orderDatum.OrderId, // 设置 TourOrder 的外键 OrderId
+                Group = tourGroup, // 设置 Group 关系属性
+                Order = orderDatum // 设置 Order 关系属性
+            };
+
+            // 保存到数据库
+            _context.TourOrders.Add(tourOrder);
+
+            // 保存更改
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }
+ 

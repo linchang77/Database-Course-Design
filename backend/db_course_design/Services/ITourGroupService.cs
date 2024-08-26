@@ -9,7 +9,7 @@ namespace db_course_design.Services
     {
         Task<IEnumerable<TourGroupResponse>> SearchTourGroupsByCityAsync(SearchTourGroupRequest request);
         Task<IEnumerable<TourGroupResponse>> GetRecommendedTourGroupsAsync();
-
+        Task<bool> PurchaseTourGroupOrderAsync(PurchaseTourOrderRequest request, int number = 1);
     }
 }
 
