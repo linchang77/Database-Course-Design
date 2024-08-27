@@ -238,6 +238,7 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
                         {{ calculateTimeDifference(flight.departureTime, flight.arrivalTime).hours }}小时
                         {{ calculateTimeDifference(flight.departureTime, flight.arrivalTime).minutes }}分钟
                       </div>
+                      <div class="flight-seat">{{ flight.ticketType }}</div>
                     </div>
                   </div>
                   <div class="flight-price">¥{{ flight.ticketPrice }}</div>
@@ -371,7 +372,14 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
   margin-left: 70px;
   margin-right: 30px;
 }
-
+.flight-seat {
+  width: 40px;
+  flex: 1;
+  font-size: 25px;
+  color: gray;
+  margin-left: 20px;
+  margin-right: 10px;
+}
 .arrow-oneway {
   font-size: 20px;
   font-weight: bold;

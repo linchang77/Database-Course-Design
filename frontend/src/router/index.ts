@@ -313,26 +313,97 @@ export const constantRoutes: RouteRecordRaw[] = [
           title: "火车",
           keepAlive: true
         }
-      }
-    ]
-  },
-  {
-    path: "/transport/airplane",
-    component: Layouts,
-    meta: {
-      hidden: true
-    },
-    children: [
+      },
       {
-        path: "order", // 新增的子路由
-        component: () => import("@/views/transport/airplane/OrderPage.vue"), // 注意这里引用的是 OrderPage.vue 的路径
-        name: "Order",
-        meta: {
-          hidden: true
-        }
+        path: "airplane/order",
+        component: () => import("@/views/transport/airplane/OrderPage.vue"),
+
+      },
+      {
+        path: "bus/order",
+        component: () => import("@/views/transport/bus/OrderPage.vue"),
+
+      },
+      {
+        path: "train/order",
+        component: () => import("@/views/transport/train/OrderPage.vue"),
+
       }
     ]
   },
+  // {
+  //   path: "/transport/airplane",
+  //   component: Layouts,
+  //   meta: {
+  //     hidden: true
+  //   },
+  //   children: [
+  //     {
+  //       path: "order", // 新增的子路由
+  //       component: () => import("@/views/transport/airplane/OrderPage.vue"), // 注意这里引用的是 OrderPage.vue 的路径
+  //       name: "Order",
+  //       meta: {
+  //         hidden: true
+  //       }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: "/transport/airplane/order",
+  //   component: () => import("@/views/transport/airplane/OrderPage.vue"),
+  //   meta: {
+  //     hidden: true
+  //   },
+  // },
+  // {
+  //   path: "/transport/bus/order",
+  //   component: () => import("@/views/transport/bus/OrderPage.vue"),
+  //   meta: {
+  //     hidden: true
+  //   },
+  // },
+  // {
+  //   path: "/transport/train/order",
+  //   component: () => import("@/views/transport/train/OrderPage.vue"),
+  //   meta: {
+  //     hidden: true
+  //   },
+  // },
+
+  // {
+  //   path: "/transport/bus",
+  //   component: Layouts,
+  //   meta: {
+  //     hidden: true
+  //   },
+  //   children: [
+  //     {
+  //       path: "order", // 新增的子路由
+  //       component: () => import("@/views/transport/bus/OrderPage.vue"), // 注意这里引用的是 OrderPage.vue 的路径
+  //       name: "Order",
+  //       meta: {
+  //         hidden: true
+  //       }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: "/transport/train",
+  //   component: Layouts,
+  //   meta: {
+  //     hidden: true
+  //   },
+  //   children: [
+  //     {
+  //       path: "order", // 新增的子路由
+  //       component: () => import("@/views/transport/train/OrderPage.vue"), // 注意这里引用的是 OrderPage.vue 的路径
+  //       name: "Order",
+  //       meta: {
+  //         hidden: true
+  //       }
+  //     }
+  //   ]
+  // },
   // {
   //   path: "/hook-demo",
   //   component: Layouts,
