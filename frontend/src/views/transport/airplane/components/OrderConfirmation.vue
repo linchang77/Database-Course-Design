@@ -3,6 +3,9 @@
     <el-form-item label="航班ID">
       <span>{{ flight.vehicleId }}</span>
     </el-form-item>
+    <el-form-item label="飞机型号">
+      <span>{{ flight.vehicleModel }}</span>
+    </el-form-item>
     <el-form-item label="出发地">
       <span>{{ flight.departureCity }}</span>
     </el-form-item>
@@ -15,9 +18,19 @@
     <el-form-item label="到达时间">
       <span>{{ flight.arrivalTime }}</span>
     </el-form-item>
+    <el-form-item label="出发机场">
+      <span>{{ flight.departureStation }}</span>
+    </el-form-item>
+    <el-form-item label="到达机场">
+      <span>{{ flight.arrivalStation }}</span>
+    </el-form-item>
+    <el-form-item label="座位类型">
+      <span>{{ flight.ticketType }}</span>
+    </el-form-item>
     <el-form-item label="票价">
       <span>{{ flight.ticketPrice }}元</span>
     </el-form-item>
+
     <el-form-item>
       <el-button type="primary" @click="$emit('submit')">下一步</el-button>
     </el-form-item>
