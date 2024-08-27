@@ -56,8 +56,50 @@ const cities = [
   { value: "广州", label: "广州" },
 ]
 
-// 获取旅游团信息
+// 获取推荐旅游团
 const fetchTourGroups = () => {
+  axios
+    .get("https://123.60.14.84:10000/api/TourGroup/recommendedtours")
+    .then((response) => {
+      console.log("API Response:", response.data);
+      const data = response.data;
+      // 确保数据是数组，并将其存储到 tourGroups 中
+      if (Array.isArray(data)) {
+        tourGroups.value = data.map((group: any) => ({
+          groupId: group.groupId,
+          groupName: group.groupName,
+          groupPrice: group.groupPrice,
+          startDate: group.startDate,
+          endDate: group.endDate,
+          guideName: group.guideName,
+          imageUrl: imageMap[group.groupId],
+          tourItineraries: group.tourItineraries.map((itinerary: any) => ({
+            itineraryId: itinerary.itineraryId,
+            itineraryTime: itinerary.itineraryTime,
+            itineraryDuration: itinerary.itineraryDuration,
+            activities: itinerary.activities,
+            scenicSpotId: itinerary.scenicSpotId
+          })),
+          hotels: group.hotels.map((hotel: any) => ({
+            hotelId: hotel.hotelId,
+            hotelName: hotel.hotelName,
+            cityName: hotel.cityName,
+            hotelGrade: hotel.hotelGrade,
+            hotelLocation: hotel.hotelLocation,
+            hotelIntroduction: hotel.hotelIntroduction
+          }))
+        }));
+      } else {
+        console.error("Unexpected response format.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching tour groups:", error);
+    });
+};
+
+// 筛选 还没写！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+const fetchFilter = () => {
   axios
     .get("https://123.60.14.84:10000/api/TourGroup/search", {
       params: {
@@ -107,6 +149,7 @@ const goToGroup = (group: TourGroup) => {
   router.push({
     path: `/group-travel/groups/detail`,
     query: {
+      groupId: group.groupId.toString(),
       groupName: group.groupName,
       groupPrice: group.groupPrice.toString(),
       startDate: group.startDate,

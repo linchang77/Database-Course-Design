@@ -1,9 +1,17 @@
 <script lang="ts" setup>
+import axios from "axios";
+import { ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { ElMessage, ElMessageBox } from 'element-plus'
+import type { Action } from 'element-plus'
 // 定义路由
 const route = useRoute();
 
+// 双向绑定
+const number = ref("1")
+
 // 接收旅游团参数
+const groupId = Number(route.query.groupId);
 const groupName = route.query.groupName as string;
 const groupPrice = Number(route.query.groupPrice);
 const startDate = route.query.startDate as string;
@@ -37,9 +45,32 @@ const formatDuration = (timeString: string): string => {
   }else{
     return `${hours}小时`;
   }
-  
 };
 
+// 加入订单购物车
+const purchase = async () => {
+  const url = 'https://123.60.14.84/api/TourGroup/purchase';
+  try {
+    const response = await axios.post(url, {
+      userId: 22,
+      groupId: groupId
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': '*/*'
+      }
+    })
+    ElMessage({
+          type: "success",
+          message: "加入成功！"
+        })
+  } catch (error) {
+    ElMessage({
+          type: "info",
+          message: "加入失败！"
+        })
+  }
+};
 </script>
 
 <template>
@@ -48,10 +79,17 @@ const formatDuration = (timeString: string): string => {
       <div class="left-container">
         <p class="title1">{{ groupName }}</p>
         <img :src="imageUrl" alt="旅游团图片" />
-        <p class="price">{{ groupPrice }} 元起</p>
+        <p class="price">{{ groupPrice }} 元/人</p>
         <p>时间：{{ new Date(startDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) }} -- {{ new Date(endDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) }}</p>
         <p>导游: {{ guideName }}</p>
-        <button>nih</button>
+        <el-card class="ticket-box" shadow="hover">
+        <div style="display: flex; align-items: center;">
+          <p style="margin-right: 10px;">人数：</p>
+          <el-input-number v-model="number" :min="1" :max="100" style="margin-right: 2px;" /> 
+          <el-button type="primary" @click="purchase">加入订单购物车</el-button>
+        </div>
+</el-card>
+
       </div>
   
       <div class="right-container">
