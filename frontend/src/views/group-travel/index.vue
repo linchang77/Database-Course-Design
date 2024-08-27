@@ -135,8 +135,6 @@ const date_input=ref("")
 
 <template>
 <div>
-  <div class="group-travel-container">
-<div>
   <div class="group-filter-container">
     <div>
       <span class="word">出发地 </span>
