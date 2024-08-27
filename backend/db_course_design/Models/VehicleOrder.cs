@@ -7,11 +7,11 @@ public partial class VehicleOrder
 {
     public int OrderId { get; set; }
 
-    public decimal TicketId { get; set; }
-
-    public string TicketUserName { get; set; } = null!;
+    public decimal? TicketId { get; set; }
 
     public virtual OrderDatum Order { get; set; } = null!;
 
-    public virtual VehicleTicket Ticket { get; set; } = null!;
+    public virtual VehicleTicket? Ticket { get; set; }
+
+    public virtual ICollection<VehiclePassenger> VehiclePassengers { get; set; } = new List<VehiclePassenger>();
 }

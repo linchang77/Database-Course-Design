@@ -45,8 +45,6 @@ namespace db_course_design.Services.impl
 
         public string? TicketArrivalCity { get; set; }
 
-        public decimal TicketId { get; set; }
-
         public decimal? TicketRemaining { get; set; }
 
         public string? TicketDepartureStation { get; set; }
@@ -54,17 +52,60 @@ namespace db_course_design.Services.impl
         public string? TicketArrivalStation { get; set; }
     }
 
+    public class VehicleOrderRequest
+    {
+        public int OrderId { get; set; }
+
+        public decimal TicketId { get; set; }
+    }
+
+    public class VehiclePassengerRequest
+    {
+        public string PassengerId { get; set; } = null!;
+
+        public string? PassengerName { get; set; }
+    }
+
     public class VehicleService : IVehicleService
     {
         private readonly ModelContext _context;
-        private readonly MapperConfiguration _config;
-        private readonly IMapper _mapper;
+
+        public IMapper _mapper { get; }
 
         public VehicleService(ModelContext context)
         {
             _context = context;
-            _config = new MapperConfiguration(cfg => cfg.AddProfile<VehicleProfile>());
-            _mapper = _config.CreateMapper();
+            _mapper = (new MapperConfiguration(cfg => cfg.AddProfile<VehicleProfile>())).CreateMapper();
+        }
+
+        public async Task<VehicleSchedule?> GetVehicleScheduleAsync(string vehicleId)
+        {
+            var schedule = await _context.VehicleSchedules.FindAsync(vehicleId);
+
+            if (schedule == null)
+                return null;
+            return schedule;
+        }
+
+        public async Task<VehicleTicket?> GetVehicleTicketAsync(decimal ticketId)
+        {
+            var ticket = await _context.VehicleTickets.FindAsync(ticketId);
+
+            if (ticket == null) 
+                return null;
+            return ticket;
+        }
+
+        public async Task<List<VehicleTicket>> GetVehicleTicketsAsync(string vehicleId)
+        {
+            var schedule =  await _context.VehicleSchedules
+                .Where(v => v.VehicleId == vehicleId)
+                .Include(v => v.VehicleTickets)
+                .FirstOrDefaultAsync();
+
+            if (schedule == null)
+                return new List<VehicleTicket>();
+            return schedule.VehicleTickets.ToList();
         }
 
         public async Task<List<VehicleResponse>> GetVehicleInfoAsync(string type, string arrivalCity, string departureCity, DateTime departureTime)
@@ -117,9 +158,40 @@ namespace db_course_design.Services.impl
             }
         }
 
+        public async Task<VehicleOrder?> AddVehicleOrderAsync(VehicleOrderRequest request)
+        {
+            try
+            {
+                var order = _mapper.Map<VehicleOrder>(request);
+                _context.VehicleOrders.Add(order);
+                await _context.SaveChangesAsync();
+                return order;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<VehiclePassenger?> AddVehiclePassengerAsync(VehiclePassengerRequest request, int orderId)
+        {
+            try
+            {
+                var passenger = _mapper.Map<VehiclePassenger>(request);
+                passenger.OrderId = orderId;
+                _context.VehiclePassengers.Add(passenger);
+                await _context.SaveChangesAsync();
+                return passenger;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task<bool> RemoveVehicleScheduleAsync(string vehicleId)
         {
-            var target = await _context.VehicleSchedules.SingleOrDefaultAsync(v => v.VehicleId == vehicleId);
+            var target = await _context.VehicleSchedules.FindAsync(vehicleId);
 
             if (target == null)
                 return false;
@@ -131,12 +203,80 @@ namespace db_course_design.Services.impl
 
         public async Task<bool> RemoveVehicleTicketAsync(decimal ticketId)
         {
-            var target = await _context.VehicleTickets.SingleOrDefaultAsync(v => v.TicketId == ticketId);
+            var target = await _context.VehicleTickets.FindAsync(ticketId);
 
             if (target == null)
                 return false;
 
             _context.VehicleTickets.Remove(target);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RemoveVehicleOrderAsync(int orderId)
+        {
+            var target = await _context.VehicleOrders.FindAsync(orderId);
+
+            if (target == null)
+                return false;
+
+            _context.VehicleOrders.Remove(target);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RemoveVehiclePassengerAsync(int orderId, string passengerId)
+        {
+            var passenger = await _context.VehiclePassengers.FindAsync(orderId, passengerId);
+            var order = await _context.VehicleOrders
+                .Where(o => o.OrderId == orderId)
+                .Include(o => o.Order)
+                .Include(o => o.Ticket)
+                .SingleOrDefaultAsync();
+
+            if (passenger == null || order == null)
+                return false;
+
+            Console.WriteLine(order.Order.ToString());
+
+            order.Order.Price -= order.Ticket.TicketPrice;
+            _context.VehiclePassengers.Remove(passenger);
+            await _context.SaveChangesAsync();
+            if ((await _context.VehiclePassengers.CountAsync(p => p.OrderId == orderId)) <= 0)
+            {
+                await RemoveVehicleOrderAsync(orderId);
+                await RemoveOrderDatumAsync(orderId);
+            }         
+            return true;
+        }
+
+        public async Task<OrderDatum?> AddOrderDatumAsync(int userId, decimal price)
+        {
+            var order = new OrderDatum
+            {
+                OrderType = "vehicle",
+                OrderDate = DateTime.Now,
+                UserId = userId,
+                Status = "Pending",
+                Price = price
+            };
+
+            _context.OrderData.Add(order);
+            await _context.SaveChangesAsync();
+            return order;
+        }
+
+        public async Task<bool> RemoveOrderDatumAsync(int orderId)
+        {
+            if (await _context.VehicleOrders.FindAsync(orderId) != null) 
+                return false;
+
+            var target = await _context.OrderData.FindAsync(orderId);
+
+            if (target == null)
+                return false;
+
+            target.Status = "Cancelled";
             await _context.SaveChangesAsync();
             return true;
         }

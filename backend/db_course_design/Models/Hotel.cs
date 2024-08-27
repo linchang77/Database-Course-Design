@@ -20,4 +20,6 @@ public partial class Hotel
     public virtual City? CityNameNavigation { get; set; }
 
     public virtual ICollection<HotelRoomType> HotelRoomTypes { get; set; } = new List<HotelRoomType>();
+
+    public virtual ICollection<TourGroup> Groups { get; set; } = new List<TourGroup>();
 }

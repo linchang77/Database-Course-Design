@@ -1,0 +1,146 @@
+﻿using db_course_design.DTOs;
+using EntityFramework.Models;
+using Microsoft.EntityFrameworkCore;
+using db_course_design.Common;
+namespace db_course_design.Services.impl
+{
+    public class TourGroupService : ITourGroupService
+    {
+        private readonly ModelContext _context;
+        public TourGroupService(ModelContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<TourGroupResponse>> SearchTourGroupsByCityAsync(SearchTourGroupRequest request)
+        {
+            var query = _context.TourGroups
+                .Include(tg => tg.Guide)
+                .Include(tg => tg.TourItineraries)
+                .Include(tg => tg.Hotels)
+                .Where(tg => tg.Departure == request.Departure &&
+                       tg.Destination == request.Destination &&
+                       (request.Departure_Time == null || tg.StartDate >= request.Departure_Time) &&
+                       (request.Days_of_Travel == 0 || tg.EndDate <= tg.StartDate.Value.AddDays(request.Days_of_Travel))
+                             );
+
+            var tourGroups = await query.ToListAsync();
+
+            return tourGroups.Select(tg => new TourGroupResponse
+            {
+                GroupId = tg.GroupId,
+                GroupName = tg.GroupName,
+                GroupPrice = tg.GroupPrice,
+                StartDate = tg.StartDate,
+                EndDate = tg.EndDate,
+                GuideName = tg.Guide?.GuideName,
+                TourItineraries = tg.TourItineraries.Select(ti => new TourItinerary
+                {
+                    ItineraryId = ti.ItineraryId,
+                    ItineraryTime = ti.ItineraryTime,
+                    ItineraryDuration = ti.ItineraryDuration,
+                    Activities = ti.Activities,
+                    ScenicSpotId = ti.ScenicSpotId
+                }).ToList(),
+                Hotels = tg.Hotels.Select(h => new Hotel
+                {
+                    HotelId = h.HotelId,
+                    HotelName = h.HotelName,
+                    CityName = h.CityName,
+                    HotelGrade = h.HotelGrade,
+                    HotelLocation = h.HotelLocation,
+                    HotelIntroduction = h.HotelIntroduction
+                }).ToList()
+            });
+        }
+
+        public async Task<IEnumerable<TourGroupResponse>> GetRecommendedTourGroupsAsync()
+        {
+            var recommendedGroups = await _context.TourGroups
+                .Include(tg => tg.Guide)
+                .Include(tg => tg.TourItineraries)
+                .Include(tg => tg.Hotels)
+                .OrderBy(tg => tg.GroupPrice) // 假设推荐规则是按最低价格排序
+                .ToListAsync();
+
+            return recommendedGroups.Select(tg => new TourGroupResponse
+            {
+                GroupId = tg.GroupId,
+                GroupName = tg.GroupName,
+                GroupPrice = tg.GroupPrice,
+                StartDate = tg.StartDate,
+                EndDate = tg.EndDate,
+                GuideName = tg.Guide?.GuideName,
+                TourItineraries = tg.TourItineraries.Select(ti => new TourItinerary
+                {
+                    ItineraryId = ti.ItineraryId,
+                    ItineraryTime = ti.ItineraryTime,
+                    ItineraryDuration = ti.ItineraryDuration,
+                    Activities = ti.Activities,
+                    ScenicSpotId = ti.ScenicSpotId
+                }).ToList(),
+                Hotels = tg.Hotels.Select(h => new Hotel
+                {
+                    HotelId = h.HotelId,
+                    HotelName = h.HotelName,
+                    CityName = h.CityName,
+                    HotelGrade = h.HotelGrade,
+                    HotelLocation = h.HotelLocation,
+                    HotelIntroduction = h.HotelIntroduction
+                }).ToList()
+            });
+        }
+
+        public async Task<bool> PurchaseTourGroupOrderAsync(PurchaseTourOrderRequest request, int number = 1)
+        {
+            if (request == null || request.GroupId == null || request.UserId == null)
+            {
+                throw new ArgumentException("旅行团ID和用户ID是必填项。");
+            }
+            byte groupId = (byte)request.GroupId.Value;
+            // 查找对应的旅行团
+            var tourGroup = await _context.TourGroups
+                .Include(t => t.GoTicket)
+                .Include(t => t.ReturnTicket)
+                .FirstOrDefaultAsync(t => t.GroupId == request.GroupId);
+
+            if (tourGroup == null)
+            {
+                throw new ArgumentException("未找到对应的旅行团。");
+            }
+
+            // 创建订单数据
+            var orderDatum = new OrderDatum
+            {
+                OrderType = "tour_group",
+                OrderDate = DateTime.UtcNow,
+                UserId = request.UserId,
+                Status = "Pending",
+                Price = tourGroup.GroupPrice,
+            };
+
+            // 将 OrderDatum 添加到上下文并保存，以生成 OrderId
+            _context.OrderData.Add(orderDatum);
+            await _context.SaveChangesAsync();
+
+            // 创建旅行团订单
+            var tourOrder = new TourOrder
+            {
+                GroupId = groupId,
+                OrderNumber = number,
+                OrderId = orderDatum.OrderId, // 设置 TourOrder 的外键 OrderId
+                Group = tourGroup, // 设置 Group 关系属性
+                Order = orderDatum // 设置 Order 关系属性
+            };
+
+            // 保存到数据库
+            _context.TourOrders.Add(tourOrder);
+
+            // 保存更改
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+    }
+}
+ 

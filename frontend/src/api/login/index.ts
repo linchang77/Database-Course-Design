@@ -10,11 +10,26 @@ export function getLoginCodeApi() {
 }
 
 /** 登录并返回 Token */
-export function loginApi(data: Login.LoginRequestData) {
+export function loginApi(data: Login.LoginRequestData, apiEndpoint: string) {
   return request<Login.LoginResponseData>({
-    url: "users/login",
+    url: `https://123.60.14.84/api/auth/${apiEndpoint}`,
     method: "post",
     data
+  });
+}
+/** 注册并返回 Token */
+export function registerApi(data: Login.LoginRequestData, apiEndpoint: string) {
+  return request<Login.LoginResponseData>({
+    url: `https://123.60.14.84/api/auth/${apiEndpoint}`,
+    method: "post",
+    data
+  })
+}
+
+export function getUserIdApi(data: Login.UserIdRequestData) {
+  return request<Login.UserIdResponseData>({
+    url: `https://123.60.14.84/api/auth/id/${data.username},${data.role}`,
+    method: "get"
   })
 }
 

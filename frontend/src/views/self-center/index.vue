@@ -9,8 +9,8 @@ const text = ref("")
 </script>
 
 <template>
-  <!-- <div class="app-container">
+  <div class="app-container">
     <el-card header="个人信息">
     </el-card>
-  </div> -->
+  </div>
 </template>

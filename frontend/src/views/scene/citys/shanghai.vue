@@ -1,121 +1,132 @@
 <script lang="ts" setup>
-import { ref } from "vue";
-import axios from "axios";
+import { ref } from "vue"
+import axios from "axios"
+import { useRouter } from "vue-router"
 
 defineOptions({
   name: "Shanghai"
-});
+})
 
 // 定义景点对象的接口
 interface Attraction {
-  scenicSpotId: string;
-  scenicSpotName: string;
-  scenicSpotGrade: string;
-  scenicSpotIntroduction: string;
-  scenicSpotLocation: string;
+  scenicSpotId: string
+  scenicSpotName: string
+  scenicSpotGrade: string
+  scenicSpotIntroduction: string
+  scenicSpotLocation: string
 }
 
-const currentPage = ref('home');
-const attractions = ref<Attraction[]>([]);
+const router = useRouter()
+const currentPage = ref("home")
+const attractions = ref<Attraction[]>([])
 
-const searchQuery = ref('');
-const starFilter = ref('全部');
-const distanceFilter = ref('全部');
+const searchQuery = ref("")
+const starFilter = ref("全部")
+const distanceFilter = ref("全部")
 
 const navigateTo = (page: string) => {
-  currentPage.value = page;
-};
+  currentPage.value = page
+}
 
-const starOptions = ['全部', '1', '2', '3', '4', '5'];
-const distanceOptions = ['全部', '2km内', '2-5km', '5-20km', '20km以上'];
+const starOptions = ["全部", "1", "2", "3", "4", "5"]
+const distanceOptions = ["全部", "2km内", "2-5km", "5-20km", "20km以上"]
 
 const fetchAttractions = () => {
-  axios.get<Attraction[]>(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent('上海')}`)
-    .then(response => {
-      let filteredAttractions = response.data;
+  axios
+    .get<Attraction[]>(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent("上海")}`)
+    .then((response) => {
+      let filteredAttractions = response.data
 
       // 星级筛选
-      if (starFilter.value !== '全部') {
-        filteredAttractions = filteredAttractions.filter(attraction => 
-          attraction.scenicSpotGrade === starFilter.value
-        );
+      if (starFilter.value !== "全部") {
+        filteredAttractions = filteredAttractions.filter(
+          (attraction) => attraction.scenicSpotGrade === starFilter.value
+        )
       }
 
       // 距离筛选
-      if (distanceFilter.value !== '全部') {
-        filteredAttractions = filteredAttractions.filter(attraction => {
-          const distance = parseFloat(attraction.scenicSpotLocation);
+      if (distanceFilter.value !== "全部") {
+        filteredAttractions = filteredAttractions.filter((attraction) => {
+          const distance = parseFloat(attraction.scenicSpotLocation)
           switch (distanceFilter.value) {
-            case '2km内':
-              return distance <= 2;
-            case '2-5km':
-              return distance > 2 && distance <= 5;
-            case '5-20km':
-              return distance > 5 && distance <= 20;
-            case '20km以上':
-              return distance > 20;
+            case "2km内":
+              return distance <= 2
+            case "2-5km":
+              return distance > 2 && distance <= 5
+            case "5-20km":
+              return distance > 5 && distance <= 20
+            case "20km以上":
+              return distance > 20
             default:
-              return true;
+              return true
           }
-        });
+        })
       }
 
-      attractions.value = filteredAttractions;
+      attractions.value = filteredAttractions
     })
-    .catch(error => {
+    .catch((error) => {
       if (error.response && error.response.status === 404) {
-        attractions.value = [];
+        attractions.value = []
       } else {
-        console.error(error);
+        console.error(error)
       }
-    });
-};
+    })
+}
 
-fetchAttractions();
+fetchAttractions()
 
 const searchAttraction = () => {
   if (searchQuery.value) {
     if (!isNaN(Number(searchQuery.value))) {
-      axios.get<Attraction>(`https://123.60.14.84/api/ScenicSpot/id/${searchQuery.value}`)
-        .then(response => {
-          attractions.value = response.data ? [response.data] : [];
+      axios
+        .get<Attraction>(`https://123.60.14.84/api/ScenicSpot/id/${searchQuery.value}`)
+        .then((response) => {
+          attractions.value = response.data ? [response.data] : []
         })
-        .catch(error => {
+        .catch((error) => {
           if (error.response && error.response.status === 404) {
-            attractions.value = [];
+            attractions.value = []
           } else {
-            console.error(error);
+            console.error(error)
           }
-        });
+        })
     } else {
-      axios.get<Attraction[]>(`https://123.60.14.84/api/ScenicSpot/name/${encodeURIComponent(searchQuery.value)}`)
-        .then(response => {
-          attractions.value = response.data ? response.data : [];
+      axios
+        .get<Attraction[]>(`https://123.60.14.84/api/ScenicSpot/name/${encodeURIComponent(searchQuery.value)}`)
+        .then((response) => {
+          attractions.value = response.data ? response.data : []
         })
-        .catch(error => {
+        .catch((error) => {
           if (error.response && error.response.status === 404) {
-            attractions.value = [];
+            attractions.value = []
           } else {
-            console.error(error);
+            console.error(error)
           }
-        });
+        })
     }
   } else {
-    fetchAttractions();
+    fetchAttractions()
   }
-};
+}
 
 const setStarFilter = (option: string) => {
-  starFilter.value = option;
-  fetchAttractions();
-};
+  starFilter.value = option
+  fetchAttractions()
+}
 
 const setDistanceFilter = (option: string) => {
-  distanceFilter.value = option;
-  fetchAttractions();
-};
-</script>
+  distanceFilter.value = option
+  fetchAttractions()
+}
 
+const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, scenicSpotId: string) => {
+  router.push({
+    path: "shanghai/tickets",
+    query: { name: scenicSpotName, introduction: scenicSpotIntroduction, id: scenicSpotId }
+  })
+}
+</script>
 
 <template>
   <div class="app-container">
@@ -123,38 +134,41 @@ const setDistanceFilter = (option: string) => {
       <div class="title">上海</div>
       <div class="title1">SHANGHAI</div>
       <nav class="nav">
-        <button 
-          v-for="page in ['home', 'attractions', 'accommodation']" 
-          :key="page" 
-          :class="{ active: currentPage === page }" 
-          @click="navigateTo(page)">
-          {{ page === 'home' ? '首页' : page === 'attractions' ? '景点' : '住宿' }}
+        <button
+          v-for="page in ['home', 'attractions', 'accommodation']"
+          :key="page"
+          :class="{ active: currentPage === page }"
+          @click="navigateTo(page)"
+        >
+          {{ page === "home" ? "首页" : page === "attractions" ? "景点" : "住宿" }}
         </button>
       </nav>
     </header>
 
     <div v-if="currentPage === 'attractions'" class="filters-container">
       <div class="search-bar">
-        <input type="text" v-model="searchQuery" placeholder="输入景点名称或ID进行搜索">
+        <input type="text" v-model="searchQuery" placeholder="输入景点名称或ID进行搜索" />
         <button @click="searchAttraction">搜索</button>
       </div>
       <div class="filter-row">
         <span>星级：</span>
-        <button 
-          v-for="option in starOptions" 
-          :key="option" 
-          :class="{ active: starFilter === option }" 
-          @click="setStarFilter(option)">
+        <button
+          v-for="option in starOptions"
+          :key="option"
+          :class="{ active: starFilter === option }"
+          @click="setStarFilter(option)"
+        >
           {{ option }}
         </button>
       </div>
       <div class="filter-row">
         <span>距离：</span>
-        <button 
-          v-for="option in distanceOptions" 
-          :key="option" 
-          :class="{ active: distanceFilter === option }" 
-          @click="setDistanceFilter(option)">
+        <button
+          v-for="option in distanceOptions"
+          :key="option"
+          :class="{ active: distanceFilter === option }"
+          @click="setDistanceFilter(option)"
+        >
           {{ option }}
         </button>
       </div>
@@ -162,14 +176,22 @@ const setDistanceFilter = (option: string) => {
 
     <main class="main-content">
       <div v-if="currentPage === 'home'">
-        <img src="/images/shanghai.jpg" alt="Shanghai" class="home-image"/>
+        <img src="/images/shanghai.jpg" alt="Shanghai" class="home-image" />
       </div>
       <div v-if="currentPage === 'attractions'" class="attractions-grid">
-        <div v-if="attractions.length === 0" class="no-results">
-          无结果
-        </div>
-        <div v-else v-for="attraction in attractions" :key="attraction.scenicSpotId" class="attraction-card">
-          <img :src="`/images/${encodeURIComponent(attraction.scenicSpotName)}.jpg`" alt="attraction.scenicSpotName" class="attraction-image">
+        <div v-if="attractions.length === 0" class="no-results">无结果</div>
+        <div
+          v-else
+          v-for="attraction in attractions"
+          :key="attraction.scenicSpotId"
+          class="attraction-card"
+          @click="goToAttraction(attraction.scenicSpotName, attraction.scenicSpotIntroduction, attraction.scenicSpotId)"
+        >
+          <img
+            :src="`/images/${encodeURIComponent(attraction.scenicSpotName)}.jpg`"
+            alt="attraction.scenicSpotName"
+            class="attraction-image"
+          />
           <div class="attraction-info">
             <h3>{{ attraction.scenicSpotName }}</h3>
             <p>{{ attraction.scenicSpotGrade }}A</p>
@@ -214,7 +236,9 @@ const setDistanceFilter = (option: string) => {
   border: none;
   background-color: transparent;
   cursor: pointer;
-  transition: color 0.3s ease, border-bottom 0.3s ease;
+  transition:
+    color 0.3s ease,
+    border-bottom 0.3s ease;
 }
 
 .nav button:hover,
@@ -271,7 +295,9 @@ const setDistanceFilter = (option: string) => {
   border: 1px solid #ccc;
   background-color: white;
   cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .filter-row button.active {
@@ -330,6 +356,14 @@ const setDistanceFilter = (option: string) => {
 .attraction-info p {
   margin: 5px 0;
   color: #555;
+}
+
+.no-results {
+  grid-column: span 3;
+  text-align: center;
+  font-size: 18px;
+  color: #777;
+  margin-top: 20px;
 }
 
 .no-results {
