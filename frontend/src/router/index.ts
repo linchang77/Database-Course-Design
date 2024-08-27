@@ -317,7 +317,60 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    children: [
+      {
+        path: "hotel",
+        component: () => import("@/views/hotel/index.vue"),
+        name: "Hotel",
+        meta: {
+          title: "酒店",
+          svgIcon: "hotel",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/hotel",
+    component: Layouts,
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: "detail",
+        component: () => import("@/views/hotel/detail.vue"),
+        name: "Detail",
+        meta: {
+          title: "酒店详情",
+          hidden: true
+        }
+      },
+      {
+        path: "room",
+        component: () => import("@/views/hotel/room.vue"),
+        name: "Room",
+        meta: {
+          title: "酒店房型",
+          hidden: true
+        }
+      },
+      {
+        path: "order",
+        component: () => import("@/views/hotel/order.vue"),
+        name: "Order",
+        meta: {
+          title: "酒店订单",
+          hidden: true
+        }
+      },
+    ]
   }
+
   // {
   //   path: "/permission",
   //   component: Layouts,
