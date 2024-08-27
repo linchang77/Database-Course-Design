@@ -189,25 +189,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
   {
     path: "/",
     component: Layouts,
-    meta:{
-      roles: ["user","admin"]
-    },
-    children: [
-      {
-        path: "free-travel",
-        component: () => import("@/views/free-travel/index.vue"),
-        name: "Free-travel",
-        meta: {
-          title: "自由行",
-          svgIcon: "free-travel",
-          affix: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    component: Layouts,
     children: [
       {
         path: "self-center",
