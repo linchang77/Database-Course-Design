@@ -572,7 +572,7 @@ public partial class ModelContext : DbContext
 
         modelBuilder.Entity<ScenicSpotTicket>(entity =>
         {
-            entity.HasKey(e => new { e.ScenicSpotId, e.TicketType, e.TicketDate }).HasName("SCENIC_SPOT_ID_AND_TICKET_TYPE_AS_PK_OF_SCENIC_SPOT_TICKET");
+            entity.HasKey(e => new { e.ScenicSpotId, e.TicketType, e.TicketDate }).HasName("SCENIC_SPOT_ID_AND_TICKET_TYPE_AND_TICKET_DATE_AS_PK_OF_SCENIC_SPOT_TICKET");
 
             entity.ToTable("SCENIC_SPOT_TICKET");
 

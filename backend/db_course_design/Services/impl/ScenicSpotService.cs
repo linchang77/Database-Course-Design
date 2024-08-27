@@ -18,6 +18,19 @@ namespace db_course_design.Services.impl
         public string? ScenicSpotLocation { get; set; }
     }
 
+    public class ScenicSpotTicketRequest
+    {
+        public decimal ScenicSpotId { get; set; }
+
+        public string TicketType { get; set; } = null!;
+
+        public decimal? TicketPrice { get; set; }
+
+        public decimal? TicketRemaining { get; set; }
+
+        public DateTime TicketDate { get; set; }
+    }
+
     public class ScenicSpotService : IScenicSpotService
     {
         private readonly ModelContext _context;
@@ -39,15 +52,13 @@ namespace db_course_design.Services.impl
                     ScenicSpotGrade = s.ScenicSpotGrade,
                     ScenicSpotIntroduction = s.ScenicSpotIntroduction,
                     ScenicSpotLocation = s.ScenicSpotLocation,
-                    CityNameNavigation = s.CityNameNavigation,
-                    ScenicSpotTickets = s.ScenicSpotTickets
                 })
                 .ToListAsync();
 
             return scenicSpots.Any() ? scenicSpots : null;
         }
 
-        public async Task<ScenicSpotResponse> GetScenicSpotByIdAsync(decimal scenicSpotId)
+        public async Task<ScenicSpotResponse?> GetScenicSpotByIdAsync(decimal scenicSpotId)
         {
             var scenicSpot = await _context.ScenicSpots
                 .FirstOrDefaultAsync(s => s.ScenicSpotId == scenicSpotId);
@@ -65,8 +76,6 @@ namespace db_course_design.Services.impl
                     ScenicSpotGrade = scenicSpot.ScenicSpotGrade,
                     ScenicSpotIntroduction = scenicSpot.ScenicSpotIntroduction,
                     ScenicSpotLocation = scenicSpot.ScenicSpotLocation,
-                    CityNameNavigation = scenicSpot.CityNameNavigation,
-                    ScenicSpotTickets = scenicSpot.ScenicSpotTickets
                 };
         }
 
@@ -82,12 +91,10 @@ namespace db_course_design.Services.impl
                     ScenicSpotGrade = s.ScenicSpotGrade,
                     ScenicSpotIntroduction = s.ScenicSpotIntroduction,
                     ScenicSpotLocation = s.ScenicSpotLocation,
-                    CityNameNavigation = s.CityNameNavigation,
-                    ScenicSpotTickets = s.ScenicSpotTickets
                 })
                 .ToListAsync();
 
-            return scenicSpots.Any() ? scenicSpots : null;
+            return scenicSpots;
         }
 
         public async Task<IEnumerable<ScenicSpotResponse>> GetScenicSpotsByGradeAsync(string city, string grade)
@@ -102,12 +109,10 @@ namespace db_course_design.Services.impl
                     ScenicSpotGrade = s.ScenicSpotGrade,
                     ScenicSpotIntroduction = s.ScenicSpotIntroduction,
                     ScenicSpotLocation = s.ScenicSpotLocation,
-                    CityNameNavigation = s.CityNameNavigation,
-                    ScenicSpotTickets = s.ScenicSpotTickets
                 })
                 .ToListAsync();
 
-            return scenicSpots.Any() ? scenicSpots : null;
+            return scenicSpots;
         }
 
         public async Task<IEnumerable<ScenicSpotResponse>> GetScenicSpotsByDistance(string city, int mindis, int maxdis)
@@ -122,12 +127,10 @@ namespace db_course_design.Services.impl
                    ScenicSpotGrade = s.ScenicSpotGrade,
                    ScenicSpotIntroduction = s.ScenicSpotIntroduction,
                    ScenicSpotLocation = s.ScenicSpotLocation,
-                   CityNameNavigation = s.CityNameNavigation,
-                   ScenicSpotTickets = s.ScenicSpotTickets
                })
                .ToListAsync();
 
-            return scenicSpots.Any() ? scenicSpots : null;
+            return scenicSpots;
         }
 
         public async Task<bool> DeleteScenicSpotAsync(decimal scenicSpotId)
@@ -144,7 +147,8 @@ namespace db_course_design.Services.impl
             await _context.SaveChangesAsync();
             return true; // 删除成功
         }
-        public async Task<ScenicSpotResponse> AddScenicSpotAsync(ScenicSpotRequest request)
+
+        public async Task<ScenicSpotResponse?> AddScenicSpotAsync(ScenicSpotRequest request)
         {
             // 将请求对象转换为数据库实体
             var scenicSpot = new ScenicSpot
@@ -170,8 +174,70 @@ namespace db_course_design.Services.impl
                 ScenicSpotLocation = scenicSpot.ScenicSpotLocation
             };
         }
+
+        public async Task<bool> DeleteScenicSpotTicketAsync(decimal scenicSpotId, string ticketType, DateTime ticketDate)
+        {
+            var ticket = await _context.ScenicSpotTickets.FindAsync(scenicSpotId, ticketType, ticketDate);
+
+            if (ticket == null)
+            {
+                return false; // 未找到门票，删除失败
+            }
+
+            _context.ScenicSpotTickets.Remove(ticket);
+            await _context.SaveChangesAsync();
+            return true; // 删除成功
+        }
+
+        public async Task<ScenicSpotTicketResponse?> AddScenicSpotTicketAsync(ScenicSpotTicketRequest request)
+        {
+            // 将请求对象转换为数据库实体
+            var ticket = new ScenicSpotTicket
+            {
+                ScenicSpotId = request.ScenicSpotId,
+                TicketType = request.TicketType,
+                TicketPrice = request.TicketPrice,
+                TicketRemaining = request.TicketRemaining,
+                TicketDate = request.TicketDate
+            };
+
+            // 将实体添加到数据库上下文中
+            _context.ScenicSpotTickets.Add(ticket);
+            await _context.SaveChangesAsync();
+
+            // 返回添加后的响应对象
+            return new ScenicSpotTicketResponse
+            {
+                ScenicSpotId = ticket.ScenicSpotId,
+                TicketType = ticket.TicketType,
+                TicketPrice = ticket.TicketPrice,
+                TicketRemaining = ticket.TicketRemaining,
+                TicketDate = ticket.TicketDate
+            };
+        }
+
+        // 获取指定景点指定种类指定日期的门票信息
+        public async Task<ScenicSpotTicketResponse?> GetScenicSpotTicketAsync(decimal scenicSpotId, string ticketType, DateTime ticketDate)
+        {
+            var ticket = await _context.ScenicSpotTickets.FindAsync(scenicSpotId, ticketType, ticketDate);
+
+            if (ticket == null)
+            {
+                return null; // 未找到门票
+            }
+
+            return new ScenicSpotTicketResponse
+            {
+                ScenicSpotId = ticket.ScenicSpotId,
+                TicketType = ticket.TicketType,
+                TicketPrice = ticket.TicketPrice,
+                TicketRemaining = ticket.TicketRemaining,
+                TicketDate = ticket.TicketDate
+            };
+        }
+
         // 获取当天的门票信息
-        public async Task<AdultChildTicketResponse> GetTodayTicketInfoAsync(string scenicSpotName)
+        public async Task<AdultChildTicketResponse?> GetTodayTicketInfoAsync(string scenicSpotName)
         {
             var today = DateTime.Today;
 
@@ -204,7 +270,7 @@ namespace db_course_design.Services.impl
         }
 
         // 获取特定日期的门票信息
-        public async Task<AdultChildTicketResponse> GetTicketInfoByDateAsync(string scenicSpotName, DateTime date)
+        public async Task<AdultChildTicketResponse?> GetTicketInfoByDateAsync(string scenicSpotName, DateTime date)
         {
             var tickets = await _context.ScenicSpotTickets
                 .Where(t => t.ScenicSpot.ScenicSpotName == scenicSpotName && t.TicketDate == date)
