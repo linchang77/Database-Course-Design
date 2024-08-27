@@ -98,9 +98,14 @@ const buildPassengers = () => {
   });
   return newPassengers;
 };
+function returnId() {
+  const id = localStorage.getItem("id");
+  console.log("id:", id)
+  return id
+}
 const emit = defineEmits(['prevStep', 'nextStep']);
 async function buyTicket() {
-  const userId = 41;
+  const userId = returnId();
   const vehicleId = orderInfo.flight.vehicleId;
   const type = orderInfo.flight.ticketType;
 

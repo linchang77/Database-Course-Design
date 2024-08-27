@@ -10,7 +10,19 @@ const Layouts = () => import("@/layouts/index.vue")
  */
 
 export const constantRoutes: RouteRecordRaw[] = [
-
+  {
+    path: "/redirect",
+    component: Layouts,
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: ":path(.*)",
+        component: () => import("@/views/redirect/index.vue")
+      }
+    ]
+  },
   {
     path: "/403",
     component: () => import("@/views/error-page/403.vue"),
@@ -35,22 +47,8 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: "/",
-    redirect: "/self-center",
-  },
-]
-
-/**
- * 动态路由
- * 用来放置有权限 (Roles 属性) 的路由
- * 必须带有 Name 属性
- */
-export const dynamicRoutes: RouteRecordRaw[] = [
-  {
-    path: "/",
     component: Layouts,
-    meta:{
-      roles: ["user"]
-    },
+    redirect: "/dashboard",
     children: [
       {
         path: "dashboard",
@@ -59,7 +57,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         meta: {
           title: "首页",
           svgIcon: "dashboard",
-          affix: true,
+          affix: true
         }
       }
     ]
@@ -67,9 +65,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
   {
     path: "/",
     component: Layouts,
-    meta:{
-      roles: ["user","admin"]
-    },
     children: [
       {
         path: "scene",
@@ -88,56 +83,69 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     component: Layouts,
     meta: {
       hidden: true,
-    },
-    children: [
+   },
+    children:[
       {
         path: "shanghai",
         component: () => import("@/views/scene/citys/shanghai.vue"),
         name: "Shanghai",
-      },
-      {
-        path: "shanghai/tickets",
-        component: () => import("@/views/scene/citys/city_shanghai/上海景点购票.vue"),
-        name: "SceneTickets",
+        meta: {
+           hidden: true,
+        }
       },
       {
         path: "tokyo",
         component: () => import("@/views/scene/citys/tokyo.vue"),
         name: "Tokyo",
+        meta: {
+           hidden: true,
+        },
       },
       {
         path: "cairo",
         component: () => import("@/views/scene/citys/cairo.vue"),
         name: "Cairo",
+        meta: {
+           hidden: true,
+        },
       },
       {
         path: "paris",
         component: () => import("@/views/scene/citys/paris.vue"),
         name: "Paris",
+        meta: {
+           hidden: true,
+        },
       },
       {
         path: "newyork",
         component: () => import("@/views/scene/citys/newyork.vue"),
         name: "Newyork",
+        meta: {
+           hidden: true,
+        },
       },
       {
         path: "riodejaneiro",
         component: () => import("@/views/scene/citys/riodejaneiro.vue"),
         name: "Riodejaneiro",
+        meta: {
+           hidden: true,
+        },
       },
       {
         path: "sydney",
         component: () => import("@/views/scene/citys/sydney.vue"),
         name: "Sydney",
+        meta: {
+           hidden: true,
+        },
       }
     ]
   },
   {
     path: "/",
     component: Layouts,
-    meta:{
-      roles: ["user","admin"]
-    },
     children: [
       {
         path: "group-travel",
@@ -151,41 +159,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-  // csh start
-  {
-    path: "/group-travel",
-    component: Layouts,
-    meta: {
-      hidden: true
-    },
-    children: [
-    {
-      path: "groups/detail",
-      component: () => import(`@/views/group-travel/groups/detail.vue`),
-      name: "group-detail",
 
-  }]
-  },
-  //csh end
-  {
-    path: "/",
-    component: Layouts,
-    meta:{
-      roles: ["guide"]
-    },
-    children: [
-      {
-        path: "guide-travel",
-        component: () => import("@/views/guide-travel/index.vue"),
-        name: "Guide-travel",
-        meta: {
-          title: "带团游",
-          svgIcon: "guide-travel",
-          affix: true
-        }
-      }
-    ]
-  },
   {
     path: "/",
     component: Layouts,
@@ -202,13 +176,9 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-
   {
     path: "/",
     component: Layouts,
-    meta:{
-      roles: ["user","guide"]
-    },
     children: [
       {
         path: "my-orders",
@@ -222,63 +192,77 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-  {
-    path: "/",
-    component: Layouts,
-    meta:{
-      roles: ["admin"]
-    },
-    children: [
-      {
-        path: "orders-management",
-        component: () => import("@/views/orders-management/index.vue"),
-        name: "Orders-management",
-        meta: {
-          title: "订单管理",
-          svgIcon: "Orders-management",
-          affix: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    component: Layouts,
-    meta:{
-      roles: ["admin"]
-    },
-    children: [
-      {
-        path: "users-management",
-        component: () => import("@/views/users-management/index.vue"),
-        name: "Users-management",
-        meta: {
-          title: "用户管理",
-          svgIcon: "Users-management",
-          affix: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    component: Layouts,
-    meta:{
-      roles: ["guide"]
-    },
-    children: [
-      {
-        path: "performance",
-        component: () => import("@/views/performance/index.vue"),
-        name: "Performance",
-        meta: {
-          title: "业绩",
-          svgIcon: "performance",
-          affix: true
-        }
-      }
-    ]
-  },
+  // {
+  //   path: "/unocss",
+  //   component: Layouts,
+  //   redirect: "/unocss/index",
+  //   children: [
+  //     {
+  //       path: "index",
+  //       component: () => import("@/views/unocss/index.vue"),
+  //       name: "UnoCSS",
+  //       meta: {
+  //         title: "UnoCSS",
+  //         svgIcon: "unocss"
+  //       }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: "/link",
+  //   meta: {
+  //     title: "外链",
+  //     svgIcon: "link"
+  //   },
+  //   children: [
+  //     {
+  //       path: "https://juejin.cn/post/7089377403717287972",
+  //       component: () => {},
+  //       name: "Link1",
+  //       meta: {
+  //         title: "中文文档"
+  //       }
+  //     },
+  //     {
+  //       path: "https://juejin.cn/column/7207659644487139387",
+  //       component: () => {},
+  //       name: "Link2",
+  //       meta: {
+  //         title: "新手教程"
+  //       }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: "/table",
+  //   component: Layouts,
+  //   redirect: "/table/element-plus",
+  //   name: "Table",
+  //   meta: {
+  //     title: "表格",
+  //     elIcon: "Grid"
+  //   },
+  //   children: [
+  //     {
+  //       path: "element-plus",
+  //       component: () => import("@/views/table/element-plus/index.vue"),
+  //       name: "ElementPlus",
+  //       meta: {
+  //         title: "Element Plus",
+  //         keepAlive: true
+  //       }
+  //     },
+  //     {
+  //       path: "vxe-table",
+  //       component: () => import("@/views/table/vxe-table/index.vue"),
+  //       name: "VxeTable",
+  //       meta: {
+  //         title: "Vxe Table",
+  //         keepAlive: true
+  //       }
+  //     }
+  //   ]
+  // },
   {
     path: "/transport",
     component: Layouts,
@@ -286,8 +270,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     name: "Transport",
     meta: {
       title: "出行",
-      svgIcon: "transport",
-      roles: ["user","admin"]
+      svgIcon: "transport"
     },
     children: [
       {
@@ -333,90 +316,155 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-  {
-    path: "/",
-    component: Layouts,
-    children: [
-      {
-        path: "hotel",
-        component: () => import("@/views/hotel/index.vue"),
-        name: "Hotel",
-        meta: {
-          title: "酒店",
-          svgIcon: "hotel",
-          affix: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/hotel",
-    component: Layouts,
-    meta: {
-      hidden: true
-    },
-    children: [
-      {
-        path: "detail",
-        component: () => import("@/views/hotel/detail.vue"),
-        name: "Detail",
-        meta: {
-          title: "酒店详情",
-          hidden: true
-        }
-      },
-      {
-        path: "room",
-        component: () => import("@/views/hotel/room.vue"),
-        name: "Room",
-        meta: {
-          title: "酒店房型",
-          hidden: true
-        }
-      },
-      {
-        path: "order",
-        component: () => import("@/views/hotel/order.vue"),
-        name: "Order",
-        meta: {
-          title: "酒店订单",
-          hidden: true
-        }
-      },
-    ]
-  }
-
   // {
-  //   path: "/permission",
+  //   path: "/transport/airplane",
   //   component: Layouts,
-  //   redirect: "/permission/page",
-  //   name: "Permission",
   //   meta: {
-  //     title: "权限",
-  //     svgIcon: "lock",
-  //     roles: ["admin", "editor"], // 可以在根路由中设置角色
-  //     alwaysShow: true // 将始终显示根菜单
+  //     hidden: true
   //   },
   //   children: [
   //     {
-  //       path: "page",
-  //       component: () => import("@/views/permission/page.vue"),
-  //       name: "PagePermission",
+  //       path: "order", // 新增的子路由
+  //       component: () => import("@/views/transport/airplane/OrderPage.vue"), // 注意这里引用的是 OrderPage.vue 的路径
+  //       name: "Order",
   //       meta: {
-  //         title: "页面级",
-  //         roles: ["admin"] // 或者在子导航中设置角色
+  //         hidden: true
+  //       }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: "/transport/airplane/order",
+  //   component: () => import("@/views/transport/airplane/OrderPage.vue"),
+  //   meta: {
+  //     hidden: true
+  //   },
+  // },
+  // {
+  //   path: "/transport/bus/order",
+  //   component: () => import("@/views/transport/bus/OrderPage.vue"),
+  //   meta: {
+  //     hidden: true
+  //   },
+  // },
+  // {
+  //   path: "/transport/train/order",
+  //   component: () => import("@/views/transport/train/OrderPage.vue"),
+  //   meta: {
+  //     hidden: true
+  //   },
+  // },
+
+  // {
+  //   path: "/transport/bus",
+  //   component: Layouts,
+  //   meta: {
+  //     hidden: true
+  //   },
+  //   children: [
+  //     {
+  //       path: "order", // 新增的子路由
+  //       component: () => import("@/views/transport/bus/OrderPage.vue"), // 注意这里引用的是 OrderPage.vue 的路径
+  //       name: "Order",
+  //       meta: {
+  //         hidden: true
+  //       }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: "/transport/train",
+  //   component: Layouts,
+  //   meta: {
+  //     hidden: true
+  //   },
+  //   children: [
+  //     {
+  //       path: "order", // 新增的子路由
+  //       component: () => import("@/views/transport/train/OrderPage.vue"), // 注意这里引用的是 OrderPage.vue 的路径
+  //       name: "Order",
+  //       meta: {
+  //         hidden: true
+  //       }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: "/hook-demo",
+  //   component: Layouts,
+  //   redirect: "/hook-demo/use-fetch-select",
+  //   name: "HookDemo",
+  //   meta: {
+  //     title: "Hook",
+  //     elIcon: "Menu",
+  //     alwaysShow: true
+  //   },
+  //   children: [
+  //     {
+  //       path: "use-fetch-select",
+  //       component: () => import("@/views/hook-demo/use-fetch-select.vue"),
+  //       name: "UseFetchSelect",
+  //       meta: {
+  //         title: "useFetchSelect"
   //       }
   //     },
   //     {
-  //       path: "directive",
-  //       component: () => import("@/views/permission/directive.vue"),
-  //       name: "DirectivePermission",
+  //       path: "use-fullscreen-loading",
+  //       component: () => import("@/views/hook-demo/use-fullscreen-loading.vue"),
+  //       name: "UseFullscreenLoading",
   //       meta: {
-  //         title: "按钮级" // 如果未设置角色，则表示：该页面不需要权限，但会继承根路由的角色
+  //         title: "useFullscreenLoading"
+  //       }
+  //     },
+  //     {
+  //       path: "use-watermark",
+  //       component: () => import("@/views/hook-demo/use-watermark.vue"),
+  //       name: "UseWatermark",
+  //       meta: {
+  //         title: "useWatermark"
   //       }
   //     }
   //   ]
   // }
+]
+
+/**
+ * 动态路由
+ * 用来放置有权限 (Roles 属性) 的路由
+ * 必须带有 Name 属性
+ */
+export const dynamicRoutes: RouteRecordRaw[] = [
+  {
+    path: "/permission",
+    component: Layouts,
+    redirect: "/permission/page",
+    name: "Permission",
+    meta: {
+      title: "权限",
+      svgIcon: "lock",
+      roles: ["admin", "editor"], // 可以在根路由中设置角色
+      alwaysShow: true // 将始终显示根菜单
+    },
+    children: [
+      {
+        path: "page",
+        component: () => import("@/views/permission/page.vue"),
+        name: "PagePermission",
+        meta: {
+          title: "页面级",
+          roles: ["admin"] // 或者在子导航中设置角色
+        }
+      },
+      {
+        path: "directive",
+        component: () => import("@/views/permission/directive.vue"),
+        name: "DirectivePermission",
+        meta: {
+          title: "按钮级" // 如果未设置角色，则表示：该页面不需要权限，但会继承根路由的角色
+        }
+      }
+    ]
+  }
 ]
 
 const router = createRouter({

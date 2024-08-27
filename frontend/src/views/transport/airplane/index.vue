@@ -168,6 +168,13 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
 
   return { hours, minutes };
 }
+
+function returnId() {
+  const id = localStorage.getItem("id");
+  console.log("id:", id)
+  return id
+}
+
 </script>
 
 <template>
@@ -186,7 +193,8 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
       <!--
       <el-button type="primary" id="submit" @click="newSchedule">新增航班</el-button>
       <el-button type="primary" id="submit" @click="addVehicleTicket">新增机票</el-button>
-      -->
+
+      <el-button type="primary" id="submit" @click="returnId">id</el-button>-->
     </div>
 
     <div class="flight-list">
