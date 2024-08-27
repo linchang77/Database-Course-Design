@@ -49,7 +49,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor"]
+      roles: ["user"]
     },
     children: [
       {
@@ -68,7 +68,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor","admin"]
+      roles: ["user","admin"]
     },
     children: [
       {
@@ -133,49 +133,10 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: "/transport",
-    component: Layouts,
-    redirect: "/transport/airplane",
-    name: "Transport",
-    meta: {
-      title: "出行",
-      svgIcon: "transport",
-      roles: ["visitor","admin"]
-    },
-    children: [
-      {
-        path: "airplane",
-        component: () => import("@/views/transport/airplane/index.vue"),
-        name: "Airplane",
-        meta: {
-          title: "飞机"
-        }
-      },
-      {
-        path: "bus",
-        component: () => import("@/views/transport/bus/index.vue"),
-        name: "Bus",
-        meta: {
-          title: "大巴",
-          keepAlive: true
-        }
-      },
-      {
-        path: "train",
-        component: () => import("@/views/transport/train/index.vue"),
-        name: "Train",
-        meta: {
-          title: "火车",
-          keepAlive: true
-        }
-      }
-    ]
-  },
-  {
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor","admin"]
+      roles: ["user","admin"]
     },
     children: [
       {
@@ -229,7 +190,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor","admin"]
+      roles: ["user","admin"]
     },
     children: [
       {
@@ -247,8 +208,25 @@ export const dynamicRoutes: RouteRecordRaw[] = [
   {
     path: "/",
     component: Layouts,
+    children: [
+      {
+        path: "self-center",
+        component: () => import("@/views/self-center/index.vue"),
+        name: "Self-center",
+        meta: {
+          title: "个人中心",
+          svgIcon: "self-center",
+          affix: true
+        }
+      }
+    ]
+  },
+
+  {
+    path: "/",
+    component: Layouts,
     meta:{
-      roles: ["visitor","guide"]
+      roles: ["user","guide"]
     },
     children: [
       {
@@ -258,22 +236,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         meta: {
           title: "我的订单",
           svgIcon: "my-orders",
-          affix: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    component: Layouts,
-    children: [
-      {
-        path: "self-center",
-        component: () => import("@/views/self-center/index.vue"),
-        name: "Self-center",
-        meta: {
-          title: "个人中心",
-          svgIcon: "self-center",
           affix: true
         }
       }
@@ -302,6 +264,25 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
+      roles: ["admin"]
+    },
+    children: [
+      {
+        path: "users-management",
+        component: () => import("@/views/users-management/index.vue"),
+        name: "Users-management",
+        meta: {
+          title: "用户管理",
+          svgIcon: "Users-management",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    meta:{
       roles: ["guide"]
     },
     children: [
@@ -313,6 +294,45 @@ export const dynamicRoutes: RouteRecordRaw[] = [
           title: "业绩",
           svgIcon: "performance",
           affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/transport",
+    component: Layouts,
+    redirect: "/transport/airplane",
+    name: "Transport",
+    meta: {
+      title: "出行",
+      svgIcon: "transport",
+      roles: ["user","admin"]
+    },
+    children: [
+      {
+        path: "airplane",
+        component: () => import("@/views/transport/airplane/index.vue"),
+        name: "Airplane",
+        meta: {
+          title: "飞机"
+        }
+      },
+      {
+        path: "bus",
+        component: () => import("@/views/transport/bus/index.vue"),
+        name: "Bus",
+        meta: {
+          title: "大巴",
+          keepAlive: true
+        }
+      },
+      {
+        path: "train",
+        component: () => import("@/views/transport/train/index.vue"),
+        name: "Train",
+        meta: {
+          title: "火车",
+          keepAlive: true
         }
       }
     ]
