@@ -23,4 +23,9 @@
         public DateTime? Departure_Time { get; set; }
         public int Days_of_Travel { get; set; }
     }
+    public class PurchaseTourOrderRequest
+    {
+        public int? UserId { get; set; }
+        public int? GroupId { get; set; }
+    }
 }

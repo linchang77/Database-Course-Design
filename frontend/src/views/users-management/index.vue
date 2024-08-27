@@ -2,15 +2,15 @@
 import { ref } from "vue"
 
 defineOptions({
-  name: "Free-travel"
+  name: "Users-management"
 })
 
 const text = ref("")
 </script>
 
 <template>
-  <!-- <div class="app-container">
-    <el-card header="自由行">
+  <div class="app-container">
+    <el-card header="用户管理">
     </el-card>
-  </div> -->
+  </div>
 </template>

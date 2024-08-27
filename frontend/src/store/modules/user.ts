@@ -5,7 +5,7 @@ import { useTagsViewStore } from "./tags-view";
 import { useSettingsStore } from "./settings";
 import { getToken, removeToken, setToken } from "@/utils/cache/cookies";
 import { resetRouter } from "@/router";
-import { loginApi, registerApi, getUserInfoApi } from "@/api/login";
+import { loginApi, registerApi, getUserIdApi } from "@/api/login";
 import routeSettings from "@/config/route";
 
 export const useUserStore = defineStore("user", () => {
@@ -37,9 +37,12 @@ const login = async ({ username, password, role }: { username: string, password:
   setToken(data.token);
   token.value = data.token;
 
-  // Store username and role in localStorage
+  // Store username,role and id in localStorage
   localStorage.setItem("username", username);
   localStorage.setItem("role", role);
+  const id = await getUserIdApi({ username, role });
+  localStorage.setItem("id", id.data);
+  console.log("UserId:",id.data);
 };
 
 /** 注册 */
@@ -66,6 +69,9 @@ const register = async ({ username, password, role }: { username: string, passwo
   // Store username and role in localStorage
   localStorage.setItem("username", username);
   localStorage.setItem("role", role);
+  const id = await getUserIdApi({ username, role });
+  localStorage.setItem("id", id.data);
+  console.log("UserId:",id.data);
 };
 
 /** 获取用户详情 */
@@ -82,7 +88,6 @@ const getInfo = async () => {
     roles.value = routeSettings.defaultRoles;
   }
 };
-
   /** 模拟角色变化 */
   const changeRoles = async (role: string) => {
     const newToken = "token-" + role;
@@ -90,7 +95,6 @@ const getInfo = async () => {
     setToken(newToken);
     window.location.reload();
   };
-
   /** 登出 */
 const logout = () => {
   removeToken();
@@ -102,6 +106,7 @@ const logout = () => {
   // Clear localStorage
   localStorage.removeItem("username");
   localStorage.removeItem("role");
+  localStorage.removeItem("id");
 };
 
   /** 重置 Token */

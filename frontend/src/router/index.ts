@@ -49,7 +49,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor"]
+      roles: ["user"]
     },
     children: [
       {
@@ -68,7 +68,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor","admin"]
+      roles: ["user","admin"]
     },
     children: [
       {
@@ -136,7 +136,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor","admin"]
+      roles: ["user","admin"]
     },
     children: [
       {
@@ -151,22 +151,20 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
+  // csh start
   {
-    path: '/group-travel',
+    path: "/group-travel",
     component: Layouts,
     meta: {
       hidden: true
     },
     children: [
-      {
-        path: 'cities/shanghai',
-        component: () => import('@/views/group-travel/cities/shanghai.vue'), 
-        name: 'shanghai-group',
-        meta: {
-          hidden: true
-        }
-      }
-    ]
+    {
+      path: "groups/detail",
+      component: () => import(`@/views/group-travel/groups/detail.vue`), 
+      name: "group-detail",
+    
+  }]
   },
   //csh end
   {
@@ -191,25 +189,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
   {
     path: "/",
     component: Layouts,
-    meta:{
-      roles: ["visitor","admin"]
-    },
-    children: [
-      {
-        path: "free-travel",
-        component: () => import("@/views/free-travel/index.vue"),
-        name: "Free-travel",
-        meta: {
-          title: "自由行",
-          svgIcon: "free-travel",
-          affix: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    component: Layouts,
     children: [
       {
         path: "self-center",
@@ -223,11 +202,12 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
+
   {
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["visitor","guide"]
+      roles: ["user","guide"]
     },
     children: [
       {
@@ -265,6 +245,25 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
+      roles: ["admin"]
+    },
+    children: [
+      {
+        path: "users-management",
+        component: () => import("@/views/users-management/index.vue"),
+        name: "Users-management",
+        meta: {
+          title: "用户管理",
+          svgIcon: "Users-management",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    meta:{
       roles: ["guide"]
     },
     children: [
@@ -288,7 +287,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     meta: {
       title: "出行",
       svgIcon: "transport",
-      roles: ["visitor","admin"]
+      roles: ["user","admin"]
     },
     children: [
       {

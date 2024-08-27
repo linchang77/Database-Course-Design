@@ -18,6 +18,8 @@ namespace db_course_design.Controllers
     出发地和目的地必填，出发时间和行程天数没有的话默认填0
       [HttpGet("search")]                   -获取筛选条件的旅行团产品  
       [HttpGet("recommendedtours")]         -获取推荐的旅行团
+      业务逻辑(旅行团订单的购买):
+        点击购买自动在数据库中产生一条旅行图订单
 
      */
     [Route("api/[controller]")]
@@ -45,6 +47,12 @@ namespace db_course_design.Controllers
             }
 
             var tourGroups = await _tourGroupService.SearchTourGroupsByCityAsync(request);
+
+            if (tourGroups == null || !tourGroups.Any())
+            {
+                return NotFound("没有找到符合条件的旅行团。");
+            }
+
             return Ok(tourGroups);
         }
 
@@ -57,6 +65,30 @@ namespace db_course_design.Controllers
         {
             var recommendedGroups = await _tourGroupService.GetRecommendedTourGroupsAsync();
             return Ok(recommendedGroups);
+        }
+        /// <summary>
+        /// 购买旅行团订单
+        /// </summary>
+        /// <param name="request">购买请求</param>
+        /// <returns>购买结果</returns>
+        [HttpPost("purchase")]
+        public async Task<ActionResult> PurchaseTourGroupOrder([FromBody] PurchaseTourOrderRequest request)
+        {
+            if (request == null || request.UserId == null || request.GroupId == null)
+            {
+                return BadRequest("用户ID和旅行团ID是必填项。");
+            }
+            var result = await _tourGroupService.PurchaseTourGroupOrderAsync(request);
+
+            if (result)
+            {
+                return Ok("订单购买成功。");
+            }
+            else
+            {
+                return StatusCode(500, "订单购买失败。");
+            }
+
         }
     }
 }

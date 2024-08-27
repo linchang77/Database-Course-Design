@@ -342,6 +342,7 @@ namespace db_course_design.Services.impl
 
             // 设置 ScenicSpotOrder 的外键 OrderId
             scenicSpotOrder.OrderId = orderDatum.OrderId;
+            scenicSpotOrder.Order = orderDatum;
 
             // 再次保存更改，以保存 ScenicSpotOrder 的 OrderId
             await _context.SaveChangesAsync();
