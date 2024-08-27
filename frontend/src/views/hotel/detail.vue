@@ -37,72 +37,74 @@ const hotels = ref<Hotel[]>([]);
 const sortOrder = ref<'asc' | 'desc'>('asc');
 const sortBy = ref<'grade' | 'price'>('grade');
 
-const destination = ref<string | null>(null);
-const checkInTime = ref<string | null>(null);
-const checkOutTime = ref<string | null>(null);
 
-destination.value = route.query.destination ? decodeURIComponent(route.query.destination as string) : null;
-checkInTime.value = route.query.checkIn ? decodeURIComponent(route.query.checkIn as string) : null;
-checkOutTime.value = route.query.checkOut ? decodeURIComponent(route.query.checkOut as string) : null;
+const destination = decodeURIComponent(route.query.destination as string);
+const checkInTime = decodeURIComponent(route.query.checkIn as string);
+const checkOutTime = decodeURIComponent(route.query.checkOut as string);
 
+
+const fetchHotels = async () => {
+  try {
+    console.log("111111")
+    const hotelId = 10
+    const response = await axios.get(`https://123.60.14.84/api/Hotel/detail/${hotelId}`,{
+      // params:{
+      //   city: "上海",
+      // }
+    });
+    console.log(response.data)
+    //hotels.value = response.data;
+
+  } catch (error) {
+    console.log("22222")
+    console.error('Error fetching hotel data:', error);
+    console.log(destination)
+  }
+};
+
+onMounted(() => {
+  fetchHotels();
+});
 
 // const fetchHotels = async () => {
-//   try {
-//     const response = await axios.get('/api/hotels', {
-//       params: {
-//         destination: destination.value,
-//         checkIn: checkInTime.value,
-//         checkOut: checkOutTime.value
-//       }
-//     });
-//     hotels.value = response.data;
-//   } catch (error) {
-//     console.error('Error fetching hotel data:', error);
-//   }
-// };
-
-// onMounted(() => {
-//   fetchHotels();
-// });
-const fetchHotels = async () => {
-  const simulatedHotels: Hotel[] = [
-    {
-      id: 1,
-      name: "Hotel A",
-      grade: "5星",
-      location: "北京市",
-      description: "一家豪华酒店，提供高品质的服务和舒适的住宿体验。",
-      roomType: "标间",
-      roomLeft: 3,
-      roomPrice: 600,
-      imageUrl: "/images/hotel_1.jpg"
-    },
-    {
-      id: 3,
-      name: "Hotel B",
-      grade: "4星",
-      location: "上海市",
-      description: "一家现代化酒店，位置优越，设施齐全。",
-      roomType: "大床房",
-      roomLeft: 1,
-      roomPrice: 800,
-      imageUrl: "/images/hotel_2.jpg"
-    },
-    {
-      id: 18,
-      name: "Hotel C",
-      grade: "3星",
-      location: "广州市",
-      description: "经济型酒店，提供基础的住宿设施。",
-      roomType: "总统套房",
-      roomLeft: 9,
-      roomPrice: 100,
-      imageUrl: "/images/hotel_3.jpg"
-    },
-  ];
+//   const simulatedHotels: Hotel[] = [
+//     {
+//       id: 1,
+//       name: "Hotel A",
+//       grade: "5星",
+//       location: "北京市",
+//       description: "一家豪华酒店，提供高品质的服务和舒适的住宿体验。",
+//       roomType: "标间",
+//       roomLeft: 3,
+//       roomPrice: 600,
+//       imageUrl: "/images/hotel_1.jpg"
+//     },
+//     {
+//       id: 3,
+//       name: "Hotel B",
+//       grade: "4星",
+//       location: "上海市",
+//       description: "一家现代化酒店，位置优越，设施齐全。",
+//       roomType: "大床房",
+//       roomLeft: 1,
+//       roomPrice: 800,
+//       imageUrl: "/images/hotel_2.jpg"
+//     },
+//     {
+//       id: 18,
+//       name: "Hotel C",
+//       grade: "3星",
+//       location: "广州市",
+//       description: "经济型酒店，提供基础的住宿设施。",
+//       roomType: "总统套房",
+//       roomLeft: 9,
+//       roomPrice: 100,
+//       imageUrl: "/images/hotel_3.jpg"
+//     },
+//   ];
   
-  hotels.value = simulatedHotels;
-};
+//   hotels.value = simulatedHotels;
+// };
 
 const sortedHotels = computed(() => {
   return hotels.value.slice().sort((a, b) => {
@@ -260,5 +262,3 @@ onMounted(() => {
   text-align: right;
 }
 </style>
-
-111

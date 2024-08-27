@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
-const hotelQuery = route.query.hotel as string | undefined;
+const hotelQuery = route.query.hotel as string;
 
 interface Hotel {
   id: number;
@@ -18,7 +18,7 @@ interface Hotel {
   imageUrl: string; 
 }
 
-const hotel = hotelQuery ? JSON.parse(decodeURIComponent(hotelQuery)) as Hotel : null;
+const hotel = JSON.parse(decodeURIComponent(hotelQuery)) as Hotel;
 
 function viewOrder() {
   if (hotel) {

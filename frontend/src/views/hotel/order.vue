@@ -17,7 +17,7 @@ interface Hotel {
   imageUrl: string; 
 }
 
-const hotel = ref<Hotel | null>(null);
+const hotel = ref<Hotel>();
 
 const isSubmitDisabled = computed(() => selectedNumber.value === 0);
 
@@ -26,7 +26,7 @@ const handleSubmit = () => {
 };
 
 onMounted(() => {
-  const hotelQuery = route.query.hotel as string | undefined;
+  const hotelQuery = route.query.hotel as string;
   if (hotelQuery) {
     hotel.value = JSON.parse(decodeURIComponent(hotelQuery)) as Hotel;
   }
