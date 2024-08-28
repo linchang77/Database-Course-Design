@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { type RouteRecordRaw, createRouter } from "vue-router"
 import { history, flatMultiLevelRoutes } from "./helper"
 import routeSettings from "@/config/route"
@@ -10,7 +11,7 @@ const Layouts = () => import("@/layouts/index.vue")
  */
 
 export const constantRoutes: RouteRecordRaw[] = [
-  
+
   {
     path: "/403",
     component: () => import("@/views/error-page/403.vue"),
@@ -185,7 +186,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     children: [
     {
       path: "groups/detail",
-      component: () => import(`@/views/group-travel/groups/detail.vue`), 
+      component: () => import(`@/views/group-travel/groups/detail.vue`),
       name: "group-detail",
       meta: {
         title: "旅行团",
@@ -212,6 +213,27 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
+ // mjw start
+  {
+    path: "/",
+    component: Layouts,
+    meta: {
+      roles: ["user"] // 后续修改为 admin 角色
+    },
+    children: [
+      {
+      path: "group-travel-admin",
+      component: () => import("@/views/group-travel-admin/index.vue"),
+      name: "Group-travel-admin",
+      meta: {
+      title: "跟团游管理",
+      svgIcon: "group-travel",
+    affix: true
+   }
+   }
+  ]
+   },
+   // mjw end
   {
     path: "/",
     component: Layouts,
