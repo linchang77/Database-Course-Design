@@ -55,7 +55,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     children: [
       {
         path: "dashboard",
-        component: () => import("@/views/dashboard/index.vue"),
+        component: () => import("@/views/user/dashboard/index.vue"),
         name: "Dashboard",
         meta: {
           title: "首页",
@@ -69,12 +69,12 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["user","admin"]
+      roles: ["user"]
     },
     children: [
       {
         path: "scene",
-        component: () => import("@/views/scene/index.vue"),
+        component: () => import("@/views/user/scene/index.vue"),
         name: "Scene",
         meta: {
           title: "景点",
@@ -93,7 +93,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     children: [
       {
         path: "shanghai",
-        component: () => import("@/views/scene/citys/shanghai.vue"),
+        component: () => import("@/views/user/scene/citys/shanghai.vue"),
         name: "Shanghai",
         meta: {
           title: "上海"
@@ -101,7 +101,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "shanghai/tickets",
-        component: () => import("@/views/scene/citys/city_shanghai/上海景点购票.vue"),
+        component: () => import("@/views/user/scene/citys/city_shanghai/上海景点购票.vue"),
         name: "SceneTickets",
         meta: {
           title: "上海景点购票"
@@ -109,7 +109,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "tokyo",
-        component: () => import("@/views/scene/citys/tokyo.vue"),
+        component: () => import("@/views/user/scene/citys/tokyo.vue"),
         name: "Tokyo",
         meta: {
           title: "东京"
@@ -117,7 +117,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "cairo",
-        component: () => import("@/views/scene/citys/cairo.vue"),
+        component: () => import("@/views/user/scene/citys/cairo.vue"),
         name: "Cairo",
         meta: {
           title: "开罗"
@@ -125,7 +125,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "paris",
-        component: () => import("@/views/scene/citys/paris.vue"),
+        component: () => import("@/views/user/scene/citys/paris.vue"),
         name: "Paris",
         meta: {
           title: "巴黎"
@@ -133,7 +133,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "newyork",
-        component: () => import("@/views/scene/citys/newyork.vue"),
+        component: () => import("@/views/user/scene/citys/newyork.vue"),
         name: "Newyork",
         meta: {
           title: "纽约"
@@ -141,7 +141,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "riodejaneiro",
-        component: () => import("@/views/scene/citys/riodejaneiro.vue"),
+        component: () => import("@/views/user/scene/citys/riodejaneiro.vue"),
         name: "Riodejaneiro",
         meta: {
           title: "里约热内卢"
@@ -149,7 +149,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "sydney",
-        component: () => import("@/views/scene/citys/sydney.vue"),
+        component: () => import("@/views/user/scene/citys/sydney.vue"),
         name: "Sydney",
         meta: {
           title: "悉尼"
@@ -161,12 +161,12 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["user","admin"]
+      roles: ["user"]
     },
     children: [
       {
         path: "group-travel",
-        component: () => import("@/views/group-travel/index.vue"),
+        component: () => import("@/views/user/group-travel/index.vue"),
         name: "Group-travel",
         meta: {
           title: "跟团游",
@@ -186,7 +186,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     children: [
     {
       path: "groups/detail",
-      component: () => import(`@/views/group-travel/groups/detail.vue`),
+      component: () => import(`@/views/user/group-travel/groups/detail.vue`), 
       name: "group-detail",
       meta: {
         title: "旅行团",
@@ -203,7 +203,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     children: [
       {
         path: "guide-travel",
-        component: () => import("@/views/guide-travel/index.vue"),
+        component: () => import("@/views/guide/guide-travel/index.vue"),
         name: "Guide-travel",
         meta: {
           title: "带团游",
@@ -250,7 +250,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-
   {
     path: "/",
     component: Layouts,
@@ -274,50 +273,12 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["admin"]
-    },
-    children: [
-      {
-        path: "orders-management",
-        component: () => import("@/views/orders-management/index.vue"),
-        name: "Orders-management",
-        meta: {
-          title: "订单管理",
-          svgIcon: "Orders-management",
-          affix: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    component: Layouts,
-    meta:{
-      roles: ["admin"]
-    },
-    children: [
-      {
-        path: "users-management",
-        component: () => import("@/views/users-management/index.vue"),
-        name: "Users-management",
-        meta: {
-          title: "用户管理",
-          svgIcon: "Users-management",
-          affix: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    component: Layouts,
-    meta:{
       roles: ["guide"]
     },
     children: [
       {
         path: "performance",
-        component: () => import("@/views/performance/index.vue"),
+        component: () => import("@/views/guide/performance/index.vue"),
         name: "Performance",
         meta: {
           title: "业绩",
@@ -335,12 +296,12 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     meta: {
       title: "出行",
       svgIcon: "transport",
-      roles: ["user","admin"]
+      roles: ["user"]
     },
     children: [
       {
         path: "airplane",
-        component: () => import("@/views/transport/airplane/index.vue"),
+        component: () => import("@/views/user/transport/airplane/index.vue"),
         name: "Airplane",
         meta: {
           title: "飞机"
@@ -348,7 +309,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "bus",
-        component: () => import("@/views/transport/bus/index.vue"),
+        component: () => import("@/views/user/transport/bus/index.vue"),
         name: "Bus",
         meta: {
           title: "大巴",
@@ -357,7 +318,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "train",
-        component: () => import("@/views/transport/train/index.vue"),
+        component: () => import("@/views/user/transport/train/index.vue"),
         name: "Train",
         meta: {
           title: "火车",
@@ -370,12 +331,12 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["user","admin"]
+      roles: ["user"]
     },
     children: [
       {
         path: "hotel",
-        component: () => import("@/views/hotel/index.vue"),
+        component: () => import("@/views/user/hotel/index.vue"),
         name: "Hotel",
         meta: {
           title: "酒店",
@@ -394,7 +355,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     children: [
       {
         path: "detail",
-        component: () => import("@/views/hotel/detail.vue"),
+        component: () => import("@/views/user/hotel/detail.vue"),
         name: "Detail",
         meta: {
           title: "酒店详情",
@@ -403,7 +364,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "room",
-        component: () => import("@/views/hotel/room.vue"),
+        component: () => import("@/views/user/hotel/room.vue"),
         name: "Room",
         meta: {
           title: "酒店房型",
@@ -412,7 +373,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "order",
-        component: () => import("@/views/hotel/order.vue"),
+        component: () => import("@/views/user/hotel/order.vue"),
         name: "Order",
         meta: {
           title: "酒店订单",
@@ -420,39 +381,82 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         }
       },
     ]
-  }
-
-  // {
-  //   path: "/permission",
-  //   component: Layouts,
-  //   redirect: "/permission/page",
-  //   name: "Permission",
-  //   meta: {
-  //     title: "权限",
-  //     svgIcon: "lock",
-  //     roles: ["admin", "editor"], // 可以在根路由中设置角色
-  //     alwaysShow: true // 将始终显示根菜单
-  //   },
-  //   children: [
-  //     {
-  //       path: "page",
-  //       component: () => import("@/views/permission/page.vue"),
-  //       name: "PagePermission",
-  //       meta: {
-  //         title: "页面级",
-  //         roles: ["admin"] // 或者在子导航中设置角色
-  //       }
-  //     },
-  //     {
-  //       path: "directive",
-  //       component: () => import("@/views/permission/directive.vue"),
-  //       name: "DirectivePermission",
-  //       meta: {
-  //         title: "按钮级" // 如果未设置角色，则表示：该页面不需要权限，但会继承根路由的角色
-  //       }
-  //     }
-  //   ]
-  // }
+  },
+  {
+    path: "/",
+    component: Layouts,
+    meta:{
+      roles: ["admin"],
+      svgIcon: "Management",
+      title: "管理",
+    },
+    children: [
+      {
+        path: "city-management",
+        component: () => import("@/views/admin/city-management/index.vue"),
+        name: "City-management",
+        meta: {
+          title: "城市管理",
+          svgIcon: "City-management",
+        }
+      },
+      {
+        path: "scene-management",
+        component: () => import("@/views/admin/scene-management/index.vue"),
+        name: "Scene-management",
+        meta: {
+          title: "景点管理",
+          svgIcon: "Scene-management",
+        }
+      },
+      {
+        path: "hotel-management",
+        component: () => import("@/views/admin/hotel-management/index.vue"),
+        name: "Hotel-management",
+        meta: {
+          title: "酒店管理",
+          svgIcon: "Hotel-management",
+        }
+      },
+      {
+        path: "transport-management",
+        component: () => import("@/views/admin/transport-management/index.vue"),
+        name: "Transport-management",
+        meta: {
+          title: "交通管理",
+          svgIcon: "Transport-management",
+        }
+      },
+      {
+        path: "group-management",
+        component: () => import("@/views/admin/group-management/index.vue"),
+        name: "Group-management",
+        meta: {
+          title: "旅行团管理",
+          svgIcon: "Group-management",
+        }
+      },
+      {
+        path: "users-management",
+        component: () => import("@/views/admin/users-management/index.vue"),
+        name: "Users-management",
+        meta: {
+          title: "用户管理",
+          svgIcon: "Users-management",
+        }
+      },
+      {
+        path: "funds-management",
+        component: () => import("@/views/admin/funds-management/index.vue"),
+        name: "Funds-management",
+        meta: {
+          title: "资金管理",
+          svgIcon: "Funds-management",
+          affix: true
+        }
+      },
+    ]
+  },
 ]
 
 const router = createRouter({
