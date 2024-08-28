@@ -5,6 +5,12 @@ import type { Action } from "element-plus"
 import { Search } from "@element-plus/icons-vue"
 import axios from "axios"
 
+// 8.28 14:54
+// 1、已经有导游、旅行团、出行、酒店、景点的订单数据 
+// 但是旅行团导游性别这里没有数据
+// 现在看到的出行类型有plane、train、car 只给这三种加中文了
+// 2、按id筛选、取消订单、退款、付款的api还没接
+
 // 定义订单的响应类型
 interface BaseOrder {
   orderId: number
@@ -62,7 +68,7 @@ interface Passenger {
 interface VehicleOrder extends BaseOrder {
   orderType: "VehicleOrder"
   vehicleId?: string
-  vehicleType?: string
+  vehicleType: string
   ticketId: number
   ticketType?: string
   ticketUserName: string
@@ -75,26 +81,49 @@ interface VehicleOrder extends BaseOrder {
   passengers: Passenger[]
 }
 
+// 更多筛选选项
+const status_options = [
+  { value: "全部订单", label: "全部订单" },
+  { value: "已支付", label: "已支付" },
+  { value: "待支付", label: "待支付" },
+  { value: "已取消", label: "已取消" }
+]
+
+const options = [
+  { value: "全部订单", label: "全部订单" },
+  { value: "酒店", label: "酒店" },
+  { value: "出行", label: "出行" },
+  { value: "景点", label: "景点" },
+  { value: "导游", label: "导游" },
+  { value: "旅行团", label: "旅行团" }
+]
+
+// 筛选用的双向绑定
+const order_id_input = ref("")
+const order_status_input = ref("全部订单")
+const order_type_input = ref("全部订单")
+const date_input = ref("")
+
 type Order = GuideOrder | HotelOrder | ScenicOrder | TourOrder | VehicleOrder
 
 const orders = ref<Order[]>([])
-
+const total = ref(0)
+const showEmptyMessage = ref(false) // 用于控制是否显示“暂无订单数据”
 const categoryFilter = ref("")
 const statusFilter = ref("")
 const startDate = ref("")
 const endDate = ref("")
-const userId = 22 // 根据需求替换为实际的用户ID
+const userId = 41 // 根据需求替换为实际的用户ID
 const userRole = "user"
 const apiUrl = "https://123.60.14.84/api/Order"
-
-const total = ref(0)
-const showEmptyMessage = ref(false) // 新增，用于控制是否显示“暂无订单数据”
 
 // 获取订单列表
 const fetchOrders = () => {
   axios
-    .get(`${apiUrl}/${userRole}/${userId}`, {
+    .get(`${apiUrl}/role`, {
       params: {
+        role: userRole, // 角色类型替换为实际角色
+        Id: userId,
         orderType: categoryFilter.value || undefined,
         statusType: statusFilter.value || undefined,
         start: startDate.value || undefined,
@@ -148,6 +177,9 @@ const fetchOrders = () => {
 // 按订单ID搜索订单
 async function searchOrder() {
   const orderId = order_id_input.value
+  order_status_input.value = '全部订单'
+  order_type_input.value = '全部订单'
+  date_input.value = ''
   if (!orderId) {
     // 如果订单号为空，显示全部订单
     try {
@@ -181,7 +213,7 @@ async function searchOrder() {
   }
 }
 
-// 按订单分类筛选订单ok
+// 按订单分类筛选订单
 const filterOrdersByCategory = () => {
   categoryFilter.value = order_type_input.value
   switch (order_type_input.value) {
@@ -208,7 +240,12 @@ const filterOrdersByCategory = () => {
   }
   if (categoryFilter.value) {
     axios
-      .get(`${apiUrl}/${userRole}/${userId}/category/${categoryFilter.value}`, {})
+      .get(`https://123.60.14.84:11100/api/Order/role/category/${categoryFilter.value}`, {
+        params: {
+          role: "User",
+          Id: userId
+        }
+      })
       .then((response) => {
         if (response.data && response.data.length > 0) {
           orders.value = response.data
@@ -229,7 +266,7 @@ const filterOrdersByCategory = () => {
   }
 }
 
-// 按订单状态筛选订单ok
+// 按订单状态筛选订
 const filterOrdersByStatus = () => {
   switch (order_status_input.value) {
     case "全部订单":
@@ -249,7 +286,12 @@ const filterOrdersByStatus = () => {
   }
   if (statusFilter.value) {
     axios
-      .get(`${apiUrl}/${userRole}/${userId}/status/${statusFilter.value}`, {})
+      .get(`https://123.60.14.84/api/Order/role/status/${statusFilter.value}`, {
+        params: {
+          role: "User",
+          Id: userId
+        }
+      })
       .then((response) => {
         if (response.data && response.data.length > 0) {
           orders.value = response.data
@@ -269,14 +311,16 @@ const filterOrdersByStatus = () => {
   }
 }
 
-// 按时间段筛选订单ok
+// 按时间段筛选订单
 const filterByDate = () => {
   startDate.value = date_input.value[0]
   endDate.value = date_input.value[1]
   if (startDate.value && endDate.value) {
     axios
-      .get(`${apiUrl}/${userRole}/${userId}/date-range`, {
+      .get(`https://123.60.14.84/api/Order/role/date-range`, {
         params: {
+          role: "User",
+          Id: userId,
           start: startDate.value,
           end: endDate.value
         }
@@ -380,10 +424,7 @@ async function PayOrder(orderId: number) {
 
 // 初次加载时获取订单
 onMounted(() => {
-  console.log("Component mounted, fetching orders...")
   fetchOrders()
-  // console.log("Component mounted, using mock orders...")
-  // orders.value = mockOrders
 })
 
 // 格式化订单状态显示
@@ -408,27 +449,15 @@ const formatCategory = (status: string) => {
   return stateMap[status] || "未知类型"
 }
 
-// 更多筛选选项
-const status_options = [
-  { value: "全部订单", label: "全部订单" },
-  { value: "已支付", label: "已支付" },
-  { value: "待支付", label: "待支付" },
-  { value: "已取消", label: "已取消" }
-]
-
-const options = [
-  { value: "全部订单", label: "全部订单" },
-  { value: "酒店", label: "酒店" },
-  { value: "出行", label: "出行" },
-  { value: "景点", label: "景点" },
-  { value: "导游", label: "导游" },
-  { value: "旅行团", label: "旅行团" }
-]
-
-const order_id_input = ref("")
-const order_status_input = ref("全部订单")
-const order_type_input = ref("全部订单")
-const date_input = ref("")
+// 格式化出行订单的交通类型显示
+const formatTransport = (status: string) => {
+  const stateMap: Record<string, string> = {
+    plane: "飞机",
+    train: "火车高铁",
+    car: "大巴"
+  }
+  return stateMap[status] || "未知类型"
+}
 
 // 确认付款弹窗
 const openPayment = (orderId: number) => {
@@ -438,7 +467,6 @@ const openPayment = (orderId: number) => {
     type: "warning",
     callback: (action: Action) => {
       if (action === "confirm") {
-        // Call payOrder after the payment is confirmed
         PayOrder(orderId)
         ElMessage({
           type: "success",
@@ -462,7 +490,6 @@ const openCancel = (orderId: number) => {
     type: "warning",
     callback: (action: Action) => {
       if (action === "confirm") {
-        // Call deleteOrder after the cancellation is confirmed
         deleteOrder(orderId)
         ElMessage({
           type: "success",
@@ -486,7 +513,6 @@ const openRefund = (orderId: number) => {
     type: "warning",
     callback: (action: Action) => {
       if (action === "confirm") {
-        // Call deleteOrder after the refund is confirmed
         deleteOrder(orderId)
         ElMessage({
           type: "success",
@@ -502,6 +528,7 @@ const openRefund = (orderId: number) => {
   })
 }
 
+// 格式化时间到秒
 function formatDate(dateString?: string): string {
   if (!dateString) {
     return "暂无"
@@ -520,57 +547,76 @@ function formatDate(dateString?: string): string {
   // 格式化为需要的字符串
   return `${year}年${month}月${day}日 ${hours}:${minutes}:${seconds}`
 }
+
+// 格式化时间到日
+function formatDateToDay(dateString?: string): string {
+  if (!dateString) {
+    return "暂无"
+  }
+  // 解析日期字符串
+  const date = new Date(dateString)
+
+  // 获取年、月、日
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+
+  // 格式化为需要的字符串
+  return `${year}年${month}月${day}日`
+}
 </script>
 
 <template>
   <div class="order-container">
     <div class="filter-box">
-      <span class="word"> 订单号 </span>
-      <el-input
-        v-model="order_id_input"
-        style="width: 210px"
-        placeholder="请输入订单号"
-        :prefix-icon="Search"
-        @keyup.enter="searchOrder"
-      />
+      <div class="first-row">
+        <span class="word"> 订单号 </span>
+        <el-input
+          v-model="order_id_input"
+          style="width: 210px"
+          placeholder="请输入订单号"
+          :prefix-icon="Search"
+          @keyup.enter="searchOrder"
+        />
 
-      <span class="word"> 订单状态 </span>
-      <el-select
-        v-model="order_status_input"
-        placeholder="请选择订单状态"
-        style="width: 210px"
-        @change="filterOrdersByStatus"
-      >
-        <el-option v-for="item in status_options" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
+        <el-button type="primary" class="button" @click="searchOrder"> 搜索 </el-button>
+      </div>
+      <div class="second=row" style="margin-top: 5px;">
+        <span class="word"> 订单状态 </span>
+        <el-select
+          v-model="order_status_input"
+          placeholder="请选择订单状态"
+          style="width: 210px"
+          @change="filterOrdersByStatus"
+        >
+          <el-option v-for="item in status_options" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
 
-      <span class="word"> 订单类型 </span>
-      <el-select
-        v-model="order_type_input"
-        placeholder="请选择订单类型"
-        style="width: 210px"
-        @change="filterOrdersByCategory"
-      >
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
+        <span class="word"> 订单类型 </span>
+        <el-select
+          v-model="order_type_input"
+          placeholder="请选择订单类型"
+          style="width: 210px"
+          @change="filterOrdersByCategory"
+        >
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
 
-      <span class="word"> 日期 </span>
-      <el-date-picker
-        v-model="date_input"
-        type="daterange"
-        range-separator="To"
-        start-placeholder="开始时间"
-        end-placeholder="结束时间"
-        size="default"
-        @change="filterByDate"
-      />
-
-      <el-button type="primary" class="button" @click="filterOrdersByStatus"> 筛选 </el-button>
-      <div style="margin-bottom: 10px" />
+        <span class="word"> 日期 </span>
+        <el-date-picker
+          v-model="date_input"
+          type="daterange"
+          range-separator="To"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+          size="default"
+          @change="filterByDate"
+        />
+      </div>
     </div>
 
     <!-- Main container for displaying orders -->
-    <el-scrollbar height="600px">
+    <el-scrollbar height="700px" style="margin-top: 10px;">
       <div class="main-container">
         <div class="holder-container" v-if="orders.length === 0 || showEmptyMessage">
           <el-empty description="暂无订单数据" />
@@ -582,7 +628,7 @@ function formatDate(dateString?: string): string {
           <!-- 订单列表 -->
           <div class="order-item" v-for="order in orders" :key="order.orderId">
             <div class="head">
-              <span v-if="order.orderDate">订单日期：{{ formatDate(order.orderDate) }}</span>
+              <span v-if="order.orderDate">订单日期：{{ formatDateToDay(order.orderDate) }}</span>
               <span v-else>订单日期：无</span>
 
               <span>订单编号：{{ order.orderId }}</span>
@@ -598,21 +644,21 @@ function formatDate(dateString?: string): string {
                   <li>导游姓名：{{ (order as GuideOrder).guideName }}</li>
                   <li>导游性别：{{ (order as GuideOrder).guideGender }}</li>
                   <li>
-                    服务时间：{{ formatDate((order as GuideOrder).serviceBeginDate) }} 至
-                    {{ formatDate((order as GuideOrder).serviceEndDate) }}
+                    服务时间：{{ formatDateToDay((order as GuideOrder).serviceBeginDate) }} 至
+                    {{ formatDateToDay((order as GuideOrder).serviceEndDate) }}
                   </li>
                 </ul>
                 <ul v-if="order.orderType === 'HotelOrder'">
                   <li>酒店名称：{{ (order as HotelOrder).hotelName }}</li>
                   <li>所在城市：{{ (order as HotelOrder).cityName }}</li>
-                  <li>入住日期：{{ formatDate((order as HotelOrder).checkInDate) }}</li>
-                  <li>退房日期：{{ formatDate((order as HotelOrder).checkOutDate) }}</li>
+                  <li>入住日期：{{ formatDateToDay((order as HotelOrder).checkInDate) }}</li>
+                  <li>退房日期：{{ formatDateToDay((order as HotelOrder).checkOutDate) }}</li>
                   <li>房型：{{ (order as HotelOrder).roomType }}</li>
                 </ul>
                 <ul v-if="order.orderType === 'ScenicOrder'">
                   <li>门票类型: {{ (order as ScenicOrder).ticketType }}</li>
                   <li>门票数量: {{ (order as ScenicOrder).ticketNumber }}</li>
-                  <li>游玩日期: {{ formatDate((order as ScenicOrder).ticketDate) }}</li>
+                  <li>游玩日期: {{ formatDateToDay((order as ScenicOrder).ticketDate) }}</li>
                   <li>景点名称：{{ (order as ScenicOrder).scenicSpotName }}</li>
                   <li>所在城市：{{ (order as ScenicOrder).cityName }}</li>
                 </ul>
@@ -622,11 +668,11 @@ function formatDate(dateString?: string): string {
                   <li>导游编号：{{ (order as TourOrder).guideId }}</li>
                   <li>导游姓名：{{ (order as TourOrder).guideName }}</li>
                   <li>导游性别：{{ (order as TourOrder).guideGender }}</li>
-                  <li>开始日期：{{ formatDate((order as TourOrder).startDate) }}</li>
-                  <li>结束日期：{{ formatDate((order as TourOrder).endDate) }}</li>
+                  <li>开始日期：{{ formatDateToDay((order as TourOrder).startDate) }}</li>
+                  <li>结束日期：{{ formatDateToDay((order as TourOrder).endDate) }}</li>
                 </ul>
                 <ul v-if="order.orderType === 'VehicleOrder'">
-                  <li>交通类型：{{ (order as VehicleOrder).vehicleType }}</li>
+                  <li>交通类型：{{ formatTransport((order as VehicleOrder).vehicleType) }}</li>
                   <li>出行票号：{{ (order as VehicleOrder).ticketId }}</li>
                   <li>出发时间：{{ formatDate((order as VehicleOrder).ticketDepartureTime) }}</li>
                   <li>到达时间：{{ formatDate((order as VehicleOrder).ticketArrivalTime) }}</li>
@@ -641,7 +687,7 @@ function formatDate(dateString?: string): string {
                     }}
                   </li>
                   <li v-for="passenger in (order as VehicleOrder).passengers" :key="passenger.passengerId">
-                    乘客：{{ passenger.passengerName }} (ID: {{ passenger.passengerId }})
+                    乘客：{{ passenger.passengerName }} (证件号: {{ passenger.passengerId }})
                   </li>
                 </ul>
               </div>
