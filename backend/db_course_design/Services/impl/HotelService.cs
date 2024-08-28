@@ -31,7 +31,7 @@ namespace db_course_design.Services.impl
         public async Task<List<HotelResponse>> GetHotelByCityAsync(string city)
         {
             var query = _context.Hotels.AsQueryable();
-            query = query.Where(o => o.CityName.Equals(city, StringComparison.OrdinalIgnoreCase));
+            query = query.Where(o => o.CityName.Equals(city));
 
             var Hotels = await query
                 .Select(o => _mapper.Map<HotelResponse>(o)).ToListAsync();
@@ -131,7 +131,6 @@ namespace db_course_design.Services.impl
             rsp.RoomNumber = response.RoomNumber;
             return rsp;
         }
-        /*--删除一个酒店订单--*/
 
         /*--添加酒店--*/
         public async Task<HotelResponse?> AddHotelAsync(HotelRequest request)
