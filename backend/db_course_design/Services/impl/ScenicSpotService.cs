@@ -374,6 +374,28 @@ namespace db_course_design.Services.impl
 
             return true;
         }
+        public async Task<IEnumerable<ScenicSpotResponse>> GetRecommendedScenicSpotsAsync()
+        {
+            var recommendedSpotNames = new List<string>
+            {
+                "上海迪士尼",
+                "同济大学",
+                "豫园"
+            };
 
+            var recommendedSpots = await _context.ScenicSpots
+                .Where(ss => recommendedSpotNames.Contains(ss.ScenicSpotName))
+                .ToListAsync();
+
+            return recommendedSpots.Select(ss => new ScenicSpotResponse
+            {
+                ScenicSpotId = ss.ScenicSpotId,
+                ScenicSpotName = ss.ScenicSpotName,
+                CityName = "上海",
+                ScenicSpotGrade = ss.ScenicSpotGrade,
+                ScenicSpotIntroduction = ss.ScenicSpotIntroduction,
+                ScenicSpotLocation = ss.ScenicSpotLocation
+            }).ToList();
+        }
     }
 }

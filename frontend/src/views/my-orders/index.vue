@@ -9,7 +9,6 @@ import axios from "axios"
 // 1、已经有导游、旅行团、出行、酒店、景点的订单数据
 // 但是旅行团导游性别这里没有数据
 // 现在看到的出行类型有plane、train、car 只给这三种加中文了
-// 2、按id筛选、取消订单、退款、付款的api还没接
 
 // 定义订单的响应类型
 interface BaseOrder {
@@ -120,10 +119,8 @@ const apiUrl = "https://123.60.14.84/api/Order"
 // 获取订单列表
 const fetchOrders = () => {
   axios
-    .get(`${apiUrl}/role`, {
-      params: {
-        role: userRole, // 角色类型替换为实际角色
-        Id: userId,
+    .get(`${apiUrl}/${userRole}/${userId}`, {
+    params: {
         orderType: categoryFilter.value || undefined,
         statusType: statusFilter.value || undefined,
         start: startDate.value || undefined,
@@ -198,12 +195,7 @@ async function searchOrder() {
 
   try {
     // 调用后端 API 获取订单详情
-    const response = await axios.get(`${apiUrl}/role/${orderId}`, {
-      params: {
-        role: userRole,
-        Id: userId
-      }
-    })
+    const response = await axios.get(`${apiUrl}/${userRole}/${userId}/${orderId}`, {})
     // 处理搜索结果
     console.log("Order Details:", response.data)
     orders.value = [response.data] // 将搜索结果设置为订单列表
@@ -245,12 +237,7 @@ const filterOrdersByCategory = () => {
   }
   if (categoryFilter.value) {
     axios
-      .get(`${apiUrl}/role/category/${categoryFilter.value}`, {
-        params: {
-          role: userRole,
-          Id: userId
-        }
-      })
+      .get(`${apiUrl}/${userRole}/${userId}/category/${categoryFilter.value}`, {})
       .then((response) => {
         if (response.data && response.data.length > 0) {
           orders.value = response.data
@@ -291,12 +278,7 @@ const filterOrdersByStatus = () => {
   }
   if (statusFilter.value) {
     axios
-      .get(`https://123.60.14.84/api/Order/role/status/${statusFilter.value}`, {
-        params: {
-          role: userRole,
-          Id: userId
-        }
-      })
+      .get(`${apiUrl}/${userRole}/${userId}/status/${statusFilter.value}`, {})
       .then((response) => {
         if (response.data && response.data.length > 0) {
           orders.value = response.data
@@ -322,9 +304,9 @@ const filterByDate = () => {
   endDate.value = date_input.value[1]
   if (startDate.value && endDate.value) {
     axios
-      .get(`https://123.60.14.84/api/Order/role/date-range`, {
+      .get(`${apiUrl}/${userRole}/${userId}/date-range`, {
         params: {
-          role: "User",
+          role: userRole,
           Id: userId,
           start: startDate.value,
           end: endDate.value
@@ -352,10 +334,9 @@ const filterByDate = () => {
 // 取消订单
 async function deleteOrder(orderId: number) {
   try {
-    const response = await axios.delete(`${apiUrl}/role/${orderId}`, {
-      params: {
-        role: userRole,
-        Id: userId
+    const response = await axios.delete(`${apiUrl}/${userRole}/${userId}/${orderId}`, {
+      headers: {
+        "Content-Type": "application/json"
       }
     })
     // 直接使用 axios 解析好的数据
@@ -390,11 +371,11 @@ async function deleteOrder(orderId: number) {
 
 // 标记订单为已付款
 async function PayOrder(orderId: number) {
+  const url = `${apiUrl}/${userRole}/${userId}/${orderId}`
   try {
-    const response = await axios.patch(`${apiUrl}/role/${orderId}`, {
-      params: {
-        role: userRole,
-        Id: userId
+    const response = await axios.patch(url, {
+      headers: {
+        "Content-Type": "application/json"
       }
     })
     // 直接使用 axios 解析好的数据
@@ -475,12 +456,12 @@ const openPayment = (orderId: number) => {
         PayOrder(orderId)
         ElMessage({
           type: "success",
-          message: "付款成功！"
+          message: "正在进行付款！"
         })
       } else {
         ElMessage({
           type: "info",
-          message: "付款已取消"
+          message: "付款已取消！"
         })
       }
     }
@@ -498,12 +479,12 @@ const openCancel = (orderId: number) => {
         deleteOrder(orderId)
         ElMessage({
           type: "success",
-          message: "取消订单成功！"
+          message: "正在进行取消！"
         })
       } else {
         ElMessage({
           type: "info",
-          message: "取消订单已取消"
+          message: "取消订单已取消！"
         })
       }
     }
@@ -521,12 +502,12 @@ const openRefund = (orderId: number) => {
         deleteOrder(orderId)
         ElMessage({
           type: "success",
-          message: "退款成功！"
+          message: "正在进行退款！"
         })
       } else {
         ElMessage({
           type: "info",
-          message: "退款已取消"
+          message: "退款已取消！"
         })
       }
     }
