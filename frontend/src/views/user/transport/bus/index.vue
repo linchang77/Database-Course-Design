@@ -54,7 +54,7 @@ async function newSchedule(){
   const url = "https://123.60.14.84:11000/api/Vehicle/schedule"
   console.log("url:", url)
   const vehicleScheduleData: VehicleScheduleRequest = {
-  VehicleId: 'MN11', // 示例值
+  VehicleId: 'MN12', // 示例值
   DepartureTime: new Date('2024-08-18T16:10:00'), // 示例值
   ArrivalTime: new Date('2024-08-18T17:35:00'), // 示例值
   VehicleType: 'car', // 示例值
@@ -168,9 +168,9 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
           >
         </div>
       </el-card>
-<!--
+
       <el-button type="primary" id="submit" @click="newSchedule">新增航班</el-button>
-      <el-button type="primary" id="submit" @click="addVehicleTicket">新增机票</el-button>
+ <!--     <el-button type="primary" id="submit" @click="addVehicleTicket">新增机票</el-button>
 -->
     </div>
 
