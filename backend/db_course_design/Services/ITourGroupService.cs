@@ -11,14 +11,14 @@ namespace db_course_design.Services
         IMapper _mapper { get; }
         Task<IEnumerable<TourGroupResponse>> GetAllTourGroupsAsync();
         Task<IEnumerable<TourGroupResponse>> SearchTourGroupsByCityAsync(SearchTourGroupRequest request);
-        //Task<IEnumerable<TourGroupResponse>> SearchTourGroupsByIdAsync(byte id);
-        //Task<IEnumerable<TourGroupResponse>> SearchTourGroupsByNameAsync(SearchTourGroupRequest request);
+        Task<TourGroupResponse?> SearchTourGroupsByIdAsync(byte id);
+        Task<IEnumerable<TourGroupResponse>> SearchTourGroupsByNameAsync(string name);
         Task<IEnumerable<TourGroupResponse>> GetRecommendedTourGroupsAsync();
         Task<bool> PurchaseTourGroupOrderAsync(PurchaseTourOrderRequest request, int number = 1);
-        //Task<TourGroupResponse> AddTourGroupAsync();
-        //Task<bool> DeleteTourGroupAsync(byte id);
-        //Task<TourGroupResponse> UpdateTourGroupAsync();
-        //Task<IEnumerable<GuideResponse>> GetAllGuidesAsync();
+        Task<TourGroupResponse?> AddTourGroupAsync(TourGroupRequest request);
+        Task<bool> DeleteTourGroupAsync(byte id);
+        Task<TourGroupResponse?> UpdateTourGroupAsync(byte id, TourGroupRequest request);
+        Task<IEnumerable<GuideResponse>> GetAllGuidesAsync();
     }
 }
 

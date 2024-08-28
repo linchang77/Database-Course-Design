@@ -7,6 +7,28 @@ using db_course_design.Profiles;
 
 namespace db_course_design.Services.impl
 {
+    public class TourGroupRequest
+    {
+        public byte? GuideId { get; set; }
+
+        public DateTime? StartDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+
+        public string? GroupName { get; set; }
+
+        public decimal? GroupPrice { get; set; }
+
+        public decimal? GoTicketId { get; set; }
+
+        public decimal? ReturnTicketId { get; set; }
+
+        public string? Departure { get; set; }
+
+        public string? Destination { get; set; }
+    }
+
+
     public class TourGroupService : ITourGroupService
     {
         private readonly ModelContext _context;
@@ -21,7 +43,10 @@ namespace db_course_design.Services.impl
 
         public async Task<IEnumerable<TourGroupResponse>> GetAllTourGroupsAsync()
         {
-            return await _context.TourGroups.Select(t => _mapper.Map<TourGroupResponse>(t)).ToListAsync();
+            return await _context.TourGroups
+                .Include(t => t.TourItineraries)
+                .Include(t => t.Hotels)
+                .Select(t => _mapper.Map<TourGroupResponse>(t)).ToListAsync();
         }
 
         public async Task<IEnumerable<TourGroupResponse>> SearchTourGroupsByCityAsync(SearchTourGroupRequest request)
@@ -40,10 +65,34 @@ namespace db_course_design.Services.impl
             return tourGroups.Select(t => _mapper.Map<TourGroupResponse>(t));
         }
 
+        public async Task<TourGroupResponse?> SearchTourGroupsByIdAsync(byte id)
+        {
+            var query = _context.TourGroups
+                .Where(tg => tg.GroupId == id)
+                .Include(tg => tg.TourItineraries)
+                .Include(tg => tg.Hotels);
+            var tourGroup = (await query.ToListAsync()).SingleOrDefault();
+
+            if (tourGroup == null)
+                return null;
+
+            return _mapper.Map<TourGroupResponse>(tourGroup);
+        }
+
+        public async Task<IEnumerable<TourGroupResponse>> SearchTourGroupsByNameAsync(string name)
+        {
+            var query = _context.TourGroups
+                .Where(tg => tg.GroupName.Contains(name))
+                .Include(tg => tg.TourItineraries)
+                .Include(tg => tg.Hotels);
+            var tourGroups = await query.ToListAsync();
+
+            return tourGroups.Select(t => _mapper.Map<TourGroupResponse>(t));
+        }
+
         public async Task<IEnumerable<TourGroupResponse>> GetRecommendedTourGroupsAsync()
         {
             var recommendedGroups = await _context.TourGroups
-                .Include(tg => tg.Guide)
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
                 .OrderBy(tg => tg.GroupPrice) // 假设推荐规则是按最低价格排序
@@ -101,6 +150,63 @@ namespace db_course_design.Services.impl
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<TourGroupResponse?> AddTourGroupAsync(TourGroupRequest request)
+        {
+            try
+            {
+                var record = _mapper.Map<TourGroup>(request);
+                _context.TourGroups.Add(record);
+                await _context.SaveChangesAsync();
+                return _mapper.Map<TourGroupResponse>(record);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> DeleteTourGroupAsync(byte id)
+        {
+            var target = await _context.TourGroups.FindAsync(id);
+
+            if (target == null)
+                return false;
+
+            _context.TourGroups.Remove(target);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<TourGroupResponse?> UpdateTourGroupAsync(byte id, TourGroupRequest request)
+        {
+            var target = (await _context.TourGroups
+                .Include(t => t.TourItineraries)
+                .Include(t => t.Hotels)
+                .Where(t => t.GroupId == id)
+                .ToListAsync()).SingleOrDefault();
+
+            if (target == null)
+                return null;
+
+            target.GuideId = request.GuideId;
+            target.StartDate = request.StartDate;
+            target.EndDate = request.EndDate;
+            target.GroupName = request.GroupName;
+            target.GroupPrice = request.GroupPrice;
+            target.GoTicketId = request.GoTicketId;
+            target.ReturnTicketId = request.ReturnTicketId;
+            target.Departure = request.Departure;
+            target.Destination = request.Destination;
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<TourGroupResponse>(target);
+        }
+
+        public async Task<IEnumerable<GuideResponse>> GetAllGuidesAsync()
+        {
+            return await _context.Guides.Select(g => _mapper.Map<GuideResponse>(g)).ToListAsync();
         }
     }
 }
