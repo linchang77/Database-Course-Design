@@ -347,6 +347,9 @@ export const dynamicRoutes: RouteRecordRaw[] = [
   {
     path: "/",
     component: Layouts,
+    meta:{
+      roles: ["user","admin"]
+    },
     children: [
       {
         path: "hotel",
