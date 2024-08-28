@@ -17,6 +17,11 @@ namespace db_course_design.Controllers
                2.景点的星级
     api/
         ScenicSpot/
+            all/
+                spots/
+                    GET           - 获取所有景点
+                tickets/
+                    GET           - 获取所有景点门票
             {city}/
                 GET               - 获取该城市所有的景点
                 id/
@@ -29,7 +34,7 @@ namespace db_course_design.Controllers
                     {grade}/
                         GET       - 按景点的星级筛选
                 distance/
-                    {distanch}/
+                    {distance}/
                          GET      - 按距离市中心距离筛选
       业务逻辑（用户购买景点门票）：
             展示景点的门票信息：
@@ -58,6 +63,18 @@ namespace db_course_design.Controllers
         public ScenicSpotController(IScenicSpotService scenicSpotService)
         {
             _scenicSpotService = scenicSpotService;
+        }
+
+        [HttpGet("all/spots")]
+        public async Task<IActionResult> GetAllScenicSpots()
+        {
+            return Ok(await _scenicSpotService.GetAllScenicSpotsAsync());
+        }
+
+        [HttpGet("all/tickets")]
+        public async Task<IActionResult> GetAllScenicSpotTickets()
+        {
+            return Ok(await _scenicSpotService.GetAllScenicSpotTicketsAsync());
         }
 
         [HttpGet("{city}")]
@@ -92,6 +109,7 @@ namespace db_course_design.Controllers
             }
             return Ok(scenicSpots);
         }
+
         //根据星级筛选
         [HttpGet("{city}/grade/{grade}")]
         public async Task<IActionResult> GetScenicSpotsByGrade(string city, string grade)
@@ -150,7 +168,55 @@ namespace db_course_design.Controllers
             return CreatedAtAction(nameof(GetScenicSpotById), new { scenicSpotId = addedScenicSpot.ScenicSpotId }, addedScenicSpot);
         }
 
+        // 删除门票
+        [HttpDelete("{scenicSpotId}/{ticketType},{ticketDate}")]
+        public async Task<IActionResult> DeleteScenicSpotTicket(decimal scenicSpotId, string ticketType, DateTime ticketDate)
+        {
+            var deleted = await _scenicSpotService.DeleteScenicSpotTicketAsync(scenicSpotId, ticketType, ticketDate);
+            if (!deleted)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
 
+        // 添加门票
+        [HttpPost("ticket")]
+        public async Task<IActionResult> AddScenicSpotTicket([FromBody] ScenicSpotTicketRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var addedTicket = await _scenicSpotService.AddScenicSpotTicketAsync(request);
+
+            if (addedTicket == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the scenic spot ticket.");
+            }
+
+            // 返回 201 Created 状态码，并包含新创建的景点门票的详细信息
+            return CreatedAtAction(nameof(GetScenicSpotTicketInfo), 
+                                   new { scenicSpotId = addedTicket.ScenicSpotId,
+                                         ticketType = addedTicket.TicketType,
+                                         ticketDate = addedTicket.TicketDate
+                                       }, 
+                                   addedTicket);
+        }
+
+        // 获取指定景点指定种类指定日期的门票信息
+        [HttpGet("ticket/{scenicSpotId},{ticketType},{ticketDate}")]
+        public async Task<IActionResult> GetScenicSpotTicketInfo(decimal scenicSpotId, string ticketType, DateTime ticketDate)
+        {
+            var result = await _scenicSpotService.GetScenicSpotTicketAsync(scenicSpotId, ticketType, ticketDate);
+
+            if (result == null)
+            {
+                return NotFound("No " + ticketType + " at " +  ticketDate + " found for this scenic spot.");
+            }
+            return Ok(result);
+        }
 
         // 获取指定景点当天的门票信息
         [HttpGet("ticket/{scenicSpotName}")]
