@@ -9,8 +9,8 @@ namespace db_course_design.Profiles
     {
         public VehicleProfile()
         {
-            CreateMap<VehicleSchedule, VehicleScheduleRequest>();
-            CreateMap<VehicleTicket, VehicleTicketRequest>();
+            CreateMap<VehicleSchedule, VehicleScheduleResponse>();
+            CreateMap<VehicleTicket, VehicleTicketResponse>();
             CreateMap<VehicleSchedule, VehicleResponse>()
                 .ForMember(dest => dest.DepartureTime, opt => opt.Ignore())
                 .ForMember(dest => dest.ArrivalTime, opt => opt.Ignore())
