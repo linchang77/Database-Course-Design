@@ -72,7 +72,7 @@ const handleLoginOrRegister = () => {
                 router.push({ path: "/guide-travel" });
                 break;
               case "admin":
-                router.push({ path: "/scene" });
+                router.push({ path: "/self-center" });
                 break;
               default:
                 router.push({ path: "/" });
@@ -102,7 +102,7 @@ const handleLoginOrRegister = () => {
                 router.push({ path: "/guide-travel" });
                 break;
               case "admin":
-                router.push({ path: "/scene" });
+                router.push({ path: "/self-center" });
                 break;
               default:
                 router.push({ path: "/" });

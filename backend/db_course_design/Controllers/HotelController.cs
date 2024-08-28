@@ -11,6 +11,19 @@ namespace db_course_design.Controllers
         根据城市获取酒店信息
         返回某酒店各种房型剩余房间数和房型价格
         接收用户下单信息并分配房间
+    路由：
+    api/Hotel/
+        all/
+            Get
+        {city}/
+            Get
+        detail/
+            {hotelId}/
+                Get
+        rooms/
+            {hotelId},{roomType}
+        create/
+            Post
     */
     [ApiController]
     [Route("api/[controller]")]
@@ -31,7 +44,7 @@ namespace db_course_design.Controllers
         }
 
         /*--根据城市获取酒店信息--*/
-        [HttpGet("city")]
+        [HttpGet("{city}")]
         public async Task<IActionResult> GetHotelByCity(string city)
         {
             var hotels = await _hotelService.GetHotelByCityAsync(city);
@@ -79,8 +92,6 @@ namespace db_course_design.Controllers
 
             return Ok();
         }
-
-        /*--删除一个酒店订单--*/
 
         /*
          * 业务逻辑：管理员可以在管理员界面可以对酒店及其房型、房间进行增删改
