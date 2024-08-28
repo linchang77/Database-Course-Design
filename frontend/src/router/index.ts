@@ -94,41 +94,65 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         path: "shanghai",
         component: () => import("@/views/scene/citys/shanghai.vue"),
         name: "Shanghai",
+        meta: {
+          title: "上海"
+        }
       },
       {
         path: "shanghai/tickets",
         component: () => import("@/views/scene/citys/city_shanghai/上海景点购票.vue"),
         name: "SceneTickets",
+        meta: {
+          title: "上海景点购票"
+        }
       },
       {
         path: "tokyo",
         component: () => import("@/views/scene/citys/tokyo.vue"),
         name: "Tokyo",
+        meta: {
+          title: "东京"
+        }
       },
       {
         path: "cairo",
         component: () => import("@/views/scene/citys/cairo.vue"),
         name: "Cairo",
+        meta: {
+          title: "开罗"
+        }
       },
       {
         path: "paris",
         component: () => import("@/views/scene/citys/paris.vue"),
         name: "Paris",
+        meta: {
+          title: "巴黎"
+        }
       },
       {
         path: "newyork",
         component: () => import("@/views/scene/citys/newyork.vue"),
         name: "Newyork",
+        meta: {
+          title: "纽约"
+        }
       },
       {
         path: "riodejaneiro",
         component: () => import("@/views/scene/citys/riodejaneiro.vue"),
         name: "Riodejaneiro",
+        meta: {
+          title: "里约热内卢"
+        }
       },
       {
         path: "sydney",
         component: () => import("@/views/scene/citys/sydney.vue"),
         name: "Sydney",
+        meta: {
+          title: "悉尼"
+        }
       }
     ]
   },
@@ -163,7 +187,9 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       path: "groups/detail",
       component: () => import(`@/views/group-travel/groups/detail.vue`), 
       name: "group-detail",
-    
+      meta: {
+        title: "旅行团",
+      }
   }]
   },
   //csh end
@@ -317,7 +343,63 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    meta:{
+      roles: ["user","admin"]
+    },
+    children: [
+      {
+        path: "hotel",
+        component: () => import("@/views/hotel/index.vue"),
+        name: "Hotel",
+        meta: {
+          title: "酒店",
+          svgIcon: "hotel",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/hotel",
+    component: Layouts,
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: "detail",
+        component: () => import("@/views/hotel/detail.vue"),
+        name: "Detail",
+        meta: {
+          title: "酒店详情",
+          hidden: true
+        }
+      },
+      {
+        path: "room",
+        component: () => import("@/views/hotel/room.vue"),
+        name: "Room",
+        meta: {
+          title: "酒店房型",
+          hidden: true
+        }
+      },
+      {
+        path: "order",
+        component: () => import("@/views/hotel/order.vue"),
+        name: "Order",
+        meta: {
+          title: "酒店订单",
+          hidden: true
+        }
+      },
+    ]
   }
+
   // {
   //   path: "/permission",
   //   component: Layouts,

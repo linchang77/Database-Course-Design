@@ -51,7 +51,7 @@ const buyTicket = async () => {
     // 发送POST请求进行购票
     const response = await axios.post(url, {
       orderDate: selectedDate.value,
-      userId: 41, // 这里的userId需要根据具体用户登录信息动态设置
+      userId: localStorage.getItem("id"), // 这里的userId需要根据具体用户登录信息动态设置
       status: "pending", // 初始状态，可能是待付款或待确认
       price: scene.value.ticketPrice * ticketQuantity.value
     })

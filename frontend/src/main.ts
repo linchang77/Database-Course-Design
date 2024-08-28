@@ -17,8 +17,11 @@ import "vxe-table/lib/style.css"
 import "vxe-table-plugin-element/dist/style.css"
 import "@/styles/index.scss"
 
-const app = createApp(App)
+import { createPinia } from "pinia"
 
+const app = createApp(App)
+const pinia = createPinia()
+app.use(pinia)
 /** 加载插件 */
 loadPlugins(app)
 /** 加载全局 SVG */
