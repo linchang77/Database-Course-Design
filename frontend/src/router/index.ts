@@ -213,27 +213,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
- // mjw start
-  {
-    path: "/",
-    component: Layouts,
-    meta: {
-      roles: ["user"] // 后续修改为 admin 角色
-    },
-    children: [
-      {
-      path: "group-travel-admin",
-      component: () => import("@/views/group-travel-admin/index.vue"),
-      name: "Group-travel-admin",
-      meta: {
-      title: "跟团游管理",
-      svgIcon: "group-travel",
-    affix: true
-   }
-   }
-  ]
-   },
-   // mjw end
   {
     path: "/",
     component: Layouts,
