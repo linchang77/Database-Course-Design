@@ -21,20 +21,21 @@ namespace db_course_design.Controllers
          点保存键保存，点取消键退出，均返回订单管理界面
     api/
         Order/                  
-            role/                   - 包含:role&Id
-                GET                 - 获取所有与自己相关的订单
-                category    ------- 防止路由冲突
-                    {orderType}/
-                        GET         - 按订单分类筛选
-                status
-                    {statusType}/
-                        GET         - 按订单状态筛选
-                {orderId}/
-                    GET             - 按订单ID搜索
-                    DELETE          - 取消某个订单(软删除)
-                    Patch           - 某个订单完成付款(更新资源的部分字段)
-                date-range/         - 包含：start&end
-                    GET             - 按时间段筛选
+            {role}/
+                {Id}/
+                    GET                 - 获取所有与自己相关的订单
+                    category    ------- 防止路由冲突
+                        {orderType}/
+                            GET         - 按订单分类筛选
+                    status
+                        {statusType}/
+                            GET         - 按订单状态筛选
+                    {orderId}/
+                        GET             - 按订单ID搜索
+                        DELETE          - 取消某个订单(软删除)
+                        Patch           - 某个订单完成付款(更新资源的部分字段)
+                    date-range/         - 包含：start&end
+                        GET             - 按时间段筛选
     */
     [ApiController]
     [Route("api/[controller]")]
@@ -47,7 +48,7 @@ namespace db_course_design.Controllers
         }
 
         /*--获取角色&Id相关的订单--*/
-        [HttpGet("role")]
+        [HttpGet("{role}/{Id}")]
         public async Task<IActionResult> GetAllOrders(string role, int Id)
         {
             var orders = await _orderService.GetAllOrdersAsync(role, Id);
@@ -59,7 +60,7 @@ namespace db_course_design.Controllers
         }
 
         /*--按订单分类筛选--*/
-        [HttpGet("role/category/{orderType}")]
+        [HttpGet("{role}/{Id}/category/{orderType}")]
         public async Task<IActionResult> GetOrdersByCategory(string role, int Id, string orderType)
         {
             var orders = await _orderService.GetOrdersByCategoryAsync(role, Id, orderType);
@@ -71,7 +72,7 @@ namespace db_course_design.Controllers
         }
 
         /*--按订单状态筛选--*/
-        [HttpGet("role/status/{statusType}")]
+        [HttpGet("{role}/{Id}/status/{statusType}")]
         public async Task<IActionResult> GetOrdersByStatus(string role, int Id, string statusType)
         {
             var orders = await _orderService.GetOrdersByStatusAsync(role, Id, statusType);
@@ -83,7 +84,7 @@ namespace db_course_design.Controllers
         }
 
         /*--按订单ID搜索--*/
-        [HttpGet("role/{orderId}")]
+        [HttpGet("{role}/{Id}/{orderId}")]
         public async Task<IActionResult> GetOrderById(string role, int Id, int orderId)
         {
             var order = await _orderService.GetOrderByIdAsync(role, Id, orderId);
@@ -95,7 +96,7 @@ namespace db_course_design.Controllers
         }
 
         /*--取消某个订单(软删除)--*/
-        [HttpDelete("role/{orderId}")]
+        [HttpDelete("{role}/{Id}/{orderId}")]
         public async Task<IActionResult> DelOrderById(string role, int Id, int orderId)
         {
             bool flag = await _orderService.StatusUpdateAsync(role, Id, orderId, "Cancelled");
@@ -105,7 +106,7 @@ namespace db_course_design.Controllers
         }
 
         /*--某个订单完成付款(更新资源的部分字段)--*/
-        [HttpPatch("role/{orderId}")]
+        [HttpPatch("{role}/{Id}/{orderId}")]
         public async Task<IActionResult> OrderPayedStatus(string role, int Id, int orderId)
         {
             bool flag = await _orderService.StatusUpdateAsync(role, Id, orderId, "Completed");
@@ -115,7 +116,7 @@ namespace db_course_design.Controllers
         }
 
         /*--按时间段筛选--*/
-        [HttpGet("role/date-range")]
+        [HttpGet("{role}/{Id}/date-range")]
         public async Task<IActionResult> GetOrdersByTime(string role, int Id, DateTime start, DateTime end)
         {
             var orders = await _orderService.GetOrdersByTimeAsync(role, Id, start, end);
