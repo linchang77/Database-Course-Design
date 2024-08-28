@@ -66,6 +66,7 @@ namespace db_course_design.Controllers
             var recommendedGroups = await _tourGroupService.GetRecommendedTourGroupsAsync();
             return Ok(recommendedGroups);
         }
+
         /// <summary>
         /// 购买旅行团订单
         /// </summary>
@@ -88,7 +89,12 @@ namespace db_course_design.Controllers
             {
                 return StatusCode(500, "订单购买失败。");
             }
-
         }
+
+        /// <summary>
+        /// 获取全部旅行团信息
+        /// </summary>
+        /// <returns>所有旅行团组成的列表</returns>
+        //[HttpGet("")]
     }
 }
