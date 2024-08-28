@@ -17,6 +17,11 @@ namespace db_course_design.Controllers
                2.景点的星级
     api/
         ScenicSpot/
+            all/
+                spots/
+                    GET           - 获取所有景点
+                tickets/
+                    GET           - 获取所有景点门票
             {city}/
                 GET               - 获取该城市所有的景点
                 id/
@@ -60,6 +65,18 @@ namespace db_course_design.Controllers
             _scenicSpotService = scenicSpotService;
         }
 
+        [HttpGet("all/spots")]
+        public async Task<IActionResult> GetAllScenicSpots()
+        {
+            return Ok(await _scenicSpotService.GetAllScenicSpotsAsync());
+        }
+
+        [HttpGet("all/tickets")]
+        public async Task<IActionResult> GetAllScenicSpotTickets()
+        {
+            return Ok(await _scenicSpotService.GetAllScenicSpotTicketsAsync());
+        }
+
         [HttpGet("{city}")]
         public async Task<IActionResult> GetScenicSpotsByCity(string city)
         {
@@ -92,6 +109,7 @@ namespace db_course_design.Controllers
             }
             return Ok(scenicSpots);
         }
+
         //根据星级筛选
         [HttpGet("{city}/grade/{grade}")]
         public async Task<IActionResult> GetScenicSpotsByGrade(string city, string grade)

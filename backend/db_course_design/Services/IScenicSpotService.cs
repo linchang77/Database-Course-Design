@@ -6,6 +6,8 @@ namespace db_course_design.Services
 {
     public interface IScenicSpotService
     {
+        Task<IEnumerable<ScenicSpotResponse>> GetAllScenicSpotsAsync();
+        Task<IEnumerable<ScenicSpotTicketResponse>> GetAllScenicSpotTicketsAsync();
         Task<IEnumerable<ScenicSpotResponse>> GetScenicSpotsByCityAsync(string city);
         Task<ScenicSpotResponse?> GetScenicSpotByIdAsync(decimal scenicSpotId);
         Task<IEnumerable<ScenicSpotResponse>> GetScenicSpotsByNameAsync(string scenicSpotName);

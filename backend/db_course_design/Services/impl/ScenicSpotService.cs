@@ -40,6 +40,31 @@ namespace db_course_design.Services.impl
             _context = context;
         }
 
+        public async Task<IEnumerable<ScenicSpotResponse>> GetAllScenicSpotsAsync()
+        {
+            return await _context.ScenicSpots.Select(s => new ScenicSpotResponse
+            {
+                ScenicSpotId = s.ScenicSpotId,
+                ScenicSpotName = s.ScenicSpotName,
+                CityName = s.CityName,
+                ScenicSpotGrade = s.ScenicSpotGrade,
+                ScenicSpotIntroduction = s.ScenicSpotIntroduction,
+                ScenicSpotLocation = s.ScenicSpotLocation,
+            }).ToListAsync();
+        }
+
+        public async Task<IEnumerable<ScenicSpotTicketResponse>> GetAllScenicSpotTicketsAsync()
+        {
+            return await _context.ScenicSpotTickets.Select(t => new ScenicSpotTicketResponse
+            {
+                ScenicSpotId = t.ScenicSpotId,
+                TicketType = t.TicketType,
+                TicketPrice = t.TicketPrice,
+                TicketRemaining = t.TicketRemaining,
+                TicketDate = t.TicketDate
+            }).ToListAsync();
+        }
+
         public async Task<IEnumerable<ScenicSpotResponse>> GetScenicSpotsByCityAsync(string city)
         {
             var scenicSpots = await _context.ScenicSpots

@@ -4,7 +4,7 @@ namespace db_course_design.DTOs
 {
     public class HotelResponse
     {
-        public int HotelId { get; set; }
+        public decimal HotelId { get; set; }
         public string? HotelName { get; set; }
         public string? CityName { get; set; }
         public string? HotelGrade { get; set; }
@@ -20,7 +20,7 @@ namespace db_course_design.DTOs
     }
     public class HotelRoomDetail
     {
-        public int HotelId { get; set; }
+        public decimal HotelId { get; set; }
         public string? RoomType { get; set; }
         public int RoomLeft { get; set; }
         public decimal? RoomPrice { get; set; }
@@ -29,7 +29,7 @@ namespace db_course_design.DTOs
     public class CreateHotelOrderRequest
     {
         public int userId { get; set; }
-        public int HotelId { get; set; }
+        public decimal HotelId { get; set; }
         public DateTime? CheckInDate { get; set; }
         public DateTime? CheckOutDate { get; set; }
         public string RoomType { get; set; }

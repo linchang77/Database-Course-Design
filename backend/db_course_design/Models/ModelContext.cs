@@ -369,7 +369,7 @@ public partial class ModelContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("HOTEL_LOCATION");
             entity.Property(e => e.HotelName)
-                .HasMaxLength(20)
+                .HasMaxLength(60)
                 .IsUnicode(false)
                 .HasColumnName("HOTEL_NAME");
 
