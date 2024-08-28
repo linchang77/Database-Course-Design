@@ -15,10 +15,6 @@ namespace db_course_design.DTOs
         public string? ScenicSpotIntroduction { get; set; }
 
         public string? ScenicSpotLocation { get; set; }
-
-        public virtual City? CityNameNavigation { get; set; }
-
-        public virtual ICollection<ScenicSpotTicket> ScenicSpotTickets { get; set; } = new List<ScenicSpotTicket>();
     }
     public class ScenicSpotTicketResponse
     {
@@ -31,16 +27,12 @@ namespace db_course_design.DTOs
         public decimal? TicketRemaining { get; set; }
 
         public DateTime TicketDate { get; set; }
-
-        public virtual ScenicSpot ScenicSpot { get; set; } = null!;
-
-        public virtual ICollection<ScenicSpotOrder> ScenicSpotOrders { get; set; } = new List<ScenicSpotOrder>();
     }
 
     public class AdultChildTicketResponse
     {
-        public ScenicSpotTicketResponse AdultTicket;
+        public ScenicSpotTicketResponse? AdultTicket;
 
-        public ScenicSpotTicketResponse ChildTicket;
+        public ScenicSpotTicketResponse? ChildTicket;
     }
 }

@@ -103,6 +103,9 @@ namespace db_course_design.Controllers
         [HttpPost("user/{id}/phone/add/{number}")]
         public async Task<IActionResult> AddUserPhoneNumber(int id, string number)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var target = await _profileService.AddUserPhoneNumberAsync(id, number);
 
             if (target == null)
@@ -158,6 +161,9 @@ namespace db_course_design.Controllers
         [HttpPost("guide/{id}/phone/add/{number}")]
         public async Task<IActionResult> AddGuidePhoneNumber(byte id, string number)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var target = await _profileService.AddGuidePhoneNumberAsync(id, number);
 
             if (target == null)
@@ -193,6 +199,9 @@ namespace db_course_design.Controllers
         [HttpPost("guide/{id}/regions/add/{region}")]
         public async Task<IActionResult> AddGuideRegion(byte id, string region)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var target = await _profileService.AddGuideRegionAsync(id, region);
 
             if (target == null)

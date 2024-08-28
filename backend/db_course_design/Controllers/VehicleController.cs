@@ -19,7 +19,10 @@ namespace db_course_design.Controllers
             ticket/
                 {ticketId}/
                     GET               - 获取指定车票编号的车票信息
+            schedules/
+                GET                   - 获取所有班次信息
             tickets/
+                GET                   - 获取所有车票列表
                 {vehicleId}/
                     GET               - 获取指定班号的所有车票列表
             info/
@@ -79,6 +82,22 @@ namespace db_course_design.Controllers
             if (ticket == null)
                 return NotFound("No vehicle ticket with id " + ticketId);
             return Ok(_vehicleService._mapper.Map<VehicleTicketRequest>(ticket));
+        }
+
+        [HttpGet("schedules")]
+        public async Task<IActionResult> GetAllVehicleSchedules()
+        {
+            var list = await _vehicleService.GetAllVehicleSchedulesAsync();
+
+            return Ok(list.Select(v => _vehicleService._mapper.Map<VehicleScheduleRequest>(v)));
+        }
+
+        [HttpGet("tickets")]
+        public async Task<IActionResult> GetAllVehicleTickets()
+        {
+            var list = await _vehicleService.GetAllVehicleTicketAsync();
+
+            return Ok(list.Select(v => _vehicleService._mapper.Map<VehicleTicketRequest>(v)));
         }
 
         [HttpGet("tickets/{vehicleId}")]

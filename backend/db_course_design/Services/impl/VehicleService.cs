@@ -96,6 +96,16 @@ namespace db_course_design.Services.impl
             return ticket;
         }
 
+        public async Task<List<VehicleSchedule>> GetAllVehicleSchedulesAsync()
+        {
+            return await _context.VehicleSchedules.ToListAsync();
+        }
+
+        public async Task<List<VehicleTicket>> GetAllVehicleTicketAsync()
+        {
+            return await _context.VehicleTickets.ToListAsync();
+        }
+
         public async Task<List<VehicleTicket>> GetVehicleTicketsAsync(string vehicleId)
         {
             var schedule =  await _context.VehicleSchedules
