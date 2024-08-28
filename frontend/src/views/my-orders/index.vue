@@ -6,7 +6,7 @@ import { Search } from "@element-plus/icons-vue"
 import axios from "axios"
 
 // 8.28 14:54
-// 1、已经有导游、旅行团、出行、酒店、景点的订单数据 
+// 1、已经有导游、旅行团、出行、酒店、景点的订单数据
 // 但是旅行团导游性别这里没有数据
 // 现在看到的出行类型有plane、train、car 只给这三种加中文了
 // 2、按id筛选、取消订单、退款、付款的api还没接
@@ -177,9 +177,9 @@ const fetchOrders = () => {
 // 按订单ID搜索订单
 async function searchOrder() {
   const orderId = order_id_input.value
-  order_status_input.value = '全部订单'
-  order_type_input.value = '全部订单'
-  date_input.value = ''
+  order_status_input.value = "全部订单"
+  order_type_input.value = "全部订单"
+  date_input.value = ""
   if (!orderId) {
     // 如果订单号为空，显示全部订单
     try {
@@ -198,7 +198,12 @@ async function searchOrder() {
 
   try {
     // 调用后端 API 获取订单详情
-    const response = await axios.get(`${apiUrl}/${userRole}/${userId}/${orderId}`, {})
+    const response = await axios.get(`${apiUrl}/role/${orderId}`, {
+      params: {
+        role: userRole,
+        Id: userId
+      }
+    })
     // 处理搜索结果
     console.log("Order Details:", response.data)
     orders.value = [response.data] // 将搜索结果设置为订单列表
@@ -240,9 +245,9 @@ const filterOrdersByCategory = () => {
   }
   if (categoryFilter.value) {
     axios
-      .get(`https://123.60.14.84:11100/api/Order/role/category/${categoryFilter.value}`, {
+      .get(`${apiUrl}/role/category/${categoryFilter.value}`, {
         params: {
-          role: "User",
+          role: userRole,
           Id: userId
         }
       })
@@ -288,7 +293,7 @@ const filterOrdersByStatus = () => {
     axios
       .get(`https://123.60.14.84/api/Order/role/status/${statusFilter.value}`, {
         params: {
-          role: "User",
+          role: userRole,
           Id: userId
         }
       })
@@ -347,9 +352,10 @@ const filterByDate = () => {
 // 取消订单
 async function deleteOrder(orderId: number) {
   try {
-    const response = await axios.delete(`${apiUrl}/${userRole}/${userId}/${orderId}`, {
-      headers: {
-        "Content-Type": "application/json"
+    const response = await axios.delete(`${apiUrl}/role/${orderId}`, {
+      params: {
+        role: userRole,
+        Id: userId
       }
     })
     // 直接使用 axios 解析好的数据
@@ -384,19 +390,18 @@ async function deleteOrder(orderId: number) {
 
 // 标记订单为已付款
 async function PayOrder(orderId: number) {
-  const url = `${apiUrl}/${userRole}/${userId}/${orderId}`
   try {
-    const response = await axios.patch(url, {
-      headers: {
-        "Content-Type": "application/json"
+    const response = await axios.patch(`${apiUrl}/role/${orderId}`, {
+      params: {
+        role: userRole,
+        Id: userId
       }
     })
-
-    if (response.status === 200) {
-      console.log(response.data.Message) // 显示成功消息
-      alert(`订单号为${orderId}的订单已支付.`)
-      fetchOrders() // 刷新订单列表
-    }
+    // 直接使用 axios 解析好的数据
+    const data = response.data
+    console.log(data.message) // 显示成功消息
+    alert(`订单号${orderId}的订单已支付.`)
+    fetchOrders() // 刷新订单列表
   } catch (error) {
     // 判断错误类型并处理
     if (axios.isAxiosError(error)) {
@@ -404,20 +409,20 @@ async function PayOrder(orderId: number) {
       if (error.response) {
         // 请求已发出，服务器响应状态码不在2xx范围内
         console.error("Error:", error.response.data.Message)
-        alert(`取消订单失败: ${error.response.data.Message}`)
+        alert(`支付订单失败: ${error.response.data.Message}`)
       } else if (error.request) {
         // 请求已发出，但没有收到响应
         console.error("Error:", error.request)
-        alert("付款时发生错误。")
+        alert("支付订单时发生错误。")
       } else {
         // 其他错误
         console.error("Error:", error.message)
-        alert("付款时发生错误。")
+        alert("支付订单时发生错误。")
       }
     } else {
       // 非 axios 错误
       console.error("Error:", error)
-      alert("取消订单时发生错误。")
+      alert("支付订单时发生错误。")
     }
   }
 }
@@ -581,7 +586,7 @@ function formatDateToDay(dateString?: string): string {
 
         <el-button type="primary" class="button" @click="searchOrder"> 搜索 </el-button>
       </div>
-      <div class="second=row" style="margin-top: 5px;">
+      <div class="second=row" style="margin-top: 5px">
         <span class="word"> 订单状态 </span>
         <el-select
           v-model="order_status_input"
@@ -616,7 +621,7 @@ function formatDateToDay(dateString?: string): string {
     </div>
 
     <!-- Main container for displaying orders -->
-    <el-scrollbar height="700px" style="margin-top: 10px;">
+    <el-scrollbar height="700px" style="margin-top: 10px">
       <div class="main-container">
         <div class="holder-container" v-if="orders.length === 0 || showEmptyMessage">
           <el-empty description="暂无订单数据" />
