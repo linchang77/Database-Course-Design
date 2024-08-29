@@ -34,83 +34,87 @@
       label: '国内',
       children: [
         {
-          value: "beijing",
+          value: "北京",
           label: "北京",
         },
         {
-          value: "shanghai",
+          value: "上海",
           label: "上海",
         },
         {
-          value: "guangzhou",
+          value: "广州",
           label: "广州",
         },
         {
-          value: "shenzhen",
+          value: "深圳",
           label: "深圳",
         },
         {
-          value: "chengdu",
+          value: "成都",
           label: "成都",
         },
         {
-          value: "hangzhou",
+          value: "杭州",
           label: "杭州",
         },
         {
-          value: "chongqing",
+          value: "重庆",
           label: "重庆",
         },
         {
-          value: "xian",
+          value: "白山",
+          label: "白山",
+        },
+        {
+          value: "西安",
           label: "西安",
         },
         {
-          value: "nanjing",
+          value: "南京",
           label: "南京",
         },
         {
-          value: "wuhan",
+          value: "武汉",
           label: "武汉",
         },
         {
-          value: "suzhou",
+          value: "苏州",
           label: "苏州",
         },
         {
-          value: "tianjin",
+          value: "天津",
           label: "天津",
         },
         {
-          value: "qingdao",
+          value: "青岛",
           label: "青岛",
         },
         {
-          value: "xiamen",
+          value: "厦门",
           label: "厦门",
         },
         {
-          value: "dalian",
+          value: "大连",
           label: "大连",
         },
         {
-          value: "changsha",
+          value: "长沙",
           label: "长沙",
         },
         {
-          value: "fuzhou",
+          value: "福州",
           label: "福州",
         },
         {
-          value: "kunming",
+          value: "昆明",
           label: "昆明",
         },
         {
-          value: "guiyang",
+          value: "贵阳",
           label: "贵阳",
         },
         {
-          value: "haikou",
+          value: "海口",
           label: "海口",
         },
       ],
