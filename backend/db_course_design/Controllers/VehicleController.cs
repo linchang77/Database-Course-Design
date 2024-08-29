@@ -71,7 +71,7 @@ namespace db_course_design.Controllers
 
             if (schedule == null)
                 return NotFound("No vehicle schedule of " + vehicleId);
-            return Ok(_vehicleService._mapper.Map<VehicleScheduleRequest>(schedule));
+            return Ok(_vehicleService._mapper.Map<VehicleScheduleResponse>(schedule));
         }
 
         [HttpGet("ticket/{ticketId}")]
@@ -81,7 +81,7 @@ namespace db_course_design.Controllers
 
             if (ticket == null)
                 return NotFound("No vehicle ticket with id " + ticketId);
-            return Ok(_vehicleService._mapper.Map<VehicleTicketRequest>(ticket));
+            return Ok(_vehicleService._mapper.Map<VehicleTicketResponse>(ticket));
         }
 
         [HttpGet("schedules")]
@@ -89,7 +89,7 @@ namespace db_course_design.Controllers
         {
             var list = await _vehicleService.GetAllVehicleSchedulesAsync();
 
-            return Ok(list.Select(v => _vehicleService._mapper.Map<VehicleScheduleRequest>(v)));
+            return Ok(list.Select(v => _vehicleService._mapper.Map<VehicleScheduleResponse>(v)));
         }
 
         [HttpGet("tickets")]
@@ -97,7 +97,7 @@ namespace db_course_design.Controllers
         {
             var list = await _vehicleService.GetAllVehicleTicketAsync();
 
-            return Ok(list.Select(v => _vehicleService._mapper.Map<VehicleTicketRequest>(v)));
+            return Ok(list.Select(v => _vehicleService._mapper.Map<VehicleTicketResponse>(v)));
         }
 
         [HttpGet("tickets/{vehicleId}")]
@@ -107,7 +107,7 @@ namespace db_course_design.Controllers
 
             if (tickets == null || tickets.Count == 0)
                 return NotFound("No vehicle ticket for " + vehicleId);
-            return Ok(tickets.Select(t => _vehicleService._mapper.Map<VehicleTicketRequest>(t)).ToList());
+            return Ok(tickets.Select(t => _vehicleService._mapper.Map<VehicleTicketResponse>(t)).ToList());
         }
 
         [HttpGet("info/{type},{arrivalCity},{departureCity},{departureTime}")]
@@ -132,7 +132,7 @@ namespace db_course_design.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the vehicle schedule.");
             return CreatedAtAction(nameof(GetVehicleScheduleById), 
                                    new { vehicleId = target.VehicleId }, 
-                                   _vehicleService._mapper.Map<VehicleScheduleRequest>(target));
+                                   _vehicleService._mapper.Map<VehicleScheduleResponse>(target));
         }
 
         [HttpPost("ticket")]
@@ -147,7 +147,7 @@ namespace db_course_design.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the vehicle ticket.");
             return CreatedAtAction(nameof(GetVehicleTicketByTicketId), 
                                    new { ticketId = target.TicketId },
-                                   _vehicleService._mapper.Map<VehicleTicketRequest>(target));
+                                   _vehicleService._mapper.Map<VehicleTicketResponse>(target));
         }
 
         [HttpDelete("schedule/delete/{vehicleId}")]

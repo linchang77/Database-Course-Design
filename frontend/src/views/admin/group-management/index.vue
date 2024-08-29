@@ -5,7 +5,9 @@ import { Search, Refresh, CirclePlus, Delete } from "@element-plus/icons-vue"
 import axios from "axios"
 
 const loading = ref<boolean>(false)
-
+defineOptions({
+  name: "Group-management"
+})
 // 定义导游的接口
 interface Guide {
   guideId: number
@@ -366,3 +368,4 @@ onMounted(() => {
   margin-left: 20px;
 }
 </style>
+
