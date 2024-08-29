@@ -58,8 +58,8 @@ namespace db_course_design.Services.impl
             return await _context.TourGroups
                 .Include(t => t.TourItineraries)
                 .Include(t => t.Hotels)
-                .Select(t => _mapper.Map<TourGroupResponse>(t))
-                .ToListAsync();
+                .Include(t => t.Guide) // 加载导游信息
+                .Select(t => _mapper.Map<TourGroupResponse>(t)).ToListAsync();
         }
 
         public async Task<IEnumerable<TourGroupResponse>> SearchTourGroupsByCityAsync(SearchTourGroupRequest request)
@@ -67,6 +67,7 @@ namespace db_course_design.Services.impl
             var query = _context.TourGroups
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
+                .Include(t => t.Guide) // 加载导游信息
                 .Where(tg => tg.Departure == request.Departure &&
                        tg.Destination == request.Destination &&
                        (request.Departure_Time == null || tg.StartDate >= request.Departure_Time) &&
@@ -83,7 +84,8 @@ namespace db_course_design.Services.impl
             var query = _context.TourGroups
                 .Where(tg => tg.GroupId == id)
                 .Include(tg => tg.TourItineraries)
-                .Include(tg => tg.Hotels);
+                .Include(tg => tg.Hotels)
+                .Include(t => t.Guide); // 加载导游信息;
             var tourGroup = (await query.ToListAsync()).SingleOrDefault();
 
             if (tourGroup == null)
@@ -97,7 +99,8 @@ namespace db_course_design.Services.impl
             var query = _context.TourGroups
                 .Where(tg => tg.GroupName.Contains(name))
                 .Include(tg => tg.TourItineraries)
-                .Include(tg => tg.Hotels);
+                .Include(tg => tg.Hotels)
+                .Include(t => t.Guide);
             var tourGroups = await query.ToListAsync();
 
             return tourGroups.Select(t => _mapper.Map<TourGroupResponse>(t));
@@ -108,6 +111,7 @@ namespace db_course_design.Services.impl
             var recommendedGroups = await _context.TourGroups
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
+                .Include(t => t.Guide)
                 .OrderBy(tg => tg.GroupPrice) // 假设推荐规则是按最低价格排序
                 .ToListAsync();
 

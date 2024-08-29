@@ -11,7 +11,8 @@ namespace db_course_design.Profiles
         {
             CreateMap<TourItinerary, TourItineraryResponse>();
             CreateMap<Hotel, HotelResponse>();
-            CreateMap<TourGroup, TourGroupResponse>();
+            CreateMap<TourGroup, TourGroupResponse>()
+           .ForMember(dest => dest.guidename, opt => opt.MapFrom(src => src.Guide.GuideName)); 
             CreateMap<TourGroupRequest, TourGroup>();
             CreateMap<TourItineraryRequest, TourItinerary>();
             CreateMap<Guide, GuideResponse>();
