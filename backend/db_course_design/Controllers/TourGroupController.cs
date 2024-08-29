@@ -115,14 +115,14 @@ namespace db_course_design.Controllers
         /// </summary>
         /// <param name="request">购买请求</param>
         /// <returns>购买结果</returns>
-        [HttpPost("purchase")]
-        public async Task<ActionResult> PurchaseTourGroupOrder([FromBody] PurchaseTourOrderRequest request)
+        [HttpPost("purchase/number/{number}")]
+        public async Task<ActionResult> PurchaseTourGroupOrder([FromBody] PurchaseTourOrderRequest request,int number)
         {
             if (request == null || request.UserId == null || request.GroupId == null)
             {
                 return BadRequest("用户ID和旅行团ID是必填项。");
             }
-            var result = await _tourGroupService.PurchaseTourGroupOrderAsync(request);
+            var result = await _tourGroupService.PurchaseTourGroupOrderAsync(request,number);
 
             if (result)
             {
