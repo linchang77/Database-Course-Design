@@ -6,10 +6,8 @@ defineOptions({
 import { ref, computed } from "vue"
 import PlaceSelector from "./components/PlaceSelector.vue"
 import TimeSelector from "./components/TimeSelector.vue"
-import AddScheduleTicket from "./components/AddScheduleTicket.vue"
 import { useSearchResultsStore } from "@/store/modules/searchResults"
 import { storeToRefs } from 'pinia'
-import { checkPermission } from "@/utils/permission"
 const departure = ref("")
 const destination = ref("")
 const departureTime = ref("")
@@ -76,7 +74,6 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
 
 <template>
   <div class="app">
-    <AddScheduleTicket v-if="checkPermission(['admin'])" />
     <div class="app-container">
       <el-card header="机票查询">
         <div class="index-container">

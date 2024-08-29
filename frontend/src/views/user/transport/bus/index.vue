@@ -168,9 +168,9 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
           >
         </div>
       </el-card>
-
+ <!--
       <el-button type="primary" id="submit" @click="newSchedule">新增航班</el-button>
- <!--     <el-button type="primary" id="submit" @click="addVehicleTicket">新增机票</el-button>
+    <el-button type="primary" id="submit" @click="addVehicleTicket">新增机票</el-button>
 -->
     </div>
 

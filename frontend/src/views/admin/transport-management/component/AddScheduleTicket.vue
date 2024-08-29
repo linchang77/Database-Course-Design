@@ -5,7 +5,7 @@
     <!-- 删除行程按钮 -->
     <el-button @click="showDeleteScheduleForm">删除行程</el-button>
     <!-- 删除车票按钮 -->
-    <el-button @click="showDeleteTicketForm">删除车票</el-button>
+    <el-button @click="showDeleteTicketForm">删除票务</el-button>
 
 <!-- 删除车票的对话框 -->
     <el-dialog v-model="deleteTicketFormVisible" title="删除车票" :before-close="handleCloseDeleteTicketForm">
@@ -56,6 +56,19 @@
             type="datetime"
             placeholder="选择日期时间"
           ></el-date-picker>
+        </el-form-item>
+        <el-form-item label="交通类型">
+          <div>
+            <el-select v-model="vehicleScheduleData.VehicleType" style="width: 200%;"   :filterable="true"  placeholder="请选择交通工具类型">
+              <el-option
+                v-for="item in vehicleTypes"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
         </el-form-item>
         <el-form-item label="出发城市">
           <el-input v-model="vehicleScheduleData.DepartureCity"></el-input>
@@ -137,6 +150,13 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+
+const vehicleTypes = [
+  { value: 'plane', label: '飞机' },
+  { value: 'train', label: '火车' },
+  { value: 'car', label: '大巴' },
+];
+
 // 定义行程数据结构
 interface VehicleScheduleRequest {
   VehicleId?: string;

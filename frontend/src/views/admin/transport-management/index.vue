@@ -5,12 +5,14 @@ defineOptions({
   name: "Transport-management"
 })
 
-const text = ref("")
+import AddScheduleTicket from "./component/AddScheduleTicket.vue";
+import A from "./component/a.vue";
+
+
 </script>
 
 <template>
   <div class="app-container">
-    <el-card header="交通管理">
-    </el-card>
+    <AddScheduleTicket />
   </div>
 </template>
