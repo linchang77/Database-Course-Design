@@ -137,7 +137,7 @@ const purchase = async () => {
 }
   
 .left-container {
-  flex: 1;
+  flex: 0 0 40%;
   margin-right: 20px;
   display: flex;
   flex-direction: column;
@@ -158,7 +158,7 @@ const purchase = async () => {
 }
 
 .left-container img {
-    width: 100%;
+    width: 90%;
     height: auto;
     border-radius: 10px;
     margin-top: 25px;
@@ -173,7 +173,7 @@ const purchase = async () => {
 }
   
 .right-container {
-    max-width: 60%; 
+    flex: 0 0 60%;
     display: flex;
     flex-direction: column;
     justify-content: center;

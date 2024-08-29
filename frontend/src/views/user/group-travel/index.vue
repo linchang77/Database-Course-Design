@@ -44,8 +44,8 @@ const router = useRouter()
 // 旅游团与图片url的对应关系
 const imageMap: Record<number, string> = {
   1: 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
-  2: 'https://example.com/image2.jpg',
-  3: 'https://example.com/image3.jpg',
+  22: 'https://th.bing.com/th/id/R.6f45552a07ce3691540b97b4be845785?rik=XOX7sQNnRUYI1A&riu=http%3a%2f%2fimgbdb3.bendibao.com%2fcsbdb%2fjieri%2f20214%2f29%2f2021429101819_16270.jpg&ehk=n2DNPUTw2bA4t4i9mvG9nFskomvtIPyYiFKgwBpp9ic%3d&risl=&pid=ImgRaw&r=0',
+  23: 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
   // 添加更多的映射
 };
 
@@ -61,9 +61,7 @@ const fetchTourGroups = () => {
   axios
     .get("https://123.60.14.84:10000/api/TourGroup/recommendedtours")
     .then((response) => {
-      console.log("API Response:", response.data);
       const data = response.data;
-      // 确保数据是数组，并将其存储到 tourGroups 中
       if (Array.isArray(data)) {
         tourGroups.value = data.map((group: any) => ({
           groupId: group.groupId,
