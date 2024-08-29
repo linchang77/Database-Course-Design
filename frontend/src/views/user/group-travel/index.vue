@@ -1,67 +1,76 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import axios from "axios";
+import axios from "axios"
 import { Search } from "@element-plus/icons-vue"
 import { useRouter } from "vue-router"
+import { ElButton, ElMessage } from 'element-plus'
 
+//08.29还剩最后一个购票api
+
+// 接口
 // 定义行程的接口
 interface TourItinerary {
-  itineraryId: number;
-  itineraryTime: string;
-  itineraryDuration: string;
-  activities: string;
-  scenicSpotId: number | null;
+  itineraryId: number
+  itineraryTime: string
+  itineraryDuration: string
+  activities: string
+  scenicSpotId: number | null
 }
 
 // 定义酒店接口
 interface Hotel {
-  hotelId: number;
-  hotelName: string;
-  cityName: string;
-  hotelGrade: string;
-  hotelLocation: string;
-  hotelIntroduction: string;
+  hotelId: number
+  hotelName: string
+  cityName: string
+  hotelGrade: string
+  hotelLocation: string
+  hotelIntroduction: string
 }
 
 // 定义旅游团的接口
 interface TourGroup {
-  groupId: string;
-  groupName: string;
-  groupPrice: number;
-  startDate: string;
-  endDate: string;
-  guideName: string;
-  imageUrl: string;
-  tourItineraries: TourItinerary[];
-  hotels: Hotel[];
+  groupId: number
+  groupName: string
+  groupPrice: number
+  startDate: string
+  endDate: string
+  departure: string
+  destination: string
+  guidename: string
+  imageUrl: string
+  tourItineraries: TourItinerary[]
+  hotels: Hotel[]
 }
 
-// 定义存储数据的变量
-const tourGroups = ref<TourGroup[]>([]);
-// 定义路由
+// 数据
+const tourGroups = ref<TourGroup[]>([])
 const router = useRouter()
+const groupId_input=ref("")
+const departure_input=ref("")
+const destination_input=ref("")
+const date_input=ref("")
+const showEmptyMessage = ref(false) // 用于控制是否显示“暂无订单数据”
 
 // 旅游团与图片url的对应关系
 const imageMap: Record<number, string> = {
   1: 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
   22: 'https://th.bing.com/th/id/R.6f45552a07ce3691540b97b4be845785?rik=XOX7sQNnRUYI1A&riu=http%3a%2f%2fimgbdb3.bendibao.com%2fcsbdb%2fjieri%2f20214%2f29%2f2021429101819_16270.jpg&ehk=n2DNPUTw2bA4t4i9mvG9nFskomvtIPyYiFKgwBpp9ic%3d&risl=&pid=ImgRaw&r=0',
   23: 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
-  // 添加更多的映射
-};
+}
 
 const cities = [
   { value: "上海", label: "上海" },
   { value: "北京", label: "北京" },
-  { value: "天津", label: "天津" },
-  { value: "广州", label: "广州" },
+  { value: "南京", label: "南京" },
+  { value: "长沙", label: "长沙" },
 ]
 
-// 获取推荐旅游团
+// 获取旅游团
 const fetchTourGroups = () => {
   axios
-    .get("https://123.60.14.84:10000/api/TourGroup/recommendedtours")
+    .get("https://123.60.14.84/api/TourGroup/search/all")
     .then((response) => {
-      const data = response.data;
+      const data = response.data
       if (Array.isArray(data)) {
         tourGroups.value = data.map((group: any) => ({
           groupId: group.groupId,
@@ -69,7 +78,9 @@ const fetchTourGroups = () => {
           groupPrice: group.groupPrice,
           startDate: group.startDate,
           endDate: group.endDate,
-          guideName: group.guideName,
+          departure: group.departure,
+          destination: group.destination,
+          guidename: group.guidename,
           imageUrl: imageMap[group.groupId],
           tourItineraries: group.tourItineraries.map((itinerary: any) => ({
             itineraryId: itinerary.itineraryId,
@@ -86,29 +97,85 @@ const fetchTourGroups = () => {
             hotelLocation: hotel.hotelLocation,
             hotelIntroduction: hotel.hotelIntroduction
           }))
-        }));
+        }))
+        showEmptyMessage.value = false
       } else {
-        console.error("Unexpected response format.");
+        console.error("Unexpected response format.")
+        showEmptyMessage.value = true
       }
     })
     .catch((error) => {
-      console.error("Error fetching tour groups:", error);
-    });
-};
+      console.error("Error fetching tour groups:", error)
+      showEmptyMessage.value = true
+    })
+}
 
-// 筛选 还没写！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+// 根据旅游团编号筛选
+const fetchId = () => {
+  departure_input.value = ""
+  destination_input.value = ""
+  date_input.value = ""
+  const groupId = groupId_input.value
+  axios
+    .get(`https://123.60.14.84/api/TourGroup/search/id/${groupId}`)
+    .then((response) => {
+      const data = response.data
+      console.log(data)
+      if (data) {
+        tourGroups.value = [{
+          groupId: data.groupId,
+          groupName: data.groupName,
+          groupPrice: data.groupPrice,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          departure: data.departure,
+          destination: data.destination,
+          guidename: data.guidename,
+          imageUrl: imageMap[data.groupId],
+          tourItineraries: data.tourItineraries.map((itinerary: any) => ({
+            itineraryId: itinerary.itineraryId,
+            itineraryTime: itinerary.itineraryTime,
+            itineraryDuration: itinerary.itineraryDuration,
+            activities: itinerary.activities,
+            scenicSpotId: itinerary.scenicSpotId
+          })),
+          hotels: data.hotels.map((hotel: any) => ({
+            hotelId: hotel.hotelId,
+            hotelName: hotel.hotelName,
+            cityName: hotel.cityName,
+            hotelGrade: hotel.hotelGrade,
+            hotelLocation: hotel.hotelLocation,
+            hotelIntroduction: hotel.hotelIntroduction
+          }))
+        }]
+        showEmptyMessage.value = false
+      } else {
+        console.error("Unexpected response format.")
+        showEmptyMessage.value = true
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching tour groups:", error)
+      showEmptyMessage.value = true
+    })
+}
+
+// 筛选
 const fetchFilter = () => {
+  if (!departure_input.value || !destination_input.value) {
+    ElMessage.info(`请输入出发地和目的地`)
+    return
+  }
   axios
     .get("https://123.60.14.84:10000/api/TourGroup/search", {
       params: {
-        Departure: "北京",
-        Destination: "上海"
+        Departure: departure_input.value,
+        Destination: destination_input.value,
+        Departure_Time: date_input.value,
       }
     })
     .then((response) => {
-      console.log("API Response:", response.data);
-      const data = response.data;
-      // 确保数据是数组，并将其存储到 tourGroups 中
+      const data = response.data
       if (Array.isArray(data)) {
         tourGroups.value = data.map((group: any) => ({
           groupId: group.groupId,
@@ -116,7 +183,9 @@ const fetchFilter = () => {
           groupPrice: group.groupPrice,
           startDate: group.startDate,
           endDate: group.endDate,
-          guideName: group.guideName,
+          departure: group.departure,
+          destination: group.destination,
+          guidename: group.guidename,
           imageUrl: imageMap[group.groupId],
           tourItineraries: group.tourItineraries.map((itinerary: any) => ({
             itineraryId: itinerary.itineraryId,
@@ -133,15 +202,18 @@ const fetchFilter = () => {
             hotelLocation: hotel.hotelLocation,
             hotelIntroduction: hotel.hotelIntroduction
           }))
-        }));
+        }))
+        showEmptyMessage.value = false
       } else {
-        console.error("Unexpected response format.");
+        console.error("Unexpected response format.")
+        showEmptyMessage.value = true
       }
     })
     .catch((error) => {
-      console.error("Error fetching tour groups:", error);
-    });
-};
+      console.error("Error fetching tour groups:", error)
+      showEmptyMessage.value = true
+    })
+}
 
 const goToGroup = (group: TourGroup) => {
   router.push({
@@ -152,37 +224,44 @@ const goToGroup = (group: TourGroup) => {
       groupPrice: group.groupPrice.toString(),
       startDate: group.startDate,
       endDate: group.endDate,
-      guideName: group.guideName,
+      departure: group.departure,
+      destination: group.destination,
+      guidename: group.guidename,
       imageUrl: group.imageUrl,
       tourItineraries: JSON.stringify(group.tourItineraries), 
       hotels: JSON.stringify(group.hotels)
     }
-  });
-};
-
+  })
+}
 
 // 在组件挂载时调用API
 onMounted(() => {
-  fetchTourGroups();
-});
-
-// 筛选的双向绑定
-const departure_input=ref("")
-const destination_input=ref("")
-const duration_input=ref("")
-const date_input=ref("")
-
+  fetchTourGroups()
+})
 </script>
 
 <template>
 <div>
   <div class="group-filter-container">
-    <div>
+    <div class="first-row">
+        <span class="word"> 旅行团编号号 </span>
+        <el-input
+          v-model="groupId_input"
+          style="width: 210px"
+          placeholder="请输入旅行团编号"
+          :prefix-icon="Search"
+          @keyup.enter="fetchId"
+        />
+
+        <el-button type="primary" class="button" @click="fetchId"> 搜索 </el-button>
+    </div>
+
+    <div class="second-row" style="margin-top: 5px;">
       <span class="word">出发地 </span>
           <el-select
             v-model="departure_input"
             placeholder="请选择出发地"
-            style="width: 200px"
+            style="width: 210px"
           >
             <el-option v-for="item in cities" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
@@ -190,11 +269,11 @@ const date_input=ref("")
       <el-select
             v-model="destination_input"
             placeholder="请选择目的地"
-            style="width: 200px"
+            style="width: 210px"
           >
             <el-option v-for="item in cities" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
-
+      <!--
       <span class="word"> 行程天数 </span>
       <el-input
         v-model="duration_input"
@@ -203,32 +282,35 @@ const date_input=ref("")
         :prefix-icon="Search"
          class="box"
       />
+      -->
 
       <span class="word"> 启程时间 </span>
       <el-date-picker
         v-model="date_input"
-        type="daterange"
-        range-separator="To"
-        start-placeholder="最早时间"
-        end-placeholder="最晚时间"
+        type="date"
+        placeholder="请选择日期"
         size="default"
       />
   
-      <el-button type="primary" class="button"> 筛选 </el-button>
+      <el-button type="primary" class="button" @click="fetchFilter"> 筛选 </el-button>
     </div>
   </div>
 
   <div class="group-container">
-  <div class="group-card" v-for="group in tourGroups" :key="group.groupId" @click="goToGroup(group)" >
+  <div class="holder-container" v-if="tourGroups.length === 0 || showEmptyMessage">
+      <el-empty description="暂无旅行团" />
+  </div>
+  <div v-else class="group-card" v-for="group in tourGroups" :key="group.groupId" @click="goToGroup(group)" >
     <div class="group-image">
       <img :src="group.imageUrl" alt="旅游团图片" />
 
     </div>
     <div class="group-info" >
       <p class="title" >{{ group.groupName }}</p>
-      <p>启程时间：{{ new Date(group.startDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) }}</p>
-      <p>返程时间：{{ new Date(group.endDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) }}</p>
-      <p>导游：{{ group.guideName }}</p>
+      <p>旅行团编号： {{ group.groupId }}</p>
+      <p>出发地：{{ group.departure }} - 目的地：{{ group.destination }}</p>
+      <p>时间：{{ new Date(group.startDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) }} -- {{ new Date(group.endDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) }}</p>
+      <p>导游：{{ group.guidename }}</p>
     </div>
     <div class="group-price">
       <p>{{ group.groupPrice }} 元起</p>
@@ -254,6 +336,8 @@ const date_input=ref("")
   margin-top: 20px;
   display: flex;
   gap: 20px; 
+  justify-content: center; /* 水平居中 */
+  align-items: center;  
 }
 
 .group-card {
@@ -295,6 +379,5 @@ const date_input=ref("")
   padding: 10px;
   background-color: #f8f8f8;
 }
-
 
 </style>
