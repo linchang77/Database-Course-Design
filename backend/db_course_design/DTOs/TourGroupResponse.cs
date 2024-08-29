@@ -23,6 +23,7 @@ namespace db_course_design.DTOs
         public string? Departure { get; set; }
 
         public string? Destination { get; set; }
+        public string? guidename { get; set; }
 
         public List<TourItineraryResponse> TourItineraries { get; set; }
 
