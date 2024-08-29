@@ -23,7 +23,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3333", "http://192.168.206.1:3333/", "http://192.168.89.1:3333/", "http://192.168.0.117:3333/");
+            policy.WithOrigins("http://localhost:3333");
         });
 });
 
