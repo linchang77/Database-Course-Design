@@ -13,6 +13,7 @@ namespace db_course_design.Profiles
             CreateMap<Hotel, HotelResponse>();
             CreateMap<TourGroup, TourGroupResponse>();
             CreateMap<TourGroupRequest, TourGroup>();
+            CreateMap<TourItineraryRequest, TourItinerary>();
             CreateMap<Guide, GuideResponse>();
         }
     }
