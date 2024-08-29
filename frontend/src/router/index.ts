@@ -66,6 +66,106 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: "/transport",
+    component: Layouts,
+    redirect: "/transport/airplane",
+    name: "Transport",
+    meta: {
+      title: "出行",
+      svgIcon: "transport",
+      roles: ["user"],
+    },
+    children: [
+      {
+        path: "airplane",
+        component: () => import("@/views/user/transport/airplane/index.vue"),
+        name: "Airplane",
+        meta: {
+          title: "飞机",
+          svgIcon: "plane",
+          affix: true
+        }
+      },
+      {
+        path: "bus",
+        component: () => import("@/views/user/transport/bus/index.vue"),
+        name: "Bus",
+        meta: {
+          title: "大巴",
+          svgIcon: "bus",
+          keepAlive: true,
+          affix: true
+        }
+      },
+      {
+        path: "train",
+        component: () => import("@/views/user/transport/train/index.vue"),
+        name: "Train",
+        meta: {
+          title: "火车",
+          svgIcon: "train",
+          keepAlive: true,
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    meta:{
+      roles: ["user"]
+    },
+    children: [
+      {
+        path: "hotel",
+        component: () => import("@/views/user/hotel/index.vue"),
+        name: "Hotel",
+        meta: {
+          title: "酒店",
+          svgIcon: "hotel",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/hotel",
+    component: Layouts,
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: "detail",
+        component: () => import("@/views/user/hotel/detail.vue"),
+        name: "Detail",
+        meta: {
+          title: "酒店详情",
+          hidden: true
+        }
+      },
+      {
+        path: "room",
+        component: () => import("@/views/user/hotel/room.vue"),
+        name: "Room",
+        meta: {
+          title: "酒店房型",
+          hidden: true
+        }
+      },
+      {
+        path: "order",
+        component: () => import("@/views/user/hotel/order.vue"),
+        name: "Order",
+        meta: {
+          title: "酒店订单",
+          hidden: true
+        }
+      },
+    ]
+  },
+  {
     path: "/",
     component: Layouts,
     meta:{
@@ -176,7 +276,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-  // csh start
   {
     path: "/group-travel",
     component: Layouts,
@@ -212,7 +311,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-  //csh end
   {
     path: "/",
     component: Layouts,
@@ -226,23 +324,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         name: "Guide-travel",
         meta: {
           title: "带团游",
-          svgIcon: "guide-travel",
-          affix: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    component: Layouts,
-    children: [
-      {
-        path: "self-center",
-        component: () => import("@/views/self-center/index.vue"),
-        name: "Self-center",
-        meta: {
-          title: "个人中心",
-          svgIcon: "self-center",
+          svgIcon: "guide",
           affix: true
         }
       }
@@ -287,124 +369,23 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: "/transport",
-    component: Layouts,
-    redirect: "/transport/airplane",
-    name: "Transport",
-    meta: {
-      title: "出行",
-      svgIcon: "transport",
-      roles: ["user"]
-    },
-    children: [
-      {
-        path: "airplane",
-        component: () => import("@/views/user/transport/airplane/index.vue"),
-        name: "Airplane",
-        meta: {
-          title: "飞机"
-        }
-      },
-      {
-        path: "bus",
-        component: () => import("@/views/user/transport/bus/index.vue"),
-        name: "Bus",
-        meta: {
-          title: "大巴",
-          keepAlive: true
-        }
-      },
-      {
-        path: "train",
-        component: () => import("@/views/user/transport/train/index.vue"),
-        name: "Train",
-        meta: {
-          title: "火车",
-          keepAlive: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    component: Layouts,
-    meta:{
-      roles: ["user"]
-    },
-    children: [
-      {
-        path: "hotel",
-        component: () => import("@/views/user/hotel/index.vue"),
-        name: "Hotel",
-        meta: {
-          title: "酒店",
-          svgIcon: "hotel",
-          affix: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/hotel",
-    component: Layouts,
-    meta: {
-      hidden: true
-    },
-    children: [
-      {
-        path: "detail",
-        component: () => import("@/views/user/hotel/detail.vue"),
-        name: "Detail",
-        meta: {
-          title: "酒店详情",
-          hidden: true
-        }
-      },
-      {
-        path: "room",
-        component: () => import("@/views/user/hotel/room.vue"),
-        name: "Room",
-        meta: {
-          title: "酒店房型",
-          hidden: true
-        }
-      },
-      {
-        path: "order",
-        component: () => import("@/views/user/hotel/order.vue"),
-        name: "Order",
-        meta: {
-          title: "酒店订单",
-          hidden: true
-        }
-      },
-    ]
-  },
-  {
     path: "/",
     component: Layouts,
     meta:{
       roles: ["admin"],
-      svgIcon: "Management",
+      svgIcon: "management",
       title: "管理",
+      affix: true
     },
     children: [
       {
-        path: "city-management",
-        component: () => import("@/views/admin/city-management/index.vue"),
-        name: "City-management",
+        path: "transport-management",
+        component: () => import("@/views/admin/transport-management/index.vue"),
+        name: "Transport-management",
         meta: {
-          title: "城市管理",
-          svgIcon: "City-management",
-        }
-      },
-      {
-        path: "scene-management",
-        component: () => import("@/views/admin/scene-management/index.vue"),
-        name: "Scene-management",
-        meta: {
-          title: "景点管理",
-          svgIcon: "Scene-management",
+          title: "交通管理",
+          svgIcon: "transport",
+          affix: true
         }
       },
       {
@@ -413,16 +394,18 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         name: "Hotel-management",
         meta: {
           title: "酒店管理",
-          svgIcon: "Hotel-management",
+          svgIcon: "hotel",
+          affix: true
         }
       },
       {
-        path: "transport-management",
-        component: () => import("@/views/admin/transport-management/index.vue"),
-        name: "Transport-management",
+        path: "scene-management",
+        component: () => import("@/views/admin/scene-management/index.vue"),
+        name: "Scene-management",
         meta: {
-          title: "交通管理",
-          svgIcon: "Transport-management",
+          title: "景点管理",
+          svgIcon: "scene",
+          affix: true
         }
       },
       {
@@ -431,7 +414,18 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         name: "Group-management",
         meta: {
           title: "旅行团管理",
-          svgIcon: "Group-management",
+          svgIcon: "group-travel",
+          affix: true
+        }
+      },
+      {
+        path: "city-management",
+        component: () => import("@/views/admin/city-management/index.vue"),
+        name: "City-management",
+        meta: {
+          title: "城市管理",
+          svgIcon: "city",
+          affix: true
         }
       },
       {
@@ -440,7 +434,8 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         name: "Users-management",
         meta: {
           title: "用户管理",
-          svgIcon: "Users-management",
+          svgIcon: "user",
+          affix: true
         }
       },
       {
@@ -449,10 +444,26 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         name: "Funds-management",
         meta: {
           title: "资金管理",
-          svgIcon: "Funds-management",
+          svgIcon: "fund",
           affix: true
         }
       },
+    ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    children: [
+      {
+        path: "self-center",
+        component: () => import("@/views/self-center/index.vue"),
+        name: "Self-center",
+        meta: {
+          title: "个人中心",
+          svgIcon: "self-center",
+          affix: true
+        }
+      }
     ]
   },
 ]
