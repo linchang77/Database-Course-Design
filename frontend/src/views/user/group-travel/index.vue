@@ -167,7 +167,7 @@ const fetchFilter = () => {
     return
   }
   axios
-    .get("https://123.60.14.84:10000/api/TourGroup/search", {
+    .get("https://123.60.14.84/api/TourGroup/search", {
       params: {
         Departure: departure_input.value,
         Destination: destination_input.value,
