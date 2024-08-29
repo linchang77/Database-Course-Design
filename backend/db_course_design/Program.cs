@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using db_course_design.Common;
 using db_course_design.Services;
 using db_course_design.Services.impl;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson; // Newtonsoft.JsonÌæ´úÄ¬ÈÏµÄSystem.Text.Json£¬Ìá¹©ÁËAddNewtonsoftJson·½·¨
-using Newtonsoft.Json;  // ÒýÈëNewtonsoft.JsonÃüÃû¿Õ¼ä
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson; // Newtonsoft.Jsonï¿½ï¿½ï¿½Ä¬ï¿½Ïµï¿½System.Text.Jsonï¿½ï¿½ï¿½á¹©ï¿½ï¿½AddNewtonsoftJsonï¿½ï¿½ï¿½ï¿½
+using Newtonsoft.Json;  // ï¿½ï¿½ï¿½ï¿½Newtonsoft.Jsonï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {
-        // ÅäÖÃÐòÁÐ»¯ÉèÖÃ
-        options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto; // ´¦Àí¶àÌ¬ÐÔ
-        options.SerializerSettings.Formatting = Formatting.Indented; // ÃÀ»¯JSONÊä³ö
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½
+        options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½
+        options.SerializerSettings.Formatting = Formatting.Indented; // ï¿½ï¿½ï¿½ï¿½JSONï¿½ï¿½ï¿½
     }); ;
 
 // Add CORS service
@@ -23,7 +23,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3333") // Ìæ»»ÎªÇ°¶ËµÄµØÖ·
+            policy.WithOrigins("http://localhost:3333") // ï¿½æ»»ÎªÇ°ï¿½ËµÄµï¿½Ö·
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -36,8 +36,8 @@ builder.Services.AddScoped<IScenicSpotService, ScenicSpotService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<ITourGroupService, TourGroupService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
-/////////////////////////////////////////×Ô¼º¸ù¾ÝÐèÒªÌí¼ÓÄÚÈÝ//////////////////////////////////////////////////////////////
-//Ìí¼ÓDbContext
+/////////////////////////////////////////ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½//////////////////////////////////////////////////////////////
+//ï¿½ï¿½ï¿½ï¿½DbContext
 //builder.Services.AddDbContext<ModelContext>(options =>
 //    options.UseOracle("DATA SOURCE=123.60.14.84:1521/ORCL;TNS_ADMIN=C:\\\\\\\\Users\\\\\\\\LQS\\\\\\\\Oracle\\\\\\\\network\\\\\\\\admin;PERSIST SECURITY INFO=True;USER ID=SYSTEM;PASSWORD=summer_Dt514"));
 builder.Services.AddDbContext<ModelContext>(options =>
