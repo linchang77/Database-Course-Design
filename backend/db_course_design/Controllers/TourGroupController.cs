@@ -2,7 +2,9 @@
 using db_course_design.DTOs;
 using db_course_design.Services;
 using db_course_design.Services.impl;
+using EntityFramework.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography.X509Certificates;
 
 namespace db_course_design.Controllers
 {
@@ -180,6 +182,124 @@ namespace db_course_design.Controllers
 
             if (target == null)
                 return NotFound("Tour group " + id + " doesn't exist.");
+            return Ok(target);
+        }
+
+
+        /*
+         * 业务逻辑：导游对旅行团行程信息进行增删改查
+         * api/TourGroup/itinerary/
+         *      all/{groupId}/
+         *          GET     - 获取指定旅行团的所有行程
+         *      {itineraryId}/
+         *          GET     - 按照编号查找行程
+         *      add/
+         *          POST    - 添加一条行程
+         *      del/{itineraryId}/
+         *          DELETE  - 删除一条行程
+         *      mod/{itineraryId}/
+         *          PUT     - 更新一条行程
+         */
+        [HttpGet("itinerary/all/{groupId}")]
+        public async Task<IActionResult> GetAllTourItineraries(byte groupId)
+        {
+            var list = await _tourGroupService.GetAllTourItinerarysAsync(groupId);
+
+            if (list == null || !list.Any())
+                return NotFound("Tour group " + groupId + " doesn't exist.");
+            return Ok(list.ToList());
+        }
+
+        [HttpGet("itinerary/{itineraryId}")]
+        public async Task<IActionResult> GetTourItineraryById(byte itineraryId)
+        {
+            var itinerary = await _tourGroupService.GetTourItineraryByIdAsync(itineraryId);
+
+            if (itinerary == null)
+                return NotFound("Tour itinerary " + itineraryId + " doesn't exist.");
+            return Ok(itinerary);
+        }
+
+        [HttpPost("itinerary/add")]
+        public async Task<IActionResult> AddTourItinerary([FromBody] TourItineraryRequest request)
+        {
+            var target = await _tourGroupService.AddTourItineraryAsync(request);
+
+            if (target == null)
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the tour itinerary.");
+            return CreatedAtAction(nameof(GetTourItineraryById), new { target.ItineraryId }, target);
+        }
+
+        [HttpDelete("itinerary/del/{itineraryId}")]
+        public async Task<IActionResult> DeleteTourItinerary(byte itineraryId)
+        {
+            var deleted = await _tourGroupService.DeleteTourItineraryAsync(itineraryId);
+
+            if (!deleted)
+                return NotFound("Tour itinerary " + itineraryId + " doesn't exist.");
+            return NoContent();
+        }
+
+        [HttpPut("itinerary/mod/{itineraryId}")]
+        public async Task<IActionResult> UpdateTourItinerary(byte itineraryId, [FromBody] TourItineraryRequest request)
+        {
+            var target = await _tourGroupService.UpdateTourItineraryAsync(itineraryId, request);
+
+            if (target == null)
+                return NotFound("Tour itinerary " + itineraryId + " doesn't exist.");
+            return Ok(target);
+        }
+
+
+        /*
+         * 业务逻辑：导游对旅行团酒店信息进行增删改查
+         * api/TourGroup/hotel/
+         *      all/{groupId}/
+         *          GET     - 获取指定旅行团的所有酒店
+         *      add/{groupId},{hotelId}/
+         *          PUT     - 为指定旅行团添加酒店
+         *      del/{groupId},{hotelId}/
+         *          DELETE  - 为指定旅行团删除酒店
+         *      mod/{groupId},{oldHotelId},{newHotelId}/
+         *          PATCH   - 为指定旅行团更新酒店
+         */
+        [HttpGet("hotel/all/{groupId}")]
+        public async Task<IActionResult> GetAllTourHotels(byte groupId)
+        {
+            var list = await _tourGroupService.GetAllTourHotelsAsync(groupId);
+
+            if (list == null)
+                return NotFound("Tour group " + groupId + " doesn't exist.");
+            return Ok(list.ToList());
+        }
+
+        [HttpPut("hotel/add/{groupId},{hotelId}")]
+        public async Task<IActionResult> AddTourHotel(byte groupId, decimal hotelId)
+        {
+            var target = await _tourGroupService.AddTourHotelAsync(groupId, hotelId);
+
+            if (target == null)
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the tour hotel.");
+            return Ok(target);
+        }
+
+        [HttpDelete("hotel/del/{groupId},{hotelId}")]
+        public async Task<IActionResult> DeleteTourHotel(byte groupId, decimal hotelId)
+        {
+            var deleted = await _tourGroupService.DeleteTourHotelAsync(groupId, hotelId);
+
+            if (!deleted)
+                return NotFound("Tour group " + groupId + " doesn't contain hotel " + hotelId + ".");
+            return NoContent();
+        }
+
+        [HttpPatch("hotel/mod/{groupId},{oldHotelId},{newHotelId}")]
+        public async Task<IActionResult> UpdateTourHotel(byte groupId, decimal oldHotelId, decimal newHotelId)
+        {
+            var target = await _tourGroupService.UpdateTourHotelAsync(groupId, oldHotelId, newHotelId);
+
+            if (target == null)
+                return NotFound("Tour group " + groupId + " doesn't contain hotel " + oldHotelId + ".");
             return Ok(target);
         }
     }
