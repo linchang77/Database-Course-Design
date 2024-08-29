@@ -23,7 +23,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3333");
+            policy.WithOrigins("http://localhost:3333") // 替换为前端的地址
+                 .AllowAnyHeader()
+                 .AllowAnyMethod()
+                 .AllowCredentials();
         });
 });
 
