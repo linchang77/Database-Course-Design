@@ -37,6 +37,7 @@ builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<ITourGroupService, TourGroupService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ICityService, CityService>();
 /////////////////////////////////////////自己根据需要添加内容//////////////////////////////////////////////////////////////
 //添加DbContext
 //builder.Services.AddDbContext<ModelContext>(options =>
