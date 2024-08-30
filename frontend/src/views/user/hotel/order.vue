@@ -38,6 +38,11 @@ const hotelRooms = ref<HotelRoom[]>([]);
 const isSubmitDisabled = computed(() => selectedNumber.value === 0);
 
 const handleSubmit = async() => {
+  console.log(Number(localStorage.getItem("id")))
+  console.log(selectedHotelId)
+  console.log(checkInTime.value)
+  console.log(checkOutTime.value)
+  console.log(selectedRoomType)
   for (let i = 0; i < selectedNumber.value; i++) {
     try {
       const response = await axios.post(`https://123.60.14.84/api/Hotel/create`, {

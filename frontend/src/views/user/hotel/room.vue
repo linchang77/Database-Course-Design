@@ -42,8 +42,6 @@ const hotelRooms = ref<HotelRoom[]>([]);
 
 const viewOrder = (selectedRoomType: string, selectedHotelId: number) => {
   const filteredHotelRoom = hotelRooms.value.filter(room => room.roomType === selectedRoomType);
-  console.log("hotel",hotel.value)
-  console.log("room",filteredHotelRoom)
   router.push({
     name: 'Order', 
     query: {
@@ -69,8 +67,8 @@ onMounted(() => {
 
 <template>
   <div class="app-container">
-    <el-card header="酒店房间">
-      <div class="hotel-detail" v-for="hotel in hotel ">
+    <el-card header="酒店房间" v-for="hotel in hotel">
+      <div class="hotel-detail">
         <img :src="`/images/hotel_${hotel.hotelId}.jpg`" alt="Hotel Image" style="width: 100%; height: auto;"/>
         <h2>{{ hotel.hotelName }}</h2>
         <p>介绍: {{ hotel.hotelIntroduction }}</p>
