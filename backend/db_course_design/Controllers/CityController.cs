@@ -73,7 +73,7 @@ namespace db_course_design.Controllers
             var target = await _cityService.UpdateCityIntroAsync(name, intro);
 
             if (target == null)
-                return NotFound("City " + name + " wasn't found.");
+                return BadRequest("Cannot update intro of city " + name + ".");
             return Ok(target);
         }
 
@@ -83,7 +83,7 @@ namespace db_course_design.Controllers
             var target = await _cityService.UpdateCityClimateAsync(name, t1, w1, t2, w2);
 
             if (target == null)
-                return NotFound("City " + name + " wasn't found.");
+                return BadRequest("Cannot update climate of city " + name + ".");
             return Ok(target);
         }
     }

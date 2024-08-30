@@ -162,19 +162,23 @@ namespace db_course_design.Services.impl
         /*--更新酒店--*/
         public async Task<HotelResponse?> UpdateHotelAsync(HotelResponse request)
         {
-            var target = await _context.Hotels.FindAsync(request.HotelId);
-
-            if (target == null) 
+            try
+            {
+                var target = await _context.Hotels.FindAsync(request.HotelId);
+                if (target == null)
+                    throw new Exception();
+                target.HotelName = request.HotelName;
+                target.CityName = request.CityName;
+                target.HotelGrade = request.HotelGrade;
+                target.HotelLocation = request.HotelLocation;
+                target.HotelIntroduction = request.HotelIntroduction;
+                await _context.SaveChangesAsync();
+                return _mapper.Map<HotelResponse>(target);
+            }
+            catch
+            { 
                 return null;
-
-            target.HotelName = request.HotelName;
-            target.CityName = request.CityName;
-            target.HotelGrade = request.HotelGrade;
-            target.HotelLocation = request.HotelLocation;
-            target.HotelIntroduction = request.HotelIntroduction;
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<HotelResponse>(target);
+            }
         }
         /*--添加酒店房型--*/
         public async Task<HotelRoomDetail?> AddHotelRoomTypeAsync(HotelRoomTypeRequest request)
@@ -206,16 +210,20 @@ namespace db_course_design.Services.impl
         /*--更新酒店房型--*/
         public async Task<HotelRoomDetail?> UpdateHotelRoomTypeAsync(HotelRoomDetail request)
         {
-            var target = await _context.HotelRoomTypes.FindAsync(request.HotelId, request.RoomType);
-
-            if (target == null)
-                return null;
-
-            target.RoomPrice = request.RoomPrice;
-            target.RoomLeft = request.RoomLeft;
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<HotelRoomDetail>(target);
+            try
+            {
+                var target = await _context.HotelRoomTypes.FindAsync(request.HotelId, request.RoomType);
+                if (target == null)
+                    return null;
+                target.RoomPrice = request.RoomPrice;
+                target.RoomLeft = request.RoomLeft;
+                await _context.SaveChangesAsync();
+                return _mapper.Map<HotelRoomDetail>(target);
+            }
+            catch
+            { 
+                return null; 
+            }
         }
         /*--添加酒店房间--*/
         public async Task<HotelRoomResponse?> AddHotelRoomAsync(HotelRoomRequest request)
@@ -247,16 +255,20 @@ namespace db_course_design.Services.impl
         /*--更新酒店房间--*/
         public async Task<HotelRoomResponse?> UpdateHotelRoomAsync(HotelRoomResponse request)
         {
-            var target = await _context.HotelRooms.FindAsync(request.RoomNumber, request.HotelId);
-
-            if (target == null) 
-                return null;
-
-            target.RoomType = request.RoomType;
-            target.RoomClear = request.RoomClear;
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<HotelRoomResponse>(target);
+            try
+            {
+                var target = await _context.HotelRooms.FindAsync(request.RoomNumber, request.HotelId);
+                if (target == null)
+                    throw new Exception();
+                target.RoomType = request.RoomType;
+                target.RoomClear = request.RoomClear;
+                await _context.SaveChangesAsync();
+                return _mapper.Map<HotelRoomResponse>(target);
+            }
+            catch
+            { 
+                return null; 
+            }
         }
     }
 }

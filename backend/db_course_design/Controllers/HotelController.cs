@@ -184,7 +184,7 @@ namespace db_course_design.Controllers
             var target = await _hotelService.UpdateHotelAsync(request);
 
             if (target == null)
-                return NotFound("Hotel " + request.HotelId + " doesn't exist");
+                return BadRequest("Cannot update hotel " + request.HotelId);
             return Ok(target);
         }
 
@@ -194,7 +194,7 @@ namespace db_course_design.Controllers
             var target = await _hotelService.UpdateHotelRoomTypeAsync(request);
 
             if (target == null) 
-                return NotFound("Hotel " + request.HotelId + "doesn't have " + request.RoomType);
+                return BadRequest("Cannot update " + request.RoomType + " of hotel " + request.HotelId);
             return Ok(target);
         }
 
@@ -204,7 +204,7 @@ namespace db_course_design.Controllers
             var target = await _hotelService.UpdateHotelRoomAsync(request);
 
             if (target == null)
-                return NotFound("Hotel " + request.HotelId + " doesn't have room " + request.RoomNumber);
+                return BadRequest("Cannot update room " + request.RoomNumber + " of hotel " + request.HotelId);
             return Ok(target);
         }
     }

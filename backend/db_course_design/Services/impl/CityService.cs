@@ -89,31 +89,39 @@ namespace db_course_design.Services.impl
 
         public async Task<string?> UpdateCityIntroAsync(string name, string intro)
         {
-            var target = await _context.Cities.FindAsync(name);
-
-            if (target == null)
+            try
+            {
+                var target = await _context.Cities.FindAsync(name);
+                if (target == null)
+                    throw new Exception();
+                target.CityIntroduction = intro;
+                await _context.SaveChangesAsync();
+                return target.CityIntroduction;
+            }
+            catch
+            {
                 return null;
-
-            target.CityIntroduction = intro;
-            await _context.SaveChangesAsync();
-
-            return target.CityIntroduction;
+            }
         }
 
         public async Task<ClimateResponse?> UpdateCityClimateAsync(string name, decimal t1, string w1, decimal t2, string w2)
         {
-            var target = await _context.Climates.FindAsync(name);
-
-            if (target == null)
-                return null;
-
-            target.TodayTemperature = t1;
-            target.TodayWeather = w1;
-            target.TomorrowTemperature = t2;
-            target.TomorrowWeather = w2;
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<ClimateResponse>(target);
+            try
+            {
+                var target = await _context.Climates.FindAsync(name);
+                if (target == null)
+                    throw new Exception();
+                target.TodayTemperature = t1;
+                target.TodayWeather = w1;
+                target.TomorrowTemperature = t2;
+                target.TomorrowWeather = w2;
+                await _context.SaveChangesAsync();
+                return _mapper.Map<ClimateResponse>(target);
+            }
+            catch
+            {
+                return null; 
+            }
         }
     }
 }
