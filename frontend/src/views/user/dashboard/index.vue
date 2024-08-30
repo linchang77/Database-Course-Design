@@ -1,4 +1,10 @@
 <template>
+<div>
+  <div class="header">
+    <img src="@\assets\layouts\logo.png" alt="Logo" class="logo">
+    <h1 class="title1">e行天下</h1>
+  </div>
+
   <div>
     <!-- 上部: 热门旅游团 -->
     <section>
@@ -48,6 +54,7 @@
       </div>
     </section>
   </div>
+</div>
 </template>
 
 <script setup>
@@ -148,14 +155,14 @@ onMounted(() => {
 // 旅游团图片映射
 const imageMap = {
   1: 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
-  2: 'https://example.com/image2.jpg',
-  3: 'https://example.com/image3.jpg',
-};
+  22: 'https://th.bing.com/th/id/R.6f45552a07ce3691540b97b4be845785?rik=XOX7sQNnRUYI1A&riu=http%3a%2f%2fimgbdb3.bendibao.com%2fcsbdb%2fjieri%2f20214%2f29%2f2021429101819_16270.jpg&ehk=n2DNPUTw2bA4t4i9mvG9nFskomvtIPyYiFKgwBpp9ic%3d&risl=&pid=ImgRaw&r=0',
+  23: 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
+}
 </script>
 
 <style scoped>
 .section-title {
-  font-size: 2em;
+  font-size: 1.8em;
   font-weight: bold;
   margin-left: 5%;
   margin-bottom: 20px;
@@ -279,5 +286,30 @@ const imageMap = {
   width: 100%;
   padding: 10px;
   background-color: #f8f8f8;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background-color: #f8f8f8;
+}
+
+.logo {
+  height: 60px;
+  margin-right: 20px;
+  margin-left: 2%;
+}
+
+.header-title {
+  font-size: 2em;
+  font-weight: bold;
+  color: #000203
+}
+
+.title1 {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #000203;
 }
 </style>
