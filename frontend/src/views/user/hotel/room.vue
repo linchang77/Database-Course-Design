@@ -69,7 +69,7 @@ onMounted(() => {
   <div class="app-container">
     <el-card header="酒店房间" v-for="hotel in hotel">
       <div class="hotel-detail">
-        <img :src="`/images/hotel_${hotel.hotelId}.jpg`" alt="Hotel Image" style="width: 100%; height: auto;"/>
+        <img :src="`/images/hotel_${(hotel.hotelId)%9}.jpg`" alt="Hotel Image" style="width: 100%; height: auto;"/>
         <h2>{{ hotel.hotelName }}</h2>
         <p>介绍: {{ hotel.hotelIntroduction }}</p>
         <br>

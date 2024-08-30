@@ -153,7 +153,7 @@ const formRef = ref();
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" :icon="CirclePlus" @click="toAdd()">新增酒店</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="toAdd()">此功能暂不可用，等待接入</el-button>
         </div>
       </div>
       <div class="table-wrapper">
