@@ -72,6 +72,8 @@ namespace db_course_design.Services.impl
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
                 .Include(t => t.Guide) // 加载导游信息
+                .Include(t => t.GoTicket) // 加载去程票信息
+                .Include(t => t.ReturnTicket) // 加载回程票信息
                 .Where(tg => tg.Departure == request.Departure &&
                        tg.Destination == request.Destination &&
                        (request.Departure_Time == null || tg.StartDate >= request.Departure_Time) &&
@@ -89,6 +91,8 @@ namespace db_course_design.Services.impl
                 .Where(tg => tg.GroupId == id)
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
+                .Include(t => t.GoTicket) // 加载去程票信息
+                .Include(t => t.ReturnTicket) // 加载回程票信息
                 .Include(t => t.Guide); // 加载导游信息;
             var tourGroup = (await query.ToListAsync()).SingleOrDefault();
 
@@ -104,6 +108,8 @@ namespace db_course_design.Services.impl
                 .Where(tg => tg.GroupName.Contains(name))
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
+                .Include(t => t.GoTicket) // 加载去程票信息
+                .Include(t => t.ReturnTicket) // 加载回程票信息
                 .Include(t => t.Guide);
             var tourGroups = await query.ToListAsync();
 
@@ -116,6 +122,8 @@ namespace db_course_design.Services.impl
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
                 .Include(t => t.Guide)
+                .Include(t => t.GoTicket) // 加载去程票信息
+                .Include(t => t.ReturnTicket) // 加载回程票信息
                 .OrderBy(tg => tg.GroupPrice) // 假设推荐规则是按最低价格排序
                 .ToListAsync();
 
