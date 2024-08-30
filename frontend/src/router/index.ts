@@ -448,6 +448,16 @@ export const dynamicRoutes: RouteRecordRaw[] = [
           affix: true
         }
       },
+      {
+        path: "guides-management",
+        component: () => import("@/views/admin/guides-management/index.vue"),
+        name: "Guides-management",
+        meta: {
+          title: "导游管理",
+          svgIcon: "guide",
+          affix: true
+        }
+      },
     ]
   },
   {

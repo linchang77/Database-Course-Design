@@ -9,8 +9,8 @@ defineOptions({
 })
 
 const destination = ref('')
-const checkInTime = ref<Date | null>(null);
-const checkOutTime = ref<Date | null>(null);
+const checkInTime = ref<Date>();
+const checkOutTime = ref<Date>();
 const router = useRouter()
 
 const setDestination = (val : any) => {
@@ -25,22 +25,21 @@ const setCheckOutTime = (val : any) => {
   checkOutTime.value = val
 }
 
-const formatDate = (date: Date | null) => {
-  if (!date) return '';
-  return date.toISOString().split('T')[0]; // 仅保留日期部分
-};
+// const formatDate = (date: Date | null) => {
+//   if (!date) return '';
+//   return date.toISOString().split('T')[0]; // 仅保留日期部分
+// };
 
 
 const searchTickets = () => {
-  const formattedCheckIn = formatDate(checkInTime.value);
-  const formattedCheckOut = formatDate(checkOutTime.value);
-
+  //const formattedCheckIn = formatDate(checkInTime.value);
+  //const formattedCheckOut = formatDate(checkOutTime.value);
   router.push({
     name: 'Detail', 
     query: {
       destination: encodeURIComponent(destination.value),
-      checkIn: encodeURIComponent(formattedCheckIn),
-      checkOut: encodeURIComponent(formattedCheckOut)
+      checkInTime: checkInTime.value?.getTime(),
+      checkOutTime: checkOutTime.value?.getTime()
     }
   });
 }

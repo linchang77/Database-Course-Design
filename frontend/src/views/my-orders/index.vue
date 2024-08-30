@@ -4,6 +4,11 @@ import { ElMessage, ElMessageBox } from "element-plus"
 import type { Action } from "element-plus"
 import { Search } from "@element-plus/icons-vue"
 import axios from "axios"
+import { useUserStoreHook } from '../../store/modules/user';
+
+const userStore = useUserStoreHook();
+const userRole = userStore.roles
+const userId = ref<string | null>(localStorage.getItem('id'))
 
 // 定义订单的响应类型
 interface BaseOrder {
@@ -50,6 +55,7 @@ interface TourOrder extends BaseOrder {
   guideId?: number
   guideName: string
   guideGender: string
+  orderNumber: number
   startDate?: string
   endDate?: string
 }
@@ -107,14 +113,14 @@ const categoryFilter = ref("")
 const statusFilter = ref("")
 const startDate = ref("")
 const endDate = ref("")
-const userId = 41 // 根据需求替换为实际的用户ID
-const userRole = "user"
+//const userId = 41 // 根据需求替换为实际的用户ID
+//const userRole = "user"
 const apiUrl = "https://123.60.14.84/api/Order"
 
 // 获取订单列表
 const fetchOrders = () => {
   axios
-    .get(`${apiUrl}/${userRole}/${userId}`, {
+    .get(`${apiUrl}/${userRole}/${userId.value}`, {
     params: {
         orderType: categoryFilter.value || undefined,
         statusType: statusFilter.value || undefined,
@@ -190,7 +196,7 @@ async function searchOrder() {
 
   try {
     // 调用后端 API 获取订单详情
-    const response = await axios.get(`${apiUrl}/${userRole}/${userId}/${orderId}`, {})
+    const response = await axios.get(`${apiUrl}/${userRole}/${userId.value}/${orderId}`, {})
     // 处理搜索结果
     console.log("Order Details:", response.data)
     orders.value = [response.data] // 将搜索结果设置为订单列表
@@ -231,7 +237,7 @@ const filterOrdersByCategory = () => {
   }
   if (categoryFilter.value) {
     axios
-      .get(`${apiUrl}/${userRole}/${userId}/category/${categoryFilter.value}`, {})
+      .get(`${apiUrl}/${userRole}/${userId.value}/category/${categoryFilter.value}`, {})
       .then((response) => {
         if (response.data && response.data.length > 0) {
           orders.value = response.data
@@ -272,7 +278,7 @@ const filterOrdersByStatus = () => {
   }
   if (statusFilter.value) {
     axios
-      .get(`${apiUrl}/${userRole}/${userId}/status/${statusFilter.value}`, {})
+      .get(`${apiUrl}/${userRole}/${userId.value}/status/${statusFilter.value}`, {})
       .then((response) => {
         if (response.data && response.data.length > 0) {
           orders.value = response.data
@@ -298,10 +304,8 @@ const filterByDate = () => {
   endDate.value = date_input.value[1]
   if (startDate.value && endDate.value) {
     axios
-      .get(`${apiUrl}/${userRole}/${userId}/date-range`, {
+      .get(`${apiUrl}/${userRole}/${userId.value}/date-range`, {
         params: {
-          role: userRole,
-          Id: userId,
           start: startDate.value,
           end: endDate.value
         }
@@ -368,72 +372,70 @@ const filterOrders = () => {
     default:
       status.value = ""
   }
-  const startDateValue = date_input.value[0];
-  const endDateValue = date_input.value[1];
+  const startDateValue = date_input.value[0]
+  const endDateValue = date_input.value[1]
 
-  const requests = [];
+  const requests = []
 
   // 添加类型筛选请求
   if (category.value != '') {
-    requests.push(axios.get(`${apiUrl}/${userRole}/${userId}/category/${category.value}`));
+    requests.push(axios.get(`${apiUrl}/${userRole}/${userId.value}/category/${category.value}`))
   }else{
-    requests.push(axios.get(`${apiUrl}/${userRole}/${userId}`));
+    requests.push(axios.get(`${apiUrl}/${userRole}/${userId.value}`))
   }
 
   // 添加状态筛选请求
   if (status.value != '') {
-    requests.push(axios.get(`${apiUrl}/${userRole}/${userId}/status/${status.value}`));
+    requests.push(axios.get(`${apiUrl}/${userRole}/${userId.value}/status/${status.value}`))
   }else{
-    requests.push(axios.get(`${apiUrl}/${userRole}/${userId}`));
+    requests.push(axios.get(`${apiUrl}/${userRole}/${userId.value}`))
   }
 
   // 添加日期筛选请求
   if (startDateValue && endDateValue) {
     requests.push(
-      axios.get(`${apiUrl}/${userRole}/${userId}/date-range`, {
+      axios.get(`${apiUrl}/${userRole}/${userId.value}/date-range`, {
         params: {
-          role: userRole,
-          Id: userId,
           start: startDateValue,
           end: endDateValue
         }
       })
-    );
+    )
   }else{
-    requests.push(axios.get(`${apiUrl}/${userRole}/${userId}`));
+    requests.push(axios.get(`${apiUrl}/${userRole}/${userId.value}`))
   }
 
   // 同时执行所有请求
   Promise.all(requests)
     .then((responses) => {
-      let filteredOrders = responses[0].data; // 以第一个请求的结果为基础
+      let filteredOrders = responses[0].data // 以第一个请求的结果为基础
 
       // 合并其他请求的结果
       responses.slice(1).forEach((response) => {
         filteredOrders = filteredOrders.filter((order: Order) =>
           response.data.some((filteredOrder: Order) => filteredOrder.orderId === order.orderId)
-        );
-      });
+        )
+      })
 
       // 更新订单数据
-      orders.value = filteredOrders;
-      total.value = filteredOrders.length;
+      orders.value = filteredOrders
+      total.value = filteredOrders.length
 
       if (filteredOrders.length === 0) {
-        showEmptyMessage.value = true;
+        showEmptyMessage.value = true
       }
     })
     .catch((error) => {
-      console.error(error);
-      orders.value = [];
-      total.value = 0;
-    });
-};
+      console.error(error)
+      orders.value = []
+      total.value = 0
+    })
+}
 
 // 取消订单
 async function deleteOrder(orderId: number) {
   try {
-    const response = await axios.delete(`${apiUrl}/${userRole}/${userId}/${orderId}`, {
+    const response = await axios.delete(`${apiUrl}/${userRole}/${userId.value}/${orderId}`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -470,7 +472,7 @@ async function deleteOrder(orderId: number) {
 
 // 标记订单为已付款
 async function PayOrder(orderId: number) {
-  const url = `${apiUrl}/${userRole}/${userId}/${orderId}`
+  const url = `${apiUrl}/${userRole}/${userId.value}/${orderId}`
   try {
     const response = await axios.patch(url, {
       headers: {
@@ -750,6 +752,7 @@ function formatDateToDay(dateString?: string): string {
                 <ul v-if="order.orderType === 'TourOrder'">
                   <li>旅行团编号：{{ (order as TourOrder).groupId }}</li>
                   <li>旅行目的地：{{ (order as TourOrder).groupName }}</li>
+                  <li>人数：{{ (order as TourOrder).orderNumber }}</li>
                   <li>导游编号：{{ (order as TourOrder).guideId }}</li>
                   <li>导游姓名：{{ (order as TourOrder).guideName }}</li>
                   <li>导游性别：{{ (order as TourOrder).guideGender }}</li>
@@ -758,6 +761,8 @@ function formatDateToDay(dateString?: string): string {
                 </ul>
                 <ul v-if="order.orderType === 'VehicleOrder'">
                   <li>交通类型：{{ formatTransport((order as VehicleOrder).vehicleType) }}</li>
+                  <li>车次/航班号：{{ (order as VehicleOrder).vehicleId }}</li>
+                  <li>座位类型：{{ (order as VehicleOrder).ticketType }}</li>
                   <li>出行票号：{{ (order as VehicleOrder).ticketId }}</li>
                   <li>出发时间：{{ formatDate((order as VehicleOrder).ticketDepartureTime) }}</li>
                   <li>到达时间：{{ formatDate((order as VehicleOrder).ticketArrivalTime) }}</li>

@@ -1,65 +1,109 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import axios from 'axios';
+
+interface Hotel {
+  hotelId: number;
+  hotelName: string;
+  cityName: string;
+  hotelGrade: string;
+  hotelLocation: string;
+  hotelIntroduction: string;
+}
+
+interface HotelRoom{
+  hotelId: number;
+  roomType: string;
+  roomLeft: number;
+  roomPrice: number; 
+}
 
 const route = useRoute();
 const selectedNumber = ref(0);
 
-interface Hotel {
-  id: number;
-  name: string;
-  grade: string;
-  location: string;
-  description: string;
-  roomType: string;
-  roomLeft: number;
-  roomPrice: number; 
-  imageUrl: string; 
-}
+const checkInTime = computed(() => {
+  return route.query.checkInTime ? new Date(parseInt(route.query.checkInTime as string)).toISOString() : null;
+});
+const checkOutTime = computed(() => {
+  return route.query.checkOutTime ? new Date(parseInt(route.query.checkOutTime as string)).toISOString() : null;
+});
 
-const hotel = ref<Hotel>();
+const selectedHotelId = route.query.orderHotelId
+const selectedRoomType = route.query.orderRoomType
+
+const hotel = ref<Hotel[]>([]);
+const hotelRooms = ref<HotelRoom[]>([]);
 
 const isSubmitDisabled = computed(() => selectedNumber.value === 0);
 
-const handleSubmit = () => {
-  // axios.post('/api/save-user-info', { name: name.value, phoneNumber: phoneNumber.value });
+const handleSubmit = async() => {
+  console.log(Number(localStorage.getItem("id")))
+  console.log(selectedHotelId)
+  console.log(checkInTime.value)
+  console.log(checkOutTime.value)
+  console.log(selectedRoomType)
+  for (let i = 0; i < selectedNumber.value; i++) {
+    try {
+      const response = await axios.post(`https://123.60.14.84/api/Hotel/create`, {
+        userId: Number(localStorage.getItem("id")),
+        hotelId: Number(selectedHotelId),
+        checkInDate: checkInTime.value,
+        checkOutDate: checkOutTime.value,
+        roomType: selectedRoomType,
+      })
+      alert("购买成功!")
+      console.log("Purchase successful:", response.data)
+    } catch (error) {
+      alert("购买失败，请再尝试")
+      console.error("Failed to complete purchase:", error)
+    }
+  }
 };
 
 onMounted(() => {
   const hotelQuery = route.query.hotel as string;
-  if (hotelQuery) {
-    hotel.value = JSON.parse(decodeURIComponent(hotelQuery)) as Hotel;
-  }
+  const hotelRoomsQuery = route.query.hotelRoom as string;
+
+  hotel.value = JSON.parse(decodeURIComponent(hotelQuery));
+  hotelRooms.value = JSON.parse(decodeURIComponent(hotelRoomsQuery));
+
+  console.log("hotel", hotel.value)
+  console.log("room",hotelRooms.value)
 });
 </script>
 
 <template>
   <div class="app-container">
     <el-card header="酒店订单">
-      <div class="hotel-container" v-if="hotel">
+      <div class="hotel-container" >
         <h2>订单详情</h2>
-        <div class="info-container">
-          <div class="info-1">
-            <p>酒店名称: {{ hotel.name }}</p>
-            <p>酒店地址: {{ hotel.location }}</p>
-            <p>房型: {{ hotel.roomType }}</p>
-            <p>价格: ¥{{ hotel.roomPrice }} /间</p>
-          </div>
-          <div class="info-2">
-            <div class="quantity-selector">
-              <el-input-number 
-                v-model="selectedNumber" 
-                :min="0" 
-                :max="hotel.roomLeft" 
-              />
+        <div v-for="hotel in hotel">
+          <div class="info-container" v-for="room in hotelRooms">
+            <div class="info-1" >
+              <p>酒店名称: {{ hotel.hotelName }}</p>
+              <p>酒店地址: {{ hotel.hotelLocation }}</p>
+              <div>
+                <p>房型: {{ room.roomType }}</p>
+                <p>价格: ¥{{ room.roomPrice }} /间</p>
+              </div>
             </div>
-            <p>订单总价格: ¥{{ hotel.roomPrice * selectedNumber }}</p>
-            <button 
-            :disabled="isSubmitDisabled"
-            @click="handleSubmit"
-          >
-            提交订单
-          </button>
+            <div class="info-2">
+              <div class="quantity-selector">
+                <el-input-number 
+                  v-model="selectedNumber" 
+                  :min="0" 
+                  :max="room.roomLeft" 
+                />
+              </div>
+              <p>订单总价格: ¥{{ room.roomPrice * selectedNumber }}</p>
+              <button 
+              :disabled="isSubmitDisabled"
+              @click="handleSubmit"
+              >
+              提交订单
+              </button>
+            </div>
           </div>
         </div>
       </div>

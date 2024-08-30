@@ -8,145 +8,108 @@ defineOptions({
 })
 
 interface Hotel {
-  id: number;
-  name: string;
-  grade: string;
-  location: string;
-  description: string;
-  roomType: string;
-  roomLeft: number;
-  roomPrice: number;
-  imageUrl: string; 
+  hotelId: number;
+  hotelName: string;
+  cityName: string;
+  hotelGrade: string;
+  hotelLocation: string;
+  hotelIntroduction: string;
 }
 
-const gradeToNumber = (grade: string): number => {
-  const gradeMap: { [key: string]: number } = {
-    "5星": 5,
-    "4星": 4,
-    "3星": 3,
-    "2星": 2,
-    "1星": 1
-  };
-  return gradeMap[grade] || 0;
-};
+interface HotelRoom{
+  hotelId: number;
+  roomType: string;
+  roomLeft: number;
+  roomPrice: number; 
+}
 
 
 const route = useRoute()
 const router = useRouter()
 const hotels = ref<Hotel[]>([]);
+const hotelRooms = ref<HotelRoom[]>([]);
 const sortOrder = ref<'asc' | 'desc'>('asc');
 const sortBy = ref<'grade' | 'price'>('grade');
 
 
 const destination = decodeURIComponent(route.query.destination as string);
-const checkInTime = decodeURIComponent(route.query.checkIn as string);
-const checkOutTime = decodeURIComponent(route.query.checkOut as string);
+
+const checkInTime = route.query.checkInTime;
+const checkOutTime = route.query.checkOutTime;
 
 
-const fetchHotels = async () => {
+
+
+
+const fetchHotels = async (): Promise<Hotel[]> => {
   try {
-    console.log("111111")
-    const hotelId = 10
-    const response = await axios.get(`https://123.60.14.84/api/Hotel/detail/${hotelId}`,{
-      // params:{
-      //   city: "上海",
-      // }
-    });
-    console.log(response.data)
-    //hotels.value = response.data;
-
+    const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(destination)}`);
+    hotels.value = response.data
+    return response.data;
   } catch (error) {
-    console.log("22222")
     console.error('Error fetching hotel data:', error);
-    console.log(destination)
+    return [];
   }
 };
 
+const fetchHotelRooms = async (hotelId: number): Promise<HotelRoom[]> => {
+  try {
+    const response = await axios.get(`https://123.60.14.84/api/Hotel/detail/${encodeURIComponent(6)}`);
+    hotelRooms.value = response.data
+    return response.data; 
+  } catch (error) {
+    console.error(`Error fetching rooms for hotelId ${hotelId}:`, error);
+    return [];
+  }
+}
+
+const updateHotel = async () => {
+  const hotels = await fetchHotels();
+  for (const hotel of hotels) {
+    const hotelRooms = await fetchHotelRooms(hotel.hotelId);
+  }
+};
+
+
 onMounted(() => {
-  fetchHotels();
+  updateHotel();
 });
 
-// const fetchHotels = async () => {
-//   const simulatedHotels: Hotel[] = [
-//     {
-//       id: 1,
-//       name: "Hotel A",
-//       grade: "5星",
-//       location: "北京市",
-//       description: "一家豪华酒店，提供高品质的服务和舒适的住宿体验。",
-//       roomType: "标间",
-//       roomLeft: 3,
-//       roomPrice: 600,
-//       imageUrl: "/images/hotel_1.jpg"
-//     },
-//     {
-//       id: 3,
-//       name: "Hotel B",
-//       grade: "4星",
-//       location: "上海市",
-//       description: "一家现代化酒店，位置优越，设施齐全。",
-//       roomType: "大床房",
-//       roomLeft: 1,
-//       roomPrice: 800,
-//       imageUrl: "/images/hotel_2.jpg"
-//     },
-//     {
-//       id: 18,
-//       name: "Hotel C",
-//       grade: "3星",
-//       location: "广州市",
-//       description: "经济型酒店，提供基础的住宿设施。",
-//       roomType: "总统套房",
-//       roomLeft: 9,
-//       roomPrice: 100,
-//       imageUrl: "/images/hotel_3.jpg"
-//     },
-//   ];
-  
-//   hotels.value = simulatedHotels;
-// };
 
 const sortedHotels = computed(() => {
   return hotels.value.slice().sort((a, b) => {
-    let comparison = 0;
-    if (sortBy.value === 'grade') {
-      const gradeA = gradeToNumber(a.grade);
-      const gradeB = gradeToNumber(b.grade);
-      comparison = gradeA - gradeB;
-    } else if (sortBy.value === 'price') {
-      comparison = a.roomPrice - b.roomPrice;
-    }
+    const priceA = hotelRooms.value.find(room => room.hotelId === a.hotelId)?.roomPrice ?? 0;
+    const priceB = hotelRooms.value.find(room => room.hotelId === b.hotelId)?.roomPrice ?? 0;
+    const comparison = priceA - priceB;
     return sortOrder.value === 'asc' ? comparison : -comparison;
   });
 });
 
-const toggleSortBygrade = () => {
-  if (sortBy.value === 'grade') {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
-  } else {
-    sortBy.value = 'grade';
-    sortOrder.value = 'asc';
-  }
+const getLowestPriceForHotel = (hotelId: number): number => {
+  const rooms = hotelRooms.value.filter(room => room.hotelId === hotelId);
+  if (rooms.length === 0) return 0;
+  return Math.min(...rooms.map(room => room.roomPrice));
 };
-
 
 const toggleSortByPrice = () => {
-  if (sortBy.value === 'price') {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
-  } else {
-    sortBy.value = 'price';
-    sortOrder.value = 'asc';
-  }
+  sortBy.value = 'price'; 
+  sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'; 
 };
 
-const viewDetails = (hotel: Hotel) => {
-    router.push({
-         name: 'Room', 
-         query: {
-             hotel: encodeURIComponent(JSON.stringify(hotel))
-        } 
-    });
-    console.log(hotel)
+const viewDetails = (selectedHotelId: number) => {
+  console.log(checkInTime)
+  const filteredHotel = hotels.value.filter(hotel => hotel.hotelId === selectedHotelId);
+  const filteredHotelRooms = hotelRooms.value.filter(room => room.hotelId === selectedHotelId);
+  router.push({
+    name: 'Room', 
+    query: {
+      hotel: encodeURIComponent(JSON.stringify(filteredHotel)),
+      hotelRoom:encodeURIComponent(JSON.stringify(filteredHotelRooms)),
+      checkInTime: checkInTime,
+      checkOutTime: checkOutTime
+    } 
+  });
+
 }
 
 onMounted(() => {
@@ -155,36 +118,34 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="app-container">
-      <el-card header="酒店详情">
-        <div class="index-container">
-          <div class="sort-buttons">
-            <button @click="toggleSortBygrade" class="sort-button">
-              {{ sortBy === 'grade' ? (sortOrder === 'asc' ? '按星级升序排序' : '按星级降序排序') : '按星级排序' }}
-            </button>
-            <button @click="toggleSortByPrice" class="sort-button">
-              {{ sortBy === 'price' ? (sortOrder === 'asc' ? '按价格升序排序' : '按价格降序排序') : '按价格排序' }}
-            </button>
-          </div>
-          <div v-for="hotel in sortedHotels" :key="hotel.name" class="hotel-card">
-            <img :src="hotel.imageUrl" alt="Hotel Image" style="width: 100%; height: auto;"/>
-            <div class="info-container">
-              <div class="info-1">
-                <h2>{{ hotel.name }}</h2>
-                <p>介绍: {{ hotel.description }}</p>
-                <p>位置: {{ hotel.location }}</p>
-                <p>等级: {{ hotel.grade }}</p>
-              </div>
-              <div class="info-2">
-                <p>价格: ¥{{ hotel.roomPrice }} 起</p>
-                <button @click="viewDetails(hotel)" class="view-details-button">查看详情</button>
-              </div>
-          </div>
+  <div class="app-container">
+    <el-card header="酒店详情">
+      <div class="index-container">
+        <div class="sort-buttons">
+          <button @click="toggleSortByPrice" class="sort-button">
+            {{ sortBy === 'price' ? (sortOrder === 'asc' ? '按价格升序排序' : '按价格降序排序') : '按价格排序' }}
+          </button>
+        </div>
+        <div v-for="hotel in sortedHotels" :key="hotel.hotelName" class="hotel-card">
+          <img :src="`/images/hotel_${hotel.hotelId}.jpg`" alt="Hotel Image" style="width: 100%; height: auto;"/>
+          <div class="info-container">
+            <div class="info-1">
+              <h2>{{ hotel.hotelName }}</h2>
+              <p>位置: {{ hotel.hotelLocation }}</p>
+              <p>等级: {{ hotel.hotelGrade }}</p>
+              <br>
+              <p>介绍: {{ hotel.hotelIntroduction }}</p>
+            </div>
+            <div class="info-2">
+              <p>价格: ¥{{ getLowestPriceForHotel(hotel.hotelId) }} 起</p>
+              <button @click="viewDetails(hotel.hotelId)" class="view-details-button">查看详情</button>
+            </div>
           </div>
         </div>
-      </el-card>
-    </div>
-  </template>
+      </div>
+    </el-card>
+  </div>
+</template>
 
 
 
@@ -197,7 +158,7 @@ onMounted(() => {
 
 .sort-buttons {
   display: flex;
-  gap: 10px; /* Adjust space between buttons as needed */
+  gap: 10px; 
 }
 
 .sort-button {
@@ -256,9 +217,11 @@ onMounted(() => {
 
 .info-1 {
   flex: 1;
+  margin: 0 20px;
 }
 
 .info-2 {
   text-align: right;
+  margin: 0 40px;
 }
 </style>
