@@ -45,6 +45,7 @@ namespace db_course_design.DTOs
         public byte? GuideId { get; set; }
         public string GuideName { get; set; }
         public string GuideGender { get; set; }
+        public decimal? OrderNumber { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
     }

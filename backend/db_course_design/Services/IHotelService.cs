@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using db_course_design.DTOs;
 using EntityFramework.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace db_course_design.Services
 {
@@ -36,5 +37,7 @@ namespace db_course_design.Services
         Task<bool> DeleteHotelRoomAsync(string roomNumber, decimal hotelId);
         // 更新酒店房间信息
         Task<HotelRoomResponse?> UpdateHotelRoomAsync(HotelRoomResponse request);
+        // 推荐酒店
+        Task<IEnumerable<HotelResponse>> GetRecommendedHotels();
     }
 }
