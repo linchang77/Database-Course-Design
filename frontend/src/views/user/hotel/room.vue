@@ -1,56 +1,90 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-const route = useRoute();
-const router = useRouter();
-const hotelQuery = route.query.hotel as string;
-
 interface Hotel {
-  id: number;
-  name: string;
-  grade: string;
-  location: string;
-  description: string;
+  hotelId: number;
+  hotelName: string;
+  cityName: string;
+  hotelGrade: string;
+  hotelLocation: string;
+  hotelIntroduction: string;
+}
+
+interface HotelRoom{
+  hotelId: number;
   roomType: string;
   roomLeft: number;
   roomPrice: number; 
-  imageUrl: string; 
 }
 
-const hotel = JSON.parse(decodeURIComponent(hotelQuery)) as Hotel;
+const route = useRoute();
+const router = useRouter();
 
-function viewOrder() {
-  if (hotel) {
-    router.push({
-       name: 'Order', 
-       query: { hotel: encodeURIComponent(JSON.stringify(hotel)) } 
-      }
-    );
-  }
+const checkInTime = route.query.checkInTime;
+const checkOutTime = route.query.checkOutTime;
+
+const hotel = ref<Hotel[]>([]);
+const hotelRooms = ref<HotelRoom[]>([]);
+
+// function viewOrder() {
+//   if (hotel) {
+//     router.push({
+//        name: 'Order', 
+//        query: {
+//          hotel: encodeURIComponent(JSON.stringify(hotel.value)),
+//          hotelRoom: encodeURIComponent(JSON.stringify(hotelRoom.value))
+//         } 
+//       }
+//     );
+//   }
+// }
+
+const viewOrder = (selectedRoomType: string, selectedHotelId: number) => {
+  const filteredHotelRoom = hotelRooms.value.filter(room => room.roomType === selectedRoomType);
+  router.push({
+    name: 'Order', 
+    query: {
+      hotel: encodeURIComponent(JSON.stringify(hotel.value)),
+      hotelRoom:encodeURIComponent(JSON.stringify(filteredHotelRoom)),
+      orderHotelId: selectedHotelId,
+      orderRoomType: selectedRoomType,
+      checkInTime: checkInTime,
+      checkOutTime: checkOutTime
+    } 
+  });
 }
+
+onMounted(() => {
+  const hotelQuery = route.query.hotel as string;
+  const hotelRoomsQuery = route.query.hotelRoom as string;
+
+  hotel.value = JSON.parse(decodeURIComponent(hotelQuery));
+  hotelRooms.value = JSON.parse(decodeURIComponent(hotelRoomsQuery));
+})
 
 </script>
 
 <template>
   <div class="app-container">
-    <el-card header="酒店房间">
-      <div class="hotel-detail" v-if="hotel">
-        <img :src="hotel.imageUrl" alt="Hotel Image" style="width: 100%; height: auto;"/>
-        <h2>{{ hotel.name }}</h2>
-        <p>等级: {{ hotel.grade }}</p>
-        <p>位置: {{ hotel.location }}</p>
-        <p>介绍: {{ hotel.description }}</p>
+    <el-card header="酒店房间" v-for="hotel in hotel">
+      <div class="hotel-detail">
+        <img :src="`/images/hotel_${hotel.hotelId}.jpg`" alt="Hotel Image" style="width: 100%; height: auto;"/>
+        <h2>{{ hotel.hotelName }}</h2>
+        <p>介绍: {{ hotel.hotelIntroduction }}</p>
+        <br>
+        <p>等级: {{ hotel.hotelGrade }}</p>
+        <p>位置: {{ hotel.hotelLocation }}</p>
       </div>
-      <div class="hotel-detail" v-if="hotel">
+      <div class="hotel-detail" v-for="room in hotelRooms ">
         <div class="info-container">
           <div class="info-1">
-            <p>房型: {{ hotel.roomType }}</p> 
-            <p>剩余房间: {{ hotel.roomLeft }} 间</p> 
+            <h3>{{ room.roomType }}</h3> 
+            <p>剩余房间: {{ room.roomLeft }} 间</p> 
           </div>
           <div class="info-2">
-            <p>价格: ¥{{ hotel.roomPrice }} /间</p>
-            <button @click="viewOrder">查看详情</button>
+            <p>价格: ¥{{ room.roomPrice }} /间</p>
+            <button @click="viewOrder(room.roomType,hotel.hotelId)">查看详情</button>
           </div>
         </div>
       </div>

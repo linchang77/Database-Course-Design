@@ -25,7 +25,7 @@ const tableData = ref<Hotel[]>([]);
 const getTableData = async () => {
   loading.value = true;
   try {
-    const response = await axios.get("https://123.60.14.84/api/Hotel/all");
+    const response = await axios.get("https://123.60.14.84/api/TourGroup/guide/all");
     console.log(response.data);
     tableData.value = response.data;
   } catch (error) {
