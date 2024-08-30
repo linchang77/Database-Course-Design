@@ -48,6 +48,7 @@
             v-model="vehicleScheduleData.DepartureTime"
             type="datetime"
             placeholder="选择日期时间"
+
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="到达时间">
@@ -55,6 +56,7 @@
             v-model="vehicleScheduleData.ArrivalTime"
             type="datetime"
             placeholder="选择日期时间"
+
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="交通类型">
@@ -111,6 +113,7 @@
             v-model="vehicleTicketData.TicketDepartureTime"
             type="datetime"
             placeholder="选择日期时间"
+            value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="到达时间">
@@ -118,6 +121,7 @@
             v-model="vehicleTicketData.TicketArrivalTime"
             type="datetime"
             placeholder="选择日期时间"
+            value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="出发城市">
@@ -150,6 +154,7 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import { de } from 'element-plus/es/locales.mjs';
 
 const vehicleTypes = [
   { value: 'plane', label: '飞机' },
@@ -269,12 +274,26 @@ function handleCloseAddTicketForm() {
 
 // 添加行程的函数
 async function newSchedule() {
+  console.log("vehicleScheduleData:", vehicleScheduleData.value);
+  const deTime = new Date(vehicleScheduleData.value.DepartureTime.getTime() + 8 * 60 * 60 * 1000);
+  const arrTime = new Date(vehicleScheduleData.value.ArrivalTime.getTime() + 8 * 60 * 60 * 1000);
+  const data={
+    VehicleId: vehicleScheduleData.value.VehicleId,
+    DepartureTime: deTime.toISOString(),
+    ArrivalTime: arrTime.toISOString(),
+    VehicleType: vehicleScheduleData.value.VehicleType,
+    DepartureCity: vehicleScheduleData.value.DepartureCity,
+    ArrivalCity: vehicleScheduleData.value.ArrivalCity,
+    VehicleModel: vehicleScheduleData.value.VehicleModel,
+    ArrivalStation: vehicleScheduleData.value.ArrivalStation,
+    DepartureStation: vehicleScheduleData.value.DepartureStation
+  }
+  console.log("data:", data);
   const url = "https://123.60.14.84:11000/api/Vehicle/schedule";
   console.log("url:", url);
-  console.log("vehicleScheduleData:", vehicleScheduleData.value);
 
   axios
-    .post(url, vehicleScheduleData.value)
+    .post(url, data)
     .then((response) => {
       console.log("response:", response);
       ElMessage.success('行程添加成功');
@@ -283,16 +302,32 @@ async function newSchedule() {
       console.error(error);
       ElMessage.error('行程添加失败');
     });
-    handleCloseAddScheduleForm()
+  handleCloseAddScheduleForm()
 }
 
 // 添加票务信息的函数
 async function addVehicleTicket() {
+  console.log("vehicleScheduleData:", vehicleScheduleData.value);
+  const deTime = new Date(vehicleTicketData.value.TicketDepartureTime.getTime() + 8 * 60 * 60 * 1000);
+  const arrTime = new Date(vehicleTicketData.value.TicketArrivalTime.getTime() + 8 * 60 * 60 * 1000);
+  const data={
+    VehicleId: vehicleTicketData.value.VehicleId,
+    TicketType: vehicleTicketData.value.TicketType,
+    TicketPrice: vehicleTicketData.value.TicketPrice,
+    TicketDepartureTime: deTime.toISOString(),
+    TicketArrivalTime: arrTime.toISOString(),
+    TicketDepartureCity: vehicleTicketData.value.TicketDepartureCity,
+    TicketArrivalCity: vehicleTicketData.value.TicketArrivalCity,
+    TicketId: vehicleTicketData.value.TicketId,
+    TicketRemaining: vehicleTicketData.value.TicketRemaining,
+    TicketDepartureStation: vehicleTicketData.value.TicketDepartureStation,
+    TicketArrivalStation: vehicleTicketData.value.TicketArrivalStation
+  }
   const url = "https://123.60.14.84:11000/api/Vehicle/ticket";
   console.log("url:", url);
-  console.log("vehicleTicketData:", vehicleTicketData.value);
+
   axios
-    .post(url, vehicleTicketData.value)
+    .post(url, data)
     .then((response) => {
       console.log("response:", response);
       ElMessage.success('票务信息添加成功');

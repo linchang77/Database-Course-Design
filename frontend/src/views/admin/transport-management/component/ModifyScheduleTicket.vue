@@ -56,17 +56,34 @@
       </template>
       <el-row>
         <el-col :span="12">
-          <el-form :model="vehicleSchedule" label-width="80px">
+          <el-form :model="vehicleSchedule" label-width="120px">
             <el-form-item label="班次ID">
-              <el-input v-model="vehicleSchedule.VehicleId" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-input v-model="vehicleSchedule.vehicleId" :disabled="!isEditingVehicleSchedule"></el-input>
+            </el-form-item>
+            <el-form-item label="出发城市">
+              <el-input v-model="vehicleSchedule.departureCity" :disabled="!isEditingVehicleSchedule"></el-input>
+            </el-form-item>
+            <el-form-item label="到达城市">
+              <el-input v-model="vehicleSchedule.arrivalCity" :disabled="!isEditingVehicleSchedule"></el-input>
+            </el-form-item>
+            <el-form-item label="出发车站">
+              <el-input v-model="vehicleSchedule.departureStation" :disabled="!isEditingVehicleSchedule"></el-input>
+            </el-form-item>
+            <el-form-item label="到达车站">
+              <el-input v-model="vehicleSchedule.arrivalStation" :disabled="!isEditingVehicleSchedule"></el-input>
             </el-form-item>
             <el-form-item label="出发时间">
-              <el-input v-model="vehicleSchedule.DepartureTime" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-input v-model="vehicleSchedule.departureTime" :disabled="!isEditingVehicleSchedule"></el-input>
             </el-form-item>
             <el-form-item label="到达时间">
-              <el-input v-model="vehicleSchedule.ArrivalTime" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-input v-model="vehicleSchedule.arrivalTime" :disabled="!isEditingVehicleSchedule"></el-input>
             </el-form-item>
-            <!-- 其他字段... -->
+            <el-form-item label="交通工具类型">
+              <el-input v-model="vehicleSchedule.vehicleType" :disabled="!isEditingVehicleSchedule"></el-input>
+            </el-form-item>
+            <el-form-item label="交通工具型号">
+              <el-input v-model="vehicleSchedule.vehicleModel" :disabled="!isEditingVehicleSchedule"></el-input>
+            </el-form-item>
           </el-form>
         </el-col>
         <el-col :span="4">
@@ -199,7 +216,7 @@ function handleCloseModifySpecificTicketForm(done: () => void) {
 
 // 查询并显示行程信息
 async function fetchVehicleSchedule() {
-  const vehicleId = vehicleScheduleData.value.VehicleId;
+  const vehicleId = vehicleScheduleData.VehicleId;
   if (!vehicleId) {
     ElMessage.error('请输入班次ID');
     return;
@@ -218,7 +235,7 @@ async function fetchVehicleSchedule() {
 
 // 查询并显示某列车的车票信息
 async function fetchVehicleTickets() {
-  const vehicleId = vehicleTicketData.value.VehicleId;
+  const vehicleId = vehicleTicketData.VehicleId;
   if (!vehicleId) {
     ElMessage.error('请输入班次ID');
     return;
@@ -262,6 +279,7 @@ function editVehicleSchedule() {
 // 更新行程信息
 async function updateVehicleSchedule() {
   try {
+    //await axios.delete(`https://123.60.14.84:11000/api/Vehicle/schedule/${vehicleSchedule.value.VehicleId}`);
     await axios.put(`https://123.60.14.84:11000/api/Vehicle/schedule/${vehicleSchedule.value.VehicleId}`, vehicleSchedule.value);
     ElMessage.success('行程信息更新成功');
     isEditingVehicleSchedule.value = false;

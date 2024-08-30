@@ -158,7 +158,7 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
 <template>
   <div class="app">
     <div class="app-container">
-      <el-card header="机票查询">
+      <el-card header="车票查询">
         <div class="index-container">
           <PlaceSelector @updateValue="setDestination">目的地</PlaceSelector>
           <PlaceSelector @updateValue="setDeparture">出发地</PlaceSelector>
@@ -213,7 +213,7 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
                           <div class="time">{{ flight.arrivalTime.split("T")[1] }}</div>
                           <div class="airport">
                             <span>Arrival</span>
-                            <span>Airport</span>
+                            <span>Station</span>
                             <br />
                             <span>{{ flight.arrivalStation }}</span>
                           </div>
