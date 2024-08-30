@@ -20,7 +20,6 @@ namespace db_course_design.Services.impl
         public TransactionService(ModelContext context)
         {
             _context = context;
-            _mapper = new MapperConfiguration(cfg => cfg.AddProfile<HotelProfile>()).CreateMapper();
         }
 
         /*--管理员获取全部交易记录--*/

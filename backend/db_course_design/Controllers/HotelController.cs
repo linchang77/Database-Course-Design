@@ -22,6 +22,7 @@ namespace db_course_design.Controllers
                 Get
         rooms/
             {hotelId},{roomType}
+                Get
         create/
             Post
     */
