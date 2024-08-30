@@ -6,7 +6,7 @@ defineOptions({
 })
 
 import AddScheduleTicket from "./component/AddScheduleTicket.vue";
-import A from "./component/a.vue";
+import ModifyScheduleTicket from "./component/ModifyScheduleTicket.vue";
 
 
 </script>
@@ -14,5 +14,6 @@ import A from "./component/a.vue";
 <template>
   <div class="app-container">
     <AddScheduleTicket />
+    <ModifyScheduleTicket />
   </div>
 </template>
