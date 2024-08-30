@@ -181,7 +181,7 @@ namespace db_course_design.Controllers
             var target = await _tourGroupService.UpdateTourGroupAsync(id, request);
 
             if (target == null)
-                return NotFound("Tour group " + id + " doesn't exist.");
+                return BadRequest("Cannot update tour group " + id + ".");
             return Ok(target);
         }
 
@@ -246,7 +246,7 @@ namespace db_course_design.Controllers
             var target = await _tourGroupService.UpdateTourItineraryAsync(itineraryId, request);
 
             if (target == null)
-                return NotFound("Tour itinerary " + itineraryId + " doesn't exist.");
+                return BadRequest("Cannot update tour itinerary " + itineraryId + ".");
             return Ok(target);
         }
 
@@ -299,7 +299,7 @@ namespace db_course_design.Controllers
             var target = await _tourGroupService.UpdateTourHotelAsync(groupId, oldHotelId, newHotelId);
 
             if (target == null)
-                return NotFound("Tour group " + groupId + " doesn't contain hotel " + oldHotelId + ".");
+                return BadRequest("Cannot update hotel " + oldHotelId +" of tour group " + groupId + ".");
             return Ok(target);
         }
     }

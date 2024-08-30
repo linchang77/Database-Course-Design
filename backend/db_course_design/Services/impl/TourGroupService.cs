@@ -210,27 +210,31 @@ namespace db_course_design.Services.impl
 
         public async Task<TourGroupResponse?> UpdateTourGroupAsync(byte id, TourGroupRequest request)
         {
-            var target = (await _context.TourGroups
+            try
+            {
+                var target = (await _context.TourGroups
                 .Include(t => t.TourItineraries)
                 .Include(t => t.Hotels)
                 .Where(t => t.GroupId == id)
                 .ToListAsync()).SingleOrDefault();
-
-            if (target == null)
+                if (target == null)
+                    throw new Exception();
+                target.GuideId = request.GuideId;
+                target.StartDate = request.StartDate;
+                target.EndDate = request.EndDate;
+                target.GroupName = request.GroupName;
+                target.GroupPrice = request.GroupPrice;
+                target.GoTicketId = request.GoTicketId;
+                target.ReturnTicketId = request.ReturnTicketId;
+                target.Departure = request.Departure;
+                target.Destination = request.Destination;
+                await _context.SaveChangesAsync();
+                return _mapper.Map<TourGroupResponse>(target);
+            }
+            catch
+            {
                 return null;
-
-            target.GuideId = request.GuideId;
-            target.StartDate = request.StartDate;
-            target.EndDate = request.EndDate;
-            target.GroupName = request.GroupName;
-            target.GroupPrice = request.GroupPrice;
-            target.GoTicketId = request.GoTicketId;
-            target.ReturnTicketId = request.ReturnTicketId;
-            target.Departure = request.Departure;
-            target.Destination = request.Destination;
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<TourGroupResponse>(target);
+            }
         }
 
         public async Task<IEnumerable<TourItineraryResponse>> GetAllTourItinerarysAsync(byte groupId)
@@ -285,19 +289,23 @@ namespace db_course_design.Services.impl
 
         public async Task<TourItineraryResponse?> UpdateTourItineraryAsync(byte id, TourItineraryRequest request)
         {
-            var target = await _context.TourItineraries.FindAsync(id);
-
-            if (target == null)
+            try
+            {
+                var target = await _context.TourItineraries.FindAsync(id);
+                if (target == null)
+                    return null;
+                target.GroupId = request.GroupId;
+                target.ItineraryTime = request.ItineraryTime;
+                target.ItineraryDuration = request.ItineraryDuration;
+                target.ScenicSpotId = request.ScenicSpotId;
+                target.Activities = request.Activities;
+                await _context.SaveChangesAsync();
+                return _mapper.Map<TourItineraryResponse>(target);
+            }
+            catch
+            {
                 return null;
-
-            target.GroupId = request.GroupId;
-            target.ItineraryTime = request.ItineraryTime;
-            target.ItineraryDuration = request.ItineraryDuration;
-            target.ScenicSpotId = request.ScenicSpotId;
-            target.Activities = request.Activities;
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<TourItineraryResponse>(target);
+            }
         }
 
         public async Task<IEnumerable<HotelResponse>> GetAllTourHotelsAsync(byte groupId)
@@ -357,8 +365,15 @@ namespace db_course_design.Services.impl
 
         public async Task<HotelResponse?> UpdateTourHotelAsync(byte groupId, decimal oldHotelId, decimal newHotelId)
         {
-            if (await DeleteTourHotelAsync(groupId, oldHotelId))
-                return await AddTourHotelAsync(groupId, newHotelId);
+            try
+            {
+                if (await DeleteTourHotelAsync(groupId, oldHotelId))
+                    return await AddTourHotelAsync(groupId, newHotelId);
+            }
+            catch
+            {
+                return null;
+            }
 
             return null;
         }
