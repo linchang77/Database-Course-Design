@@ -14,9 +14,9 @@ namespace db_course_design.Services
         // 根据城市获取酒店信息
         Task<List<HotelResponse>> GetHotelByCityAsync(string city);
         // 返回某酒店各种房型剩余房间数和房型价格
-        Task<List<HotelRoomDetail>> GetHotelRoomDetailsAsync(int hotelId);
+        Task<List<HotelRoomDetail>> GetHotelRoomDetailsAsync(decimal hotelId);
         // 返回某酒店指定房型的所有房间
-        Task<List<HotelRoomResponse>> GetAllHotelRoomsAsync(int hotelId, string roomType);
+        Task<List<HotelRoomResponse>> GetAllHotelRoomsAsync(decimal hotelId, string roomType);
         // 创建一个酒店订单并分配房间
         Task<CreateHotelOrderResponse?> CreateHotelOrderAsync(CreateHotelOrderRequest request);
         // 添加酒店信息

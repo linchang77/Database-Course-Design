@@ -57,7 +57,7 @@ namespace db_course_design.Controllers
 
         /*--返回某酒店各种房型剩余房间数和房型价格--*/
         [HttpGet("detail/{hotelId}")]
-        public async Task<IActionResult> GetRoomDetail(int hotelId)
+        public async Task<IActionResult> GetRoomDetail(decimal hotelId)
         {
             var details = await _hotelService.GetHotelRoomDetailsAsync(hotelId);
             if (details == null || !details.Any()) 
@@ -69,7 +69,7 @@ namespace db_course_design.Controllers
 
         /*--返回某酒店指定房型的所有房间信息--*/
         [HttpGet("rooms/{hotelId},{roomType}")]
-        public async Task<IActionResult> GetAllRooms(int hotelId, string roomType)
+        public async Task<IActionResult> GetAllRooms(decimal hotelId, string roomType)
         {
             var rooms = await _hotelService.GetAllHotelRoomsAsync(hotelId, roomType);
             if (!rooms.Any())
@@ -148,7 +148,7 @@ namespace db_course_design.Controllers
             return Ok(target);
         }
 
-        [HttpDelete("del/hotel/hotelId")]
+        [HttpDelete("del/hotel/{hotelId}")]
         public async Task<IActionResult> DeleteHotel(decimal hotelId)
         {
             var deleted = await _hotelService.DeleteHotelAsync(hotelId);

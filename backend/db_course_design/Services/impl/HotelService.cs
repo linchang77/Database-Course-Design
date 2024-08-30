@@ -38,7 +38,7 @@ namespace db_course_design.Services.impl
             return Hotels;
         }
         /*--返回某酒店各种房型剩余房间数和房型价格--*/
-        public async Task<List<HotelRoomDetail>> GetHotelRoomDetailsAsync(int hotelId)
+        public async Task<List<HotelRoomDetail>> GetHotelRoomDetailsAsync(decimal hotelId)
         {
             var query = _context.HotelRoomTypes.AsQueryable();
             query = query.Where(o => o.HotelId == hotelId);
@@ -48,7 +48,7 @@ namespace db_course_design.Services.impl
             return RoomDetail;
         }
         /*--返回某酒店所有房间信息--*/
-        public async Task<List<HotelRoomResponse>> GetAllHotelRoomsAsync(int hotelId, string roomType)
+        public async Task<List<HotelRoomResponse>> GetAllHotelRoomsAsync(decimal hotelId, string roomType)
         {
             var detail = (await _context.HotelRoomTypes
                 .Where(t => t.HotelId == hotelId && t.RoomType == roomType)

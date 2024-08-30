@@ -973,6 +973,8 @@ public partial class ModelContext : DbContext
 
             entity.ToTable("VEHICLE_TICKET");
 
+            entity.HasIndex(e => new { e.VehicleId, e.TicketDepartureStation, e.TicketArrivalStation, e.TicketType }, "VEHICLE_TICKET_UNIQUENESS").IsUnique();
+
             entity.Property(e => e.TicketId)
                 .ValueGeneratedOnAdd()
                 .HasColumnType("NUMBER(38)")
