@@ -5,11 +5,6 @@ import type { Action } from "element-plus"
 import { Search } from "@element-plus/icons-vue"
 import axios from "axios"
 
-// 8.28 14:54
-// 1、已经有导游、旅行团、出行、酒店、景点的订单数据
-// 但是旅行团导游性别这里没有数据
-// 现在看到的出行类型有plane、train、car 只给这三种加中文了
-
 // 定义订单的响应类型
 interface BaseOrder {
   orderId: number
@@ -212,7 +207,6 @@ async function searchOrder() {
 
 // 按订单分类筛选订单
 const filterOrdersByCategory = () => {
-  categoryFilter.value = order_type_input.value
   switch (order_type_input.value) {
     case "全部订单":
       categoryFilter.value = ""
@@ -330,6 +324,111 @@ const filterByDate = () => {
     fetchOrders()
   }
 }
+
+// 同时按类型、状态和日期筛选订单
+const filterOrders = () => {
+  const category = ref("")
+  const status = ref("")
+
+  switch (order_type_input.value) {
+    case "全部订单":
+      category.value = ""
+      break
+    case "导游":
+      category.value = "GuideOrder"
+      break
+    case "酒店":
+      category.value = "HotelOrder"
+      break
+    case "景点":
+      category.value = "ScenicOrder"
+      break
+    case "出行":
+      category.value = "VehicleOrder"
+      break
+    case "旅行团":
+      category.value = "TourOrder"
+      break
+    default:
+      category.value = ""
+  }
+  switch (order_status_input.value) {
+    case "全部订单":
+      status.value = ""
+      break
+    case "已支付":
+      status.value = "Completed"
+      break
+    case "待支付":
+      status.value = "Pending"
+      break
+    case "已取消":
+      status.value = "Cancelled"
+      break
+    default:
+      status.value = ""
+  }
+  const startDateValue = date_input.value[0];
+  const endDateValue = date_input.value[1];
+
+  const requests = [];
+
+  // 添加类型筛选请求
+  if (category.value != '') {
+    requests.push(axios.get(`${apiUrl}/${userRole}/${userId}/category/${category.value}`));
+  }else{
+    requests.push(axios.get(`${apiUrl}/${userRole}/${userId}`));
+  }
+
+  // 添加状态筛选请求
+  if (status.value != '') {
+    requests.push(axios.get(`${apiUrl}/${userRole}/${userId}/status/${status.value}`));
+  }else{
+    requests.push(axios.get(`${apiUrl}/${userRole}/${userId}`));
+  }
+
+  // 添加日期筛选请求
+  if (startDateValue && endDateValue) {
+    requests.push(
+      axios.get(`${apiUrl}/${userRole}/${userId}/date-range`, {
+        params: {
+          role: userRole,
+          Id: userId,
+          start: startDateValue,
+          end: endDateValue
+        }
+      })
+    );
+  }else{
+    requests.push(axios.get(`${apiUrl}/${userRole}/${userId}`));
+  }
+
+  // 同时执行所有请求
+  Promise.all(requests)
+    .then((responses) => {
+      let filteredOrders = responses[0].data; // 以第一个请求的结果为基础
+
+      // 合并其他请求的结果
+      responses.slice(1).forEach((response) => {
+        filteredOrders = filteredOrders.filter((order: Order) =>
+          response.data.some((filteredOrder: Order) => filteredOrder.orderId === order.orderId)
+        );
+      });
+
+      // 更新订单数据
+      orders.value = filteredOrders;
+      total.value = filteredOrders.length;
+
+      if (filteredOrders.length === 0) {
+        showEmptyMessage.value = true;
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      orders.value = [];
+      total.value = 0;
+    });
+};
 
 // 取消订单
 async function deleteOrder(orderId: number) {
@@ -573,7 +672,7 @@ function formatDateToDay(dateString?: string): string {
           v-model="order_status_input"
           placeholder="请选择订单状态"
           style="width: 210px"
-          @change="filterOrdersByStatus"
+          @change="filterOrders"
         >
           <el-option v-for="item in status_options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
@@ -583,7 +682,7 @@ function formatDateToDay(dateString?: string): string {
           v-model="order_type_input"
           placeholder="请选择订单类型"
           style="width: 210px"
-          @change="filterOrdersByCategory"
+          @change="filterOrders"
         >
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
@@ -596,7 +695,7 @@ function formatDateToDay(dateString?: string): string {
           start-placeholder="开始时间"
           end-placeholder="结束时间"
           size="default"
-          @change="filterByDate"
+          @change="filterOrders"
         />
       </div>
     </div>

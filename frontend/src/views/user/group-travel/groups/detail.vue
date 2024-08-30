@@ -16,7 +16,9 @@ const groupName = route.query.groupName as string;
 const groupPrice = Number(route.query.groupPrice);
 const startDate = route.query.startDate as string;
 const endDate = route.query.endDate as string;
-const guideName = route.query.guideName as string;
+const departure = route.query.departure as string;
+const destination = route.query.destination as string;
+const guideName = route.query.guidename as string;
 const imageUrl = route.query.imageUrl as string;
 const tourItineraries = JSON.parse(route.query.tourItineraries as string);
 const hotels = JSON.parse(route.query.hotels as string);
@@ -49,10 +51,12 @@ const formatDuration = (timeString: string): string => {
 
 // 加入订单购物车
 const purchase = async () => {
-  const url = 'https://123.60.14.84/api/TourGroup/purchase';
+
+  const url = `https://123.60.14.84/api/TourGroup/purchase/number/${number.value}`;
+
   try {
     const response = await axios.post(url, {
-      userId: 22,
+      userId: 41,
       groupId: groupId
     }, {
       headers: {
@@ -80,6 +84,7 @@ const purchase = async () => {
         <p class="title1">{{ groupName }}</p>
         <img :src="imageUrl" alt="旅游团图片" />
         <p class="price">{{ groupPrice }} 元/人</p>
+        <p>出发地：{{ departure }} - 目的地：{{ destination }}</p>
         <p>时间：{{ new Date(startDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) }} -- {{ new Date(endDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) }}</p>
         <p>导游: {{ guideName }}</p>
         <el-card class="ticket-box" shadow="hover">
@@ -137,7 +142,7 @@ const purchase = async () => {
 }
   
 .left-container {
-  flex: 1;
+  flex: 0 0 40%;
   margin-right: 20px;
   display: flex;
   flex-direction: column;
@@ -158,7 +163,7 @@ const purchase = async () => {
 }
 
 .left-container img {
-    width: 100%;
+    width: 90%;
     height: auto;
     border-radius: 10px;
     margin-top: 25px;
@@ -173,7 +178,7 @@ const purchase = async () => {
 }
   
 .right-container {
-    max-width: 60%; 
+    flex: 0 0 60%;
     display: flex;
     flex-direction: column;
     justify-content: center;
