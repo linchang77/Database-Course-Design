@@ -5,9 +5,30 @@ import { Search } from "@element-plus/icons-vue"
 import { useRouter } from "vue-router"
 import { ElButton, ElMessage } from 'element-plus'
 
-//08.29还剩最后一个购票api
-
 // 接口
+// 定义车票的接口
+interface GoTicket {
+  vehicleId: string
+  ticketType: string
+  ticketPrice: number
+  ticketDepartureTime: string
+  ticketArrivalTime: string
+  ticketDepartureCity: string
+  ticketArrivalCity: string
+  ticketId: number
+}
+
+interface ReturnTicket {
+  vehicleId: string
+  ticketType: string
+  ticketPrice: number
+  ticketDepartureTime: string
+  ticketArrivalTime: string
+  ticketDepartureCity: string
+  ticketArrivalCity: string
+  ticketId: number
+}
+
 // 定义行程的接口
 interface TourItinerary {
   itineraryId: number
@@ -30,16 +51,21 @@ interface Hotel {
 // 定义旅游团的接口
 interface TourGroup {
   groupId: number
-  groupName: string
-  groupPrice: number
+  guideId: number
   startDate: string
   endDate: string
+  groupName: string
+  groupPrice: number
+  goTicketId: number
+  returnTicketId: number
   departure: string
   destination: string
   guidename: string
-  imageUrl: string
+  goTicket: GoTicket
+  returnTicket: ReturnTicket
   tourItineraries: TourItinerary[]
   hotels: Hotel[]
+  imageUrl: string
 }
 
 // 数据
@@ -71,17 +97,40 @@ const fetchTourGroups = () => {
     .get("https://123.60.14.84/api/TourGroup/search/all")
     .then((response) => {
       const data = response.data
+      console.log(data)
       if (Array.isArray(data)) {
         tourGroups.value = data.map((group: any) => ({
           groupId: group.groupId,
-          groupName: group.groupName,
-          groupPrice: group.groupPrice,
+          guideId: group.guideId,
           startDate: group.startDate,
           endDate: group.endDate,
+          groupName: group.groupName,
+          groupPrice: group.groupPrice,
+          goTicketId: group.goTicketId,
+          returnTicketId: group.returnTicketId,
           departure: group.departure,
           destination: group.destination,
           guidename: group.guidename,
-          imageUrl: imageMap[group.groupId],
+          goTicket: {
+            vehicleId: group.goTicket.vehicleId,
+            ticketType: group.goTicket.ticketType,
+            ticketPrice: group.goTicket.ticketPrice,
+            ticketDepartureTime: group.goTicket.ticketDepartureTime,
+            ticketArrivalTime: group.goTicket.ticketArrivalTime,
+            ticketDepartureCity: group.goTicket.ticketDepartureCity,
+            ticketArrivalCity: group.goTicket.ticketArrivalCity,
+            ticketId: group.goTicket.ticketId
+          },
+          returnTicket: {
+            vehicleId: group.returnTicket.vehicleId,
+            ticketType: group.returnTicket.ticketType,
+            ticketPrice: group.returnTicket.ticketPrice,
+            ticketDepartureTime: group.returnTicket.ticketDepartureTime,
+            ticketArrivalTime: group.returnTicket.ticketArrivalTime,
+            ticketDepartureCity: group.returnTicket.ticketDepartureCity,
+            ticketArrivalCity: group.returnTicket.ticketArrivalCity,
+            ticketId: group.returnTicket.ticketId
+          },
           tourItineraries: group.tourItineraries.map((itinerary: any) => ({
             itineraryId: itinerary.itineraryId,
             itineraryTime: itinerary.itineraryTime,
@@ -96,7 +145,8 @@ const fetchTourGroups = () => {
             hotelGrade: hotel.hotelGrade,
             hotelLocation: hotel.hotelLocation,
             hotelIntroduction: hotel.hotelIntroduction
-          }))
+          })),
+          imageUrl: imageMap[group.groupId]
         }))
         showEmptyMessage.value = false
       } else {
@@ -124,14 +174,36 @@ const fetchId = () => {
       if (data) {
         tourGroups.value = [{
           groupId: data.groupId,
-          groupName: data.groupName,
-          groupPrice: data.groupPrice,
+          guideId: data.guideId,
           startDate: data.startDate,
           endDate: data.endDate,
+          groupName: data.groupName,
+          groupPrice: data.groupPrice,
+          goTicketId: data.goTicketId,
+          returnTicketId: data.returnTicketId,
           departure: data.departure,
           destination: data.destination,
           guidename: data.guidename,
-          imageUrl: imageMap[data.groupId],
+          goTicket: {
+            vehicleId: data.goTicket.vehicleId,
+            ticketType: data.goTicket.ticketType,
+            ticketPrice: data.goTicket.ticketPrice,
+            ticketDepartureTime: data.goTicket.ticketDepartureTime,
+            ticketArrivalTime: data.goTicket.ticketArrivalTime,
+            ticketDepartureCity: data.goTicket.ticketDepartureCity,
+            ticketArrivalCity: data.goTicket.ticketArrivalCity,
+            ticketId: data.goTicket.ticketId
+          },
+          returnTicket: {
+            vehicleId: data.returnTicket.vehicleId,
+            ticketType: data.returnTicket.ticketType,
+            ticketPrice: data.returnTicket.ticketPrice,
+            ticketDepartureTime: data.returnTicket.ticketDepartureTime,
+            ticketArrivalTime: data.returnTicket.ticketArrivalTime,
+            ticketDepartureCity: data.returnTicket.ticketDepartureCity,
+            ticketArrivalCity: data.returnTicket.ticketArrivalCity,
+            ticketId: data.returnTicket.ticketId
+          },
           tourItineraries: data.tourItineraries.map((itinerary: any) => ({
             itineraryId: itinerary.itineraryId,
             itineraryTime: itinerary.itineraryTime,
@@ -146,7 +218,8 @@ const fetchId = () => {
             hotelGrade: hotel.hotelGrade,
             hotelLocation: hotel.hotelLocation,
             hotelIntroduction: hotel.hotelIntroduction
-          }))
+          })),
+          imageUrl: imageMap[data.groupId]
         }]
         showEmptyMessage.value = false
       } else {
@@ -179,14 +252,36 @@ const fetchFilter = () => {
       if (Array.isArray(data)) {
         tourGroups.value = data.map((group: any) => ({
           groupId: group.groupId,
-          groupName: group.groupName,
-          groupPrice: group.groupPrice,
+          guideId: group.guideId,
           startDate: group.startDate,
           endDate: group.endDate,
+          groupName: group.groupName,
+          groupPrice: group.groupPrice,
+          goTicketId: group.goTicketId,
+          returnTicketId: group.returnTicketId,
           departure: group.departure,
           destination: group.destination,
           guidename: group.guidename,
-          imageUrl: imageMap[group.groupId],
+          goTicket: {
+            vehicleId: group.goTicket.vehicleId,
+            ticketType: group.goTicket.ticketType,
+            ticketPrice: group.goTicket.ticketPrice,
+            ticketDepartureTime: group.goTicket.ticketDepartureTime,
+            ticketArrivalTime: group.goTicket.ticketArrivalTime,
+            ticketDepartureCity: group.goTicket.ticketDepartureCity,
+            ticketArrivalCity: group.goTicket.ticketArrivalCity,
+            ticketId: group.goTicket.ticketId
+          },
+          returnTicket: {
+            vehicleId: group.returnTicket.vehicleId,
+            ticketType: group.returnTicket.ticketType,
+            ticketPrice: group.returnTicket.ticketPrice,
+            ticketDepartureTime: group.returnTicket.ticketDepartureTime,
+            ticketArrivalTime: group.returnTicket.ticketArrivalTime,
+            ticketDepartureCity: group.returnTicket.ticketDepartureCity,
+            ticketArrivalCity: group.returnTicket.ticketArrivalCity,
+            ticketId: group.returnTicket.ticketId
+          },
           tourItineraries: group.tourItineraries.map((itinerary: any) => ({
             itineraryId: itinerary.itineraryId,
             itineraryTime: itinerary.itineraryTime,
@@ -201,7 +296,8 @@ const fetchFilter = () => {
             hotelGrade: hotel.hotelGrade,
             hotelLocation: hotel.hotelLocation,
             hotelIntroduction: hotel.hotelIntroduction
-          }))
+          })),
+          imageUrl: imageMap[group.groupId]
         }))
         showEmptyMessage.value = false
       } else {
@@ -220,16 +316,21 @@ const goToGroup = (group: TourGroup) => {
     path: `/group-travel/groups/detail`,
     query: {
       groupId: group.groupId.toString(),
-      groupName: group.groupName,
-      groupPrice: group.groupPrice.toString(),
+      guideId: group.guideId.toString(),
       startDate: group.startDate,
       endDate: group.endDate,
+      groupName: group.groupName,
+      groupPrice: group.groupPrice.toString(),
+      goTicketId: group.goTicketId.toString(),
+      returnTicketId: group.returnTicketId.toString(),
       departure: group.departure,
       destination: group.destination,
       guidename: group.guidename,
-      imageUrl: group.imageUrl,
+      goTicket:JSON.stringify(group.goTicket), 
+      returnTicket:JSON.stringify(group.returnTicket), 
       tourItineraries: JSON.stringify(group.tourItineraries), 
-      hotels: JSON.stringify(group.hotels)
+      hotels: JSON.stringify(group.hotels),
+      imageUrl: group.imageUrl
     }
   })
 }
