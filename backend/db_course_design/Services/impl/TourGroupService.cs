@@ -59,8 +59,12 @@ namespace db_course_design.Services.impl
                 .Include(t => t.TourItineraries)
                 .Include(t => t.Hotels)
                 .Include(t => t.Guide) // 加载导游信息
-                .Select(t => _mapper.Map<TourGroupResponse>(t)).ToListAsync();
+                .Include(t => t.GoTicket) // 加载去程票信息
+                .Include(t => t.ReturnTicket) // 加载回程票信息
+                .Select(t => _mapper.Map<TourGroupResponse>(t))
+                .ToListAsync();
         }
+
 
         public async Task<IEnumerable<TourGroupResponse>> SearchTourGroupsByCityAsync(SearchTourGroupRequest request)
         {
@@ -143,7 +147,7 @@ namespace db_course_design.Services.impl
                 OrderDate = DateTime.UtcNow,
                 UserId = request.UserId,
                 Status = "Pending",
-                Price = tourGroup.GroupPrice,
+                Price = tourGroup.GroupPrice*number,
             };
 
             // 将 OrderDatum 添加到上下文并保存，以生成 OrderId

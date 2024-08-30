@@ -149,6 +149,7 @@ namespace db_course_design.Services.impl
                     GuideGender = o.Group.Guide.GuideGender,
                     StartDate = o.Group.StartDate,
                     EndDate = o.Group.EndDate,
+                    OrderNumber=o.OrderNumber,
                 }).ToListAsync();
             return tourOrders;
         }

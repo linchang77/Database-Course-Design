@@ -270,5 +270,20 @@ namespace db_course_design.Services.impl
                 return null; 
             }
         }
+        public async Task<IEnumerable<HotelResponse>> GetRecommendedHotels()
+        {
+            var recommendedHotelNames = new List<string>
+            {
+                "上海如家酒店（沪太路店）",
+                "南京山水大酒店",
+                "7天优品酒店（上海国际汽车城同济大学店）"
+            };
+
+            var recommendedHotels = await _context.Hotels
+                .Where(ss => recommendedHotelNames.Contains(ss.HotelName))
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<HotelResponse>>(recommendedHotels);
+        }
     }
 }

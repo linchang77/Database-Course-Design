@@ -15,17 +15,25 @@ namespace db_course_design.Controllers
     {
         private readonly ITourGroupService _tourGroupService;
         private readonly IScenicSpotService _scenicSpotService;
+        private readonly IHotelService _hotelService;
 
-        public RecommendationController(ITourGroupService tourGroupService,IScenicSpotService scenicSpotService)
+        public RecommendationController(ITourGroupService tourGroupService,IScenicSpotService scenicSpotService, IHotelService hotelService)
         {
             _tourGroupService = tourGroupService;
             _scenicSpotService = scenicSpotService;
+            _hotelService = hotelService;
         }
 
         [HttpGet("scenicspots")]
         public async Task<ActionResult<IEnumerable<ScenicSpotResponse>>> GetRecommendedScenicSpots()
         {
             var recommendedSpots = await _scenicSpotService.GetRecommendedScenicSpotsAsync();
+            return Ok(recommendedSpots);
+        }
+        [HttpGet("hotels")]
+        public async Task<ActionResult<IEnumerable<ScenicSpotResponse>>> GetRecommendedHotels()
+        {
+            var recommendedSpots = await _hotelService.GetRecommendedHotels();
             return Ok(recommendedSpots);
         }
     }
