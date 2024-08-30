@@ -3,7 +3,12 @@ import axios from "axios";
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus'
-import type { Action } from 'element-plus'
+import { useUserStoreHook } from '../../../../store/modules/user';
+
+const userStore = useUserStoreHook();
+const userRole = userStore.roles
+const userId = ref<string | null>(localStorage.getItem('id'))
+
 // 定义路由
 const route = useRoute();
 
@@ -22,6 +27,8 @@ const guideName = route.query.guidename as string;
 const imageUrl = route.query.imageUrl as string;
 const tourItineraries = JSON.parse(route.query.tourItineraries as string);
 const hotels = JSON.parse(route.query.hotels as string);
+const goTicket = JSON.parse(route.query.goTicket as string);
+const returnTicket = JSON.parse(route.query.returnTicket as string);
 
 // 时间格式
 const formatDateTime = (timeString: string) => {
@@ -56,7 +63,7 @@ const purchase = async () => {
 
   try {
     const response = await axios.post(url, {
-      userId: 41,
+      userId: userId.value,
       groupId: groupId
     }, {
       headers: {
@@ -93,13 +100,12 @@ const purchase = async () => {
           <el-input-number v-model="number" :min="1" :max="100" style="margin-right: 2px;" /> 
           <el-button type="primary" @click="purchase">加入订单购物车</el-button>
         </div>
-</el-card>
-
+        </el-card>
       </div>
-  
+      
       <div class="right-container">
         <div class="right-content-up">
-          <el-scrollbar height="400px">
+          <el-scrollbar height="350px">
             <p class="title2">行程</p>
             <ul>
               <li v-for="itinerary in tourItineraries" :key="itinerary.itineraryId">
@@ -111,9 +117,41 @@ const purchase = async () => {
             </ul>
           </el-scrollbar>
         </div>
-  
+
+        <div class="right-content-mid">
+          <el-scrollbar height="200px">
+            <p class="title2">交通</p>
+            <ul>
+      <li>
+        <p><strong>去程票务信息</strong></p>
+        <p>交通工具编号: {{ goTicket.vehicleId }}</p>
+        <p>票务类型: {{ goTicket.ticketType }}</p>
+        <p>票价: ￥{{ goTicket.ticketPrice }}</p>
+        <p>出发时间: {{ formatDateTime(goTicket.ticketDepartureTime) }}</p>
+        <p>到达时间: {{ formatDateTime(goTicket.ticketArrivalTime) }}</p>
+        <p>出发城市: {{ goTicket.ticketDepartureCity }}</p>
+        <p>到达城市: {{ goTicket.ticketArrivalCity }}</p>
+        <p>票务ID: {{ goTicket.ticketId }}</p>
+        <hr class="custom-hr">
+      </li>
+      <li>
+        <p><strong>返程票务信息</strong></p>
+        <p>交通工具编号: {{ returnTicket.vehicleId }}</p>
+        <p>票务类型: {{ returnTicket.ticketType }}</p>
+        <p>票价: ￥{{ returnTicket.ticketPrice }}</p>
+        <p>出发时间: {{ formatDateTime(returnTicket.ticketDepartureTime) }}</p>
+        <p>到达时间: {{ formatDateTime(returnTicket.ticketArrivalTime) }}</p>
+        <p>出发城市: {{ returnTicket.ticketDepartureCity }}</p>
+        <p>到达城市: {{ returnTicket.ticketArrivalCity }}</p>
+        <p>票务ID: {{ returnTicket.ticketId }}</p>
+      </li>
+    </ul>
+          </el-scrollbar>
+        </div>
+        
+        
         <div class="right-content-down">
-          <el-scrollbar height="300px">
+          <el-scrollbar height="200px">
             <p class="title2">酒店</p>
             <ul>
               <li v-for="hotel in hotels" :key="hotel.hotelId">
@@ -186,12 +224,12 @@ const purchase = async () => {
 }
 
 .right-content-up {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
   
-.right-content-down {
-    margin-bottom: 20px;
+.right-content-mid, .right-content-down {
+    margin-bottom: 10px;
 }
   
 .el-scrollbar {
