@@ -40,7 +40,7 @@ namespace db_course_design.Services.impl
         /*--查询酒店房型和价格--*/
         public async Task<HotelTypeDetail> GetHotelTypeDetailAsync(decimal hotelId)
         {
-            var hotel = _context.HotelRoomTypes
+            var hotel = await _context.HotelRoomTypes
                 .Where(o => o.HotelId == hotelId)
                 .ToListAsync();
 
@@ -67,7 +67,7 @@ namespace db_course_design.Services.impl
             return isAvailable;
         }
         /*--查询剩余房间数--*/
-        public async Task<int> CountRoomLeft(HotelRoomType type, DateTime? StartDate, DateTime? EndDate)
+        public int CountRoomLeft(HotelRoomType type, DateTime? StartDate, DateTime? EndDate)
         {
             int count = 0;
             // 遍历所有属于指定房型的房间
@@ -94,7 +94,7 @@ namespace db_course_design.Services.impl
                 return null;
 
             /*--更新符合条件的剩余房间数--*/
-            int count = await CountRoomLeft(target, StartDate, EndDate);
+            int count = CountRoomLeft(target, StartDate, EndDate);
             target.RoomLeft = count;
             await _context.SaveChangesAsync();
 

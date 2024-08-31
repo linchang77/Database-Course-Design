@@ -52,6 +52,7 @@ namespace db_course_design.Services.impl
                 ScenicSpotGrade = s.ScenicSpotGrade,
                 ScenicSpotIntroduction = s.ScenicSpotIntroduction,
                 ScenicSpotLocation = s.ScenicSpotLocation,
+                ScenicSpotRemoteness = s.ScenicSpotRemoteness
             }).ToListAsync();
         }
 
@@ -79,6 +80,7 @@ namespace db_course_design.Services.impl
                     ScenicSpotGrade = s.ScenicSpotGrade,
                     ScenicSpotIntroduction = s.ScenicSpotIntroduction,
                     ScenicSpotLocation = s.ScenicSpotLocation,
+                    ScenicSpotRemoteness = s.ScenicSpotRemoteness
                 })
                 .ToListAsync();
 
@@ -103,6 +105,7 @@ namespace db_course_design.Services.impl
                     ScenicSpotGrade = scenicSpot.ScenicSpotGrade,
                     ScenicSpotIntroduction = scenicSpot.ScenicSpotIntroduction,
                     ScenicSpotLocation = scenicSpot.ScenicSpotLocation,
+                    ScenicSpotRemoteness = scenicSpot.ScenicSpotRemoteness
                 };
         }
 
@@ -118,6 +121,7 @@ namespace db_course_design.Services.impl
                     ScenicSpotGrade = s.ScenicSpotGrade,
                     ScenicSpotIntroduction = s.ScenicSpotIntroduction,
                     ScenicSpotLocation = s.ScenicSpotLocation,
+                    ScenicSpotRemoteness = s.ScenicSpotRemoteness
                 })
                 .ToListAsync();
 
@@ -136,6 +140,7 @@ namespace db_course_design.Services.impl
                     ScenicSpotGrade = s.ScenicSpotGrade,
                     ScenicSpotIntroduction = s.ScenicSpotIntroduction,
                     ScenicSpotLocation = s.ScenicSpotLocation,
+                    ScenicSpotRemoteness = s.ScenicSpotRemoteness
                 })
                 .ToListAsync();
 
@@ -154,6 +159,7 @@ namespace db_course_design.Services.impl
                    ScenicSpotGrade = s.ScenicSpotGrade,
                    ScenicSpotIntroduction = s.ScenicSpotIntroduction,
                    ScenicSpotLocation = s.ScenicSpotLocation,
+                   ScenicSpotRemoteness = s.ScenicSpotRemoteness
                })
                .ToListAsync();
 
@@ -469,7 +475,8 @@ namespace db_course_design.Services.impl
                 CityName = "上海",
                 ScenicSpotGrade = ss.ScenicSpotGrade,
                 ScenicSpotIntroduction = ss.ScenicSpotIntroduction,
-                ScenicSpotLocation = ss.ScenicSpotLocation
+                ScenicSpotLocation = ss.ScenicSpotLocation,
+                ScenicSpotRemoteness = ss.ScenicSpotRemoteness
             }).ToList();
         }
     }

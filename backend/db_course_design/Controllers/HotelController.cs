@@ -67,7 +67,7 @@ namespace db_course_design.Controllers
             return Ok(types);
         }
         /*--返回某酒店各种房型剩余房间数和房型价格--*/
-        [HttpGet("{hotelId}/detail")]
+        [HttpGet("{hotelId}/detail/{roomType},{StartDate},{EndDate}")]
         public async Task<IActionResult> GetRoomDetail(decimal hotelId, string roomType,  DateTime? StartDate, DateTime? EndDate)
         {
             var detail = await _hotelService.GetHotelRoomDetailsAsync(hotelId, roomType, StartDate, EndDate);
