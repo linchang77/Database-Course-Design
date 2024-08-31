@@ -127,7 +127,7 @@ onMounted(() => {
           </button>
         </div>
         <div v-for="hotel in sortedHotels" :key="hotel.hotelName" class="hotel-card">
-          <img :src="`/images/hotel_${hotel.hotelId}.jpg`" alt="Hotel Image" style="width: 100%; height: auto;"/>
+          <img :src="`/images/hotel_${(hotel.hotelId)%9}.jpg`" alt="Hotel Image" style="width: 100%; height: auto;"/>
           <div class="info-container">
             <div class="info-1">
               <h2>{{ hotel.hotelName }}</h2>
