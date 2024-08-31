@@ -38,10 +38,7 @@ namespace db_course_design.Controllers
         public async Task<IActionResult> GetAllGuidesAsync()
         {
             var guides = await _guideService.GetAllGuideAsync();
-            if(guides == null || !guides.Any())
-            {
-                return NotFound(new { Message ="No guide found"});
-            }
+
             return Ok(guides);
         }
         /*--根据导游id、姓名筛选--*/

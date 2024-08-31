@@ -18,6 +18,7 @@ namespace db_course_design.Services.impl
         public GuideService(ModelContext context)
         {
             _context = context;
+            _mapper = new MapperConfiguration(cfg => cfg.AddProfile<GuideProfile>()).CreateMapper();
         }
         /*--获取全部导游信息--*/
         public async Task<List<GuideResponse>> GetAllGuideAsync()
