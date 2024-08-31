@@ -16,6 +16,8 @@ namespace db_course_design.Services.impl
         public string? ScenicSpotIntroduction { get; set; }
 
         public string? ScenicSpotLocation { get; set; }
+
+        public decimal? ScenicSpotRemoteness { get; set; }
     }
 
     public class ScenicSpotTicketRequest
@@ -80,7 +82,7 @@ namespace db_course_design.Services.impl
                 })
                 .ToListAsync();
 
-            return scenicSpots.Any() ? scenicSpots : null;
+            return scenicSpots;
         }
 
         public async Task<ScenicSpotResponse?> GetScenicSpotByIdAsync(decimal scenicSpotId)
@@ -175,29 +177,69 @@ namespace db_course_design.Services.impl
 
         public async Task<ScenicSpotResponse?> AddScenicSpotAsync(ScenicSpotRequest request)
         {
-            // 将请求对象转换为数据库实体
-            var scenicSpot = new ScenicSpot
+            try
             {
-                ScenicSpotName = request.ScenicSpotName,
-                CityName = request.CityName,
-                ScenicSpotGrade = request.ScenicSpotGrade,
-                ScenicSpotIntroduction = request.ScenicSpotIntroduction,
-                ScenicSpotLocation = request.ScenicSpotLocation,
-            };
+                // 将请求对象转换为数据库实体
+                var scenicSpot = new ScenicSpot
+                {
+                    ScenicSpotName = request.ScenicSpotName,
+                    CityName = request.CityName,
+                    ScenicSpotGrade = request.ScenicSpotGrade,
+                    ScenicSpotIntroduction = request.ScenicSpotIntroduction,
+                    ScenicSpotLocation = request.ScenicSpotLocation,
+                    ScenicSpotRemoteness = request.ScenicSpotRemoteness,
+                };
 
-            // 将实体添加到数据库上下文中
-            _context.ScenicSpots.Add(scenicSpot);
-            await _context.SaveChangesAsync();
+                // 将实体添加到数据库上下文中
+                _context.ScenicSpots.Add(scenicSpot);
+                await _context.SaveChangesAsync();
 
-            // 返回添加后的响应对象
-            return new ScenicSpotResponse
+                // 返回添加后的响应对象
+                return new ScenicSpotResponse
+                {
+                    ScenicSpotName = scenicSpot.ScenicSpotName,
+                    CityName = scenicSpot.CityName,
+                    ScenicSpotGrade = scenicSpot.ScenicSpotGrade,
+                    ScenicSpotIntroduction = scenicSpot.ScenicSpotIntroduction,
+                    ScenicSpotLocation = scenicSpot.ScenicSpotLocation,
+                    ScenicSpotRemoteness = scenicSpot.ScenicSpotRemoteness
+                };
+            }
+            catch
             {
-                ScenicSpotName = scenicSpot.ScenicSpotName,
-                CityName = scenicSpot.CityName,
-                ScenicSpotGrade = scenicSpot.ScenicSpotGrade,
-                ScenicSpotIntroduction = scenicSpot.ScenicSpotIntroduction,
-                ScenicSpotLocation = scenicSpot.ScenicSpotLocation
-            };
+                return null;
+            }
+        }
+
+        public async Task<ScenicSpotResponse?> UpdateScenicSpotAsync(decimal scenicSpotId, ScenicSpotRequest request)
+        {
+            try
+            {
+                // scenicSpotId用于搜索要修改的景点信息，不可修改
+                var scenicSpot = await _context.ScenicSpots.FindAsync(scenicSpotId);
+                if (scenicSpot == null)
+                    throw new Exception();
+                scenicSpot.ScenicSpotName = request.ScenicSpotName;
+                scenicSpot.CityName = request.CityName;
+                scenicSpot.ScenicSpotGrade = request.ScenicSpotGrade;
+                scenicSpot.ScenicSpotIntroduction = request.ScenicSpotIntroduction;
+                scenicSpot.ScenicSpotLocation = request.ScenicSpotLocation;
+                scenicSpot.ScenicSpotRemoteness = request.ScenicSpotRemoteness;
+                await _context.SaveChangesAsync();
+                return new ScenicSpotResponse
+                {
+                    ScenicSpotName = scenicSpot.ScenicSpotName,
+                    CityName = scenicSpot.CityName,
+                    ScenicSpotGrade = scenicSpot.ScenicSpotGrade,
+                    ScenicSpotIntroduction = scenicSpot.ScenicSpotIntroduction,
+                    ScenicSpotLocation = scenicSpot.ScenicSpotLocation,
+                    ScenicSpotRemoteness = scenicSpot.ScenicSpotRemoteness
+                };
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task<bool> DeleteScenicSpotTicketAsync(decimal scenicSpotId, string ticketType, DateTime ticketDate)
@@ -216,29 +258,62 @@ namespace db_course_design.Services.impl
 
         public async Task<ScenicSpotTicketResponse?> AddScenicSpotTicketAsync(ScenicSpotTicketRequest request)
         {
-            // 将请求对象转换为数据库实体
-            var ticket = new ScenicSpotTicket
+            try
             {
-                ScenicSpotId = request.ScenicSpotId,
-                TicketType = request.TicketType,
-                TicketPrice = request.TicketPrice,
-                TicketRemaining = request.TicketRemaining,
-                TicketDate = request.TicketDate
-            };
+                // 将请求对象转换为数据库实体
+                var ticket = new ScenicSpotTicket
+                {
+                    ScenicSpotId = request.ScenicSpotId,
+                    TicketType = request.TicketType,
+                    TicketPrice = request.TicketPrice,
+                    TicketRemaining = request.TicketRemaining,
+                    TicketDate = request.TicketDate
+                };
 
-            // 将实体添加到数据库上下文中
-            _context.ScenicSpotTickets.Add(ticket);
-            await _context.SaveChangesAsync();
+                // 将实体添加到数据库上下文中
+                _context.ScenicSpotTickets.Add(ticket);
+                await _context.SaveChangesAsync();
 
-            // 返回添加后的响应对象
-            return new ScenicSpotTicketResponse
+                // 返回添加后的响应对象
+                return new ScenicSpotTicketResponse
+                {
+                    ScenicSpotId = ticket.ScenicSpotId,
+                    TicketType = ticket.TicketType,
+                    TicketPrice = ticket.TicketPrice,
+                    TicketRemaining = ticket.TicketRemaining,
+                    TicketDate = ticket.TicketDate
+                };
+            }
+            catch
             {
-                ScenicSpotId = ticket.ScenicSpotId,
-                TicketType = ticket.TicketType,
-                TicketPrice = ticket.TicketPrice,
-                TicketRemaining = ticket.TicketRemaining,
-                TicketDate = ticket.TicketDate
-            };
+                return null;
+            }
+        }
+
+        public async Task<ScenicSpotTicketResponse?> UpdateScenicSpotTicketAsync(ScenicSpotTicketRequest request)
+        {
+            try
+            {
+                // (scenicSpotId, ticketType, ticketDate)用于搜索要修改的门票信息，不可修改
+                var ticket = await _context.ScenicSpotTickets.FindAsync(request.ScenicSpotId, request.TicketType, request.TicketDate);
+                if (ticket == null)
+                    throw new Exception();
+                ticket.TicketPrice = request.TicketPrice;
+                ticket.TicketRemaining = request.TicketRemaining;
+                await _context.SaveChangesAsync();
+                return new ScenicSpotTicketResponse
+                {
+                    ScenicSpotId = request.ScenicSpotId,
+                    TicketType = request.TicketType,
+                    TicketDate = request.TicketDate,
+                    TicketPrice = request.TicketPrice,
+                    TicketRemaining = request.TicketRemaining
+                };
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         // 获取指定景点指定种类指定日期的门票信息

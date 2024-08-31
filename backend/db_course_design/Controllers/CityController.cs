@@ -50,6 +50,9 @@ namespace db_course_design.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddCity([FromBody] CityRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var target = await _cityService.AddCityAsync(request);
 
             if (target == null)

@@ -168,6 +168,17 @@ namespace db_course_design.Controllers
             return CreatedAtAction(nameof(GetScenicSpotById), new { scenicSpotId = addedScenicSpot.ScenicSpotId }, addedScenicSpot);
         }
 
+        //更新景点信息
+        [HttpPut("{scenicSpotId}/update")]
+        public async Task<IActionResult> UpdateScenicSpot(decimal scenicSpotId, [FromBody] ScenicSpotRequest request)
+        {
+            var newScenicSpot = await _scenicSpotService.UpdateScenicSpotAsync(scenicSpotId, request);
+
+            if (newScenicSpot == null)
+                return BadRequest("Cannot update scenic spot " + scenicSpotId);
+            return Ok(newScenicSpot);
+        }
+
         // 删除门票
         [HttpDelete("{scenicSpotId}/{ticketType},{ticketDate}")]
         public async Task<IActionResult> DeleteScenicSpotTicket(decimal scenicSpotId, string ticketType, DateTime ticketDate)
@@ -203,6 +214,16 @@ namespace db_course_design.Controllers
                                          ticketDate = addedTicket.TicketDate
                                        }, 
                                    addedTicket);
+        }
+
+        [HttpPut("ticket/update")]
+        public async Task<IActionResult> UpdateScenicSpotTicket([FromBody] ScenicSpotTicketRequest request)
+        {
+            var newTicket = await _scenicSpotService.UpdateScenicSpotTicketAsync(request);
+
+            if (newTicket == null)
+                return BadRequest("Cannot update " + request.TicketType + " of scenic spot " + request.ScenicSpotId + " on " + request.TicketDate);
+            return Ok(newTicket);
         }
 
         // 获取指定景点指定种类指定日期的门票信息
