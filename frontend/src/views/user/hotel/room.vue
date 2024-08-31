@@ -27,18 +27,6 @@ const checkOutTime = route.query.checkOutTime;
 const hotel = ref<Hotel[]>([]);
 const hotelRooms = ref<HotelRoom[]>([]);
 
-// function viewOrder() {
-//   if (hotel) {
-//     router.push({
-//        name: 'Order', 
-//        query: {
-//          hotel: encodeURIComponent(JSON.stringify(hotel.value)),
-//          hotelRoom: encodeURIComponent(JSON.stringify(hotelRoom.value))
-//         } 
-//       }
-//     );
-//   }
-// }
 
 const viewOrder = (selectedRoomType: string, selectedHotelId: number) => {
   const filteredHotelRoom = hotelRooms.value.filter(room => room.roomType === selectedRoomType);
