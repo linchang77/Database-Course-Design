@@ -61,5 +61,58 @@ namespace db_course_design.Controllers
             }
             return Ok(guides);
         }
+        /*--根据Id搜索--*/
+        [HttpGet("{GuideId}")]
+        public async Task<IActionResult> GetGuideByIdAsync(byte GuideId)
+        {
+            var guide = await _guideService.GetGuideByIdAsync(GuideId);
+            if (guide == null)
+            {
+                return NotFound(new { Message = "Guide not found" });
+            }
+            return Ok(guide);
+        }
+        /*
+         业务逻辑：导游信息的增删改
+
+         
+         */
+        /*--添加导游信息--*/
+        [HttpPost("add")]
+        public async Task<IActionResult> AddGuideAsync([FromBody] GuideRequest guideRequest)
+        {
+            var addedGuide = await _guideService.AddGuideAsync(guideRequest);
+            if (addedGuide == null)
+            {
+                return BadRequest(new { Message = "Failed to add guide" });
+            }
+
+            // 返回添加的导游信息
+            return Ok(addedGuide);
+        }
+
+        /*--修改导游信息--*/
+        [HttpPut("update/{GuideId}")]
+        public async Task<IActionResult> UpdateGuideAsync(byte GuideId, [FromBody] GuideRequest guideRequest)
+        {
+            var updatedGuide = await _guideService.UpdateGuideAsync(GuideId, guideRequest);
+            if (updatedGuide == null)
+            {
+                return NotFound(new { Message = "Guide not found" });
+            }
+            return Ok(updatedGuide);
+        }
+
+        /*--删除导游信息--*/
+        [HttpDelete("del/{GuideId}")]
+        public async Task<IActionResult> DeleteGuideAsync(byte GuideId)
+        {
+            var result = await _guideService.DeleteGuideAsync(GuideId);
+            if (!result)
+            {
+                return NotFound(new { Message = "Guide not found" });
+            }
+            return NoContent();
+        }
     }
 }
