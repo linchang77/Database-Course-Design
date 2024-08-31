@@ -4,8 +4,6 @@ using db_course_design.Services;
 using db_course_design.Services.impl;
 using db_course_design.DTOs;
 using EntityFramework.Models;
-
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace db_course_design.Controllers

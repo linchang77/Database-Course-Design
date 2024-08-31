@@ -67,7 +67,7 @@ namespace db_course_design.Controllers
             return Ok(types);
         }
         /*--返回某酒店各种房型剩余房间数和房型价格--*/
-        [HttpGet("{hotelId}/detail")]
+        [HttpGet("{hotelId}/detail/{roomType},{StartDate},{EndDate}")]
         public async Task<IActionResult> GetRoomDetail(decimal hotelId, string roomType,  DateTime? StartDate, DateTime? EndDate)
         {
             var detail = await _hotelService.GetHotelRoomDetailsAsync(hotelId, roomType, StartDate, EndDate);
@@ -132,6 +132,9 @@ namespace db_course_design.Controllers
         [HttpPost("add/hotel")]
         public async Task<IActionResult> AddHotel([FromBody] HotelRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var target = await _hotelService.AddHotelAsync(request);
 
             if (target == null)
@@ -142,6 +145,9 @@ namespace db_course_design.Controllers
         [HttpPost("add/roomtype")]
         public async Task<IActionResult> AddHotelRoomType([FromBody] HotelRoomTypeRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var target = await _hotelService.AddHotelRoomTypeAsync(request);
 
             if (target == null)
@@ -152,6 +158,9 @@ namespace db_course_design.Controllers
         [HttpPost("add/room")]
         public async Task<IActionResult> AddHotelRoom([FromBody] HotelRoomRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var target = await _hotelService.AddHotelRoomAsync(request);
 
             if (target == null)
