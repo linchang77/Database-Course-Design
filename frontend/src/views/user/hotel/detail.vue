@@ -23,6 +23,17 @@ interface HotelRoom{
   roomPrice: number; 
 }
 
+const gradeToNumber = (grade: string): number => {
+  const gradeMap: { [key: string]: number } = {
+    "五星级": 5,
+    "四星级": 4,
+    "三星级": 3,
+    "二星级": 2,
+    "一星级": 1
+  };
+  return gradeMap[grade] || 0;
+};
+
 
 const route = useRoute()
 const router = useRouter()
@@ -37,7 +48,15 @@ const destination = decodeURIComponent(route.query.destination as string);
 const checkInTime = route.query.checkInTime;
 const checkOutTime = route.query.checkOutTime;
 
+const startDate = computed(() => {
+  return route.query.checkInTime ? new Date(parseInt(route.query.checkInTime as string)).toISOString() : null;
+});
+const endDate = computed(() => {
+  return route.query.checkOutTime ? new Date(parseInt(route.query.checkOutTime as string)).toISOString() : null;
+});
 
+console.log("start",startDate.value)
+console.log("end",endDate.value)
 
 
 
@@ -54,8 +73,16 @@ const fetchHotels = async (): Promise<Hotel[]> => {
 
 const fetchHotelRooms = async (hotelId: number): Promise<HotelRoom[]> => {
   try {
-    const response = await axios.get(`https://123.60.14.84/api/Hotel/detail/${encodeURIComponent(6)}`);
+    const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(hotelId)}/type`);
+    // const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(hotelId)}/detail`,{
+    //   params:{
+    //     roomType: "特色休闲房",
+    //     StartDate: startDate,
+    //     EndDate: endDate
+    //   }
+    // });
     hotelRooms.value = response.data
+    console.log(response.data);
     return response.data; 
   } catch (error) {
     console.error(`Error fetching rooms for hotelId ${hotelId}:`, error);
@@ -78,12 +105,28 @@ onMounted(() => {
 
 const sortedHotels = computed(() => {
   return hotels.value.slice().sort((a, b) => {
-    const priceA = hotelRooms.value.find(room => room.hotelId === a.hotelId)?.roomPrice ?? 0;
-    const priceB = hotelRooms.value.find(room => room.hotelId === b.hotelId)?.roomPrice ?? 0;
-    const comparison = priceA - priceB;
+    let comparison = 0;
+    if (sortBy.value === 'price') {
+      const priceA = hotelRooms.value.find(room => room.hotelId === a.hotelId)?.roomPrice ?? 0;
+      const priceB = hotelRooms.value.find(room => room.hotelId === b.hotelId)?.roomPrice ?? 0;
+      comparison = priceA - priceB;
+    } else if (sortBy.value === 'grade'){
+      const gradeA = gradeToNumber(a.hotelGrade);
+      const gradeB = gradeToNumber(b.hotelGrade);
+      comparison = gradeA - gradeB;
+    }
     return sortOrder.value === 'asc' ? comparison : -comparison;
   });
 });
+
+const toggleSortBygrade = () => {
+  if (sortBy.value === 'grade') {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortBy.value = 'grade';
+    sortOrder.value = 'asc';
+  }
+};
 
 const getLowestPriceForHotel = (hotelId: number): number => {
   const rooms = hotelRooms.value.filter(room => room.hotelId === hotelId);
@@ -125,7 +168,10 @@ onMounted(() => {
           <button @click="toggleSortByPrice" class="sort-button">
             {{ sortBy === 'price' ? (sortOrder === 'asc' ? '按价格升序排序' : '按价格降序排序') : '按价格排序' }}
           </button>
-        </div>
+          <button @click="toggleSortBygrade" class="sort-button">
+            {{ sortBy === 'grade' ? (sortOrder === 'asc' ? '按星级升序排序' : '按星级降序排序') : '按星级排序' }}
+          </button>
+          </div>
         <div v-for="hotel in sortedHotels" :key="hotel.hotelName" class="hotel-card">
           <img :src="`/images/hotel_${(hotel.hotelId)%9}.jpg`" alt="Hotel Image" style="width: 100%; height: auto;"/>
           <div class="info-container">

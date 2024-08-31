@@ -71,6 +71,7 @@ const handleAdd = () => {
         })
         .catch(() => {
           ElMessage.error("新增酒店失败");
+          resetForm(); // 失败时重置表单
         })
         .finally(() => {
           loading.value = false;
@@ -83,7 +84,7 @@ const handleAdd = () => {
 
 //重置表单
 const resetForm = () => {
-  formData.value = DEFAULT_FORM_DATA;
+  formData.value = { ...DEFAULT_FORM_DATA }; // 使用深拷贝重置表单
 };
 
 //提交删除需求
@@ -117,6 +118,7 @@ const handleUpdate = () => {
         })
         .catch(() => {
           ElMessage.error("修改酒店失败");
+          resetForm(); // 失败时重置表单
         })
         .finally(() => {
           loading.value = false;
@@ -210,7 +212,7 @@ const formRef = ref();
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .search-wrapper {
   margin-bottom: 20px;
   :deep(.el-card__body) {
