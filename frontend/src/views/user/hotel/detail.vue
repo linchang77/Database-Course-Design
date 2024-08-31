@@ -74,6 +74,13 @@ const fetchHotels = async (): Promise<Hotel[]> => {
 const fetchHotelRooms = async (hotelId: number): Promise<HotelRoom[]> => {
   try {
     const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(hotelId)}/type`);
+    // const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(hotelId)}/detail`,{
+    //   params:{
+    //     roomType: "特色休闲房",
+    //     StartDate: startDate,
+    //     EndDate: endDate
+    //   }
+    // });
     hotelRooms.value = response.data
     console.log(response.data);
     return response.data; 
