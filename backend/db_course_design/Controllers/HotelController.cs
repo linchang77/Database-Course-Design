@@ -60,14 +60,14 @@ namespace db_course_design.Controllers
         public async Task<IActionResult> GetRoomType(decimal hotelId)
         {
             var types = await _hotelService.GetHotelTypeDetailAsync(hotelId);
-            if (types == null)
+            if (!types.Any())
             {
                 return NotFound(new { Message = "this Hotel is closed" });
             }
             return Ok(types);
         }
         /*--返回某酒店各种房型剩余房间数和房型价格--*/
-        [HttpGet("{hotelId}/detail/{roomType},{StartDate},{EndDate}")]
+        [HttpGet("{hotelId}/detail")]
         public async Task<IActionResult> GetRoomDetail(decimal hotelId, string roomType,  DateTime? StartDate, DateTime? EndDate)
         {
             var detail = await _hotelService.GetHotelRoomDetailsAsync(hotelId, roomType, StartDate, EndDate);

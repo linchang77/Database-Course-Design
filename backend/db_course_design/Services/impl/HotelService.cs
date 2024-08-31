@@ -38,23 +38,25 @@ namespace db_course_design.Services.impl
             return Hotels;
         }
         /*--查询酒店房型和价格--*/
-        public async Task<HotelTypeDetail> GetHotelTypeDetailAsync(decimal hotelId)
+        public async Task<List<HotelTypeDetail>> GetHotelTypeDetailAsync(decimal hotelId)
         {
             var hotel = await _context.HotelRoomTypes
                 .Where(o => o.HotelId == hotelId)
+                .Select(o => _mapper.Map<HotelTypeDetail>(o))
                 .ToListAsync();
 
-            return _mapper.Map<HotelTypeDetail>(hotel);
+            return hotel;
         }
         /*--检查房间在指定时间内是否可用--*/
-        public bool CheckRoomClear(HotelRoom? room, DateTime? StartDate, DateTime? EndDate)
+        public async Task<bool> CheckRoomClear(HotelRoom? room, DateTime? StartDate, DateTime? EndDate)
         {
             bool isAvailable = true;
 
             // 遍历该房间的所有订单
             foreach (var order in room.HotelOrders)
             {
-                if (order.Order.Status == "Completed")
+                var status = (await _context.OrderData.FindAsync(order.OrderId)).Status;
+                if (status.Equals("Completed"))
                 {
                     // 检查订单日期是否与所需的日期范围重叠
                     if (!(order.CheckOutDate <= StartDate || order.CheckInDate >= EndDate))
@@ -67,13 +69,18 @@ namespace db_course_design.Services.impl
             return isAvailable;
         }
         /*--查询剩余房间数--*/
-        public int CountRoomLeft(HotelRoomType type, DateTime? StartDate, DateTime? EndDate)
+        public async Task<int> CountRoomLeft(string roomType, DateTime? StartDate, DateTime? EndDate)
         {
             int count = 0;
+            var rooms = await _context.HotelRooms
+                .Where(r => r.RoomType.Equals(roomType))
+                .Include(r => r.HotelOrders)
+                .ToListAsync();
+
             // 遍历所有属于指定房型的房间
-            foreach (var room in type.HotelRooms)
+            foreach (var room in rooms)
             {
-                bool isAvailable = CheckRoomClear(room, StartDate, EndDate);
+                bool isAvailable = await CheckRoomClear(room, StartDate, EndDate);
 
                 // 如果房间满足条件，计数+1
                 if (isAvailable)
@@ -85,16 +92,15 @@ namespace db_course_design.Services.impl
         }
 
         /*--返回某酒店指定房型剩余房间数和房型价格--*/
-        public async Task<HotelRoomDetail> GetHotelRoomDetailsAsync(decimal hotelId, string roomType, DateTime? StartDate, DateTime? EndDate)
+        public async Task<HotelRoomDetail?> GetHotelRoomDetailsAsync(decimal hotelId, string roomType, DateTime? StartDate, DateTime? EndDate)
         {
-            var target = await _context.HotelRoomTypes
-                .Where(o => o.HotelId == hotelId && o.RoomType.Equals(roomType))
-                .FirstOrDefaultAsync();
+            var target = await _context.HotelRoomTypes.FindAsync(hotelId, roomType);
+
             if (target == null)
                 return null;
 
             /*--更新符合条件的剩余房间数--*/
-            int count = CountRoomLeft(target, StartDate, EndDate);
+            int count = await CountRoomLeft(roomType, StartDate, EndDate);
             target.RoomLeft = count;
             await _context.SaveChangesAsync();
 
@@ -124,7 +130,7 @@ namespace db_course_design.Services.impl
             // 找合适的房间
             foreach(var room in query.HotelRooms)
             {
-                bool isAvailable = CheckRoomClear(room, request.CheckInDate, request.CheckOutDate);
+                bool isAvailable = await CheckRoomClear(room, request.CheckInDate, request.CheckOutDate);
 
                 if (isAvailable)
                 {
