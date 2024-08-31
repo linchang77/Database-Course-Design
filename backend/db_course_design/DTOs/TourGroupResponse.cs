@@ -23,15 +23,18 @@ namespace db_course_design.DTOs
         public string? Departure { get; set; }
 
         public string? Destination { get; set; }
-        public string? guidename { get; set; }
-        public tourTicket GoTicket { get; set; }
-        public tourTicket ReturnTicket { get; set; }
 
-        public List<TourItineraryResponse> TourItineraries { get; set; }
+        public string? GuideName { get; set; }
 
-        public List<HotelResponse> Hotels { get; set; }
+        public TourTicket? GoTicket { get; set; }
+
+        public TourTicket? ReturnTicket { get; set; }
+
+        public ICollection<TourItineraryResponse> TourItineraries { get; set; } = new List<TourItineraryResponse>();
+
+        public ICollection<HotelResponse> Hotels { get; set; } = new List<HotelResponse>();
     }
-    public class tourTicket
+    public class TourTicket
     {
         public string? VehicleId { get; set; }
 

@@ -12,13 +12,15 @@ namespace db_course_design.Profiles
             CreateMap<TourItinerary, TourItineraryResponse>();
             CreateMap<Hotel, HotelResponse>();
             CreateMap<TourGroup, TourGroupResponse>()
-           .ForMember(dest => dest.guidename, opt => opt.MapFrom(src => src.Guide.GuideName))
-           .ForMember(dest => dest.GoTicket, opt => opt.MapFrom(src => src.GoTicket))
-           .ForMember(dest => dest.ReturnTicket, opt => opt.MapFrom(src => src.ReturnTicket)); 
-            CreateMap<TourGroupRequest, TourGroup>();
+                .ForMember(dest => dest.GuideName, opt => opt.MapFrom(src => src.Guide.GuideName))
+                .ForMember(dest => dest.GoTicket, opt => opt.MapFrom(src => src.GoTicket))
+                .ForMember(dest => dest.ReturnTicket, opt => opt.MapFrom(src => src.ReturnTicket));
+            CreateMap<TourGroupRequest, TourGroup>()
+                .ForMember(dest => dest.TourItineraries, opt => opt.Ignore())
+                .ForMember(dest => dest.Hotels, opt => opt.Ignore());
             CreateMap<TourItineraryRequest, TourItinerary>();
             CreateMap<Guide, GuideResponse>();
-            CreateMap<VehicleTicket, tourTicket>();
+            CreateMap<VehicleTicket, TourTicket>();
         }
     }
 }
