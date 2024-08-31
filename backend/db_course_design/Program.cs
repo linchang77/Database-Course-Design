@@ -38,6 +38,7 @@ builder.Services.AddScoped<ITourGroupService, TourGroupService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICityService, CityService>();
+builder.Services.AddScoped<IGuideService, GuideService>();
 /////////////////////////////////////////自己根据需要添加内容//////////////////////////////////////////////////////////////
 //添加DbContext
 //builder.Services.AddDbContext<ModelContext>(options =>

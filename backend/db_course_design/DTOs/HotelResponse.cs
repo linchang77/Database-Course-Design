@@ -18,6 +18,12 @@ namespace db_course_design.DTOs
         public string? RoomType { get; set; }
         public bool? RoomClear { get; set; }
     }
+    public class HotelTypeDetail
+    {
+        public decimal HotelId { get; set; }
+        public string? RoomType { get; set; }
+        public decimal? RoomPrice { get; set; }
+    }
     public class HotelRoomDetail
     {
         public decimal HotelId { get; set; }
@@ -25,7 +31,7 @@ namespace db_course_design.DTOs
         public int RoomLeft { get; set; }
         public decimal? RoomPrice { get; set; }
     }
-    // 接收类
+    // 创建酒店订单请求
     public class CreateHotelOrderRequest
     {
         public int userId { get; set; }
@@ -33,16 +39,6 @@ namespace db_course_design.DTOs
         public DateTime? CheckInDate { get; set; }
         public DateTime? CheckOutDate { get; set; }
         public string RoomType { get; set; }
-    }
-    // 响应类
-    public class CreateHotelOrderResponse
-    {
-        public string RoomType { get; set; }
-        public decimal? RoomPrice { get; set; }
-        public string CityName { get; set; }
-        public string HotelName { get; set; }
-        public string HotelLocation { get; set; }
-        public string RoomNumber { get; set; }
     }
     // 添加酒店请求
     public class HotelRequest
