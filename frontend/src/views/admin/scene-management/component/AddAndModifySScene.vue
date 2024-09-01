@@ -8,22 +8,22 @@
     <el-dialog v-model="addScenicFormVisible" title="新增景区" :before-close="handleCloseAddScenicForm">
       <el-form :model="scenicToAdd" label-width="120px">
         <el-form-item label="景区名称">
-          <el-input v-model="scenicToAdd.scenicName" placeholder="请输入景区名称"></el-input>
+          <el-input v-model="scenicToAdd.scenicSpotName" placeholder="请输入景区名称"></el-input>
         </el-form-item>
         <el-form-item label="所在城市">
-          <el-input v-model="scenicToAdd.city" placeholder="请输入所在城市"></el-input>
+          <el-input v-model="scenicToAdd.cityName" placeholder="请输入所在城市"></el-input>
         </el-form-item>
         <el-form-item label="景区等级">
-          <el-input v-model="scenicToAdd.grade" placeholder="请输入景区等级"></el-input>
+          <el-input v-model="scenicToAdd.scenicSpotGrade" placeholder="请输入景区等级"></el-input>
         </el-form-item>
         <el-form-item label="景区简介">
-          <el-input v-model="scenicToAdd.introduction" type="textarea" placeholder="请输入景区简介"></el-input>
+          <el-input v-model="scenicToAdd.scenicSpotIntroduction" type="textarea" placeholder="请输入景区简介"></el-input>
         </el-form-item>
         <el-form-item label="景区位置">
-          <el-input v-model="scenicToAdd.location" placeholder="请输入景区位置"></el-input>
+          <el-input v-model="scenicToAdd.scenicSpotLocation" placeholder="请输入景区位置"></el-input>
         </el-form-item>
         <el-form-item label="距离市中心远近评分">
-          <el-input v-model="scenicToAdd.remoteness" placeholder="请输入距离市中心远近评分"></el-input>
+          <el-input v-model="scenicToAdd.scenicSpotRemoteness" placeholder="请输入距离市中心远近评分"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -171,14 +171,14 @@ function handleCloseModifyScenicForm(done: () => void) {
 
 // 新增景区
 async function addScenic() {
-  const scenicToAdd = scenicToAdd.value;
-  if (!scenicToAdd.ScenicName || !scenicToAdd.City) {
+  const scenicToadd = scenicToAdd;
+  if (!scenicToadd.scenicSpotName || !scenicToadd.cityName) {
     ElMessage.error('请输入景区名称和所在城市');
     return;
   }
 
   try {
-    await axios.post('https://123.60.14.84:11000/api/Scenic', scenicToAdd);
+    await axios.post('https://123.60.14.84:11000/api/Scenic', scenicToadd);
     ElMessage.success('景区添加成功');
     addScenicFormVisible.value = false;
     scenic.value = null;
@@ -190,7 +190,7 @@ async function addScenic() {
 
 // 删除景区
 async function deleteScenic() {
-  const scenicId = scenicToDelete.value.ScenicId;
+  const scenicId = scenicToDelete.ScenicId;
   if (!scenicId) {
     ElMessage.error('请输入景区ID');
     return;
@@ -245,12 +245,12 @@ async function updateScenic() {
 
 // 定义数据模型
 const scenicToAdd = reactive({
-  ScenicName: '',
-  City: '',
-  Grade: '',
-  Introduction: '',
-  Location: '',
-  Remoteness: ''
+  scenicSpotName: '',
+  cityName: '',
+  scenicSpotGrade: '',
+  scenicSpotIntroduction: '',
+  scenicSpotLocation: '',
+  scenicSpotRemoteness: ''
 });
 
 const scenicToDelete = reactive({

@@ -4,13 +4,13 @@
 defineOptions({
   name: "Scene-management"
 })
-import AddAndModifyCity from '../city-management/component/AddAndModifyCity.vue';
+import AddAndModifySScene from './component/AddAndModifySScene.vue';
 
 </script>
 
 <template>
   <div class="app-container">
-    <AddAndModifyCity />
+    <AddAndModifySScene />
 
     <!-- 页面内容
     <el-card header="景点管理">

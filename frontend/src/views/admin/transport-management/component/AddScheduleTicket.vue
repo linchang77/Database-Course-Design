@@ -99,7 +99,7 @@
     <!-- 添加票务信息的表单 -->
     <el-dialog v-model="ticketFormVisible" title="添加票务信息" :before-close="handleCloseTicketForm">
       <el-form :model="vehicleTicketData" label-width="120px">
-        <el-form-item label="航班ID">
+        <el-form-item label="行程ID">
           <el-input v-model="vehicleTicketData.VehicleId"></el-input>
         </el-form-item>
         <el-form-item label="座位类型">
@@ -113,7 +113,6 @@
             v-model="vehicleTicketData.TicketDepartureTime"
             type="datetime"
             placeholder="选择日期时间"
-            value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="到达时间">
@@ -121,23 +120,22 @@
             v-model="vehicleTicketData.TicketArrivalTime"
             type="datetime"
             placeholder="选择日期时间"
-            value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="出发城市">
-          <el-input v-model="vehicleTicketData.TicketDepartureCity"></el-input>
+          <el-input v-model="vehicleTicketData.TicketDepartureCity" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="到达城市">
-          <el-input v-model="vehicleTicketData.TicketArrivalCity"></el-input>
+          <el-input v-model="vehicleTicketData.TicketArrivalCity" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="剩余票数">
           <el-input-number v-model="vehicleTicketData.TicketRemaining" :min="0"></el-input-number>
         </el-form-item>
-        <el-form-item label="到达机场">
-          <el-input v-model="vehicleTicketData.TicketArrivalStation"></el-input>
+        <el-form-item label="到达站点">
+          <el-input v-model="vehicleTicketData.TicketArrivalStation" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="出发机场">
-          <el-input v-model="vehicleTicketData.TicketDepartureStation"></el-input>
+        <el-form-item label="出发站点">
+          <el-input v-model="vehicleTicketData.TicketDepartureStation" :disabled="true"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -154,7 +152,8 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
-import { de } from 'element-plus/es/locales.mjs';
+import { visualHiddenProps } from 'element-plus/es/components/visual-hidden/index.mjs';
+
 
 const vehicleTypes = [
   { value: 'plane', label: '飞机' },
@@ -278,18 +277,18 @@ async function newSchedule() {
   const deTime = new Date(vehicleScheduleData.value.DepartureTime.getTime() + 8 * 60 * 60 * 1000);
   const arrTime = new Date(vehicleScheduleData.value.ArrivalTime.getTime() + 8 * 60 * 60 * 1000);
   const data={
-    VehicleId: vehicleScheduleData.value.VehicleId,
-    DepartureTime: deTime.toISOString(),
-    ArrivalTime: arrTime.toISOString(),
-    VehicleType: vehicleScheduleData.value.VehicleType,
-    DepartureCity: vehicleScheduleData.value.DepartureCity,
-    ArrivalCity: vehicleScheduleData.value.ArrivalCity,
-    VehicleModel: vehicleScheduleData.value.VehicleModel,
-    ArrivalStation: vehicleScheduleData.value.ArrivalStation,
-    DepartureStation: vehicleScheduleData.value.DepartureStation
+    vehicleId: vehicleScheduleData.value.VehicleId,
+    departureTime: deTime,
+    arrivalTime: arrTime,
+    vehicleType: vehicleScheduleData.value.VehicleType,
+    departureCity: vehicleScheduleData.value.DepartureCity,
+    arrivalCity: vehicleScheduleData.value.ArrivalCity,
+    vehicleModel: vehicleScheduleData.value.VehicleModel,
+    arrivalStation: vehicleScheduleData.value.ArrivalStation,
+    departureStation: vehicleScheduleData.value.DepartureStation
   }
   console.log("data:", data);
-  const url = "https://123.60.14.84:11000/api/Vehicle/schedule";
+  const url = "https://123.60.14.84/api/Vehicle/schedule";
   console.log("url:", url);
 
   axios
@@ -307,23 +306,31 @@ async function newSchedule() {
 
 // 添加票务信息的函数
 async function addVehicleTicket() {
-  console.log("vehicleScheduleData:", vehicleScheduleData.value);
-  const deTime = new Date(vehicleTicketData.value.TicketDepartureTime.getTime() + 8 * 60 * 60 * 1000);
-  const arrTime = new Date(vehicleTicketData.value.TicketArrivalTime.getTime() + 8 * 60 * 60 * 1000);
-  const data={
+  console.log("vehicleTicketData:", vehicleTicketData.value);
+  const res = await axios.get(`https://123.60.14.84/api/Vehicle/schedule/${vehicleTicketData.value.VehicleId}`);
+  console.log("res:", res);
+  const schedule = res.data;
+  console.log("schedule:", schedule);
+
+  const deTimetobe = new Date(vehicleTicketData.value.TicketDepartureTime);
+  const arrTimetobe = new Date(vehicleTicketData.value.TicketArrivalTime);
+
+  const deTime = new Date(deTimetobe.getTime() + 8 * 60 * 60 * 1000);
+  const arrTime = new Date(arrTimetobe.getTime() + 8 * 60 * 60 * 1000);
+  const data = {
     VehicleId: vehicleTicketData.value.VehicleId,
     TicketType: vehicleTicketData.value.TicketType,
     TicketPrice: vehicleTicketData.value.TicketPrice,
-    TicketDepartureTime: deTime.toISOString(),
-    TicketArrivalTime: arrTime.toISOString(),
-    TicketDepartureCity: vehicleTicketData.value.TicketDepartureCity,
-    TicketArrivalCity: vehicleTicketData.value.TicketArrivalCity,
+    TicketDepartureTime: deTime,
+    TicketArrivalTime: arrTime,
+    TicketDepartureCity: schedule.departureCity,
+    TicketArrivalCity: schedule.arrivalCity,
     TicketId: vehicleTicketData.value.TicketId,
     TicketRemaining: vehicleTicketData.value.TicketRemaining,
-    TicketDepartureStation: vehicleTicketData.value.TicketDepartureStation,
-    TicketArrivalStation: vehicleTicketData.value.TicketArrivalStation
+    TicketDepartureStation: schedule.departureStation,
+    TicketArrivalStation: schedule.arrivalStation
   }
-  const url = "https://123.60.14.84:11000/api/Vehicle/ticket";
+  const url = "https://123.60.14.84/api/Vehicle/ticket";
   console.log("url:", url);
 
   axios
@@ -368,7 +375,7 @@ function handleCloseDeleteTicketForm() {
 
 // 删除行程的函数
 async function deleteVehicleSchedule() {
-  const url = `https://123.60.14.84:11000/api/Vehicle/schedule/delete/${vehicleScheduleData.value.VehicleId}`;
+  const url = `https://123.60.14.84/api/Vehicle/schedule/delete/${vehicleScheduleData.value.VehicleId}`;
   console.log("url:", url);
   axios
     .delete(url)
@@ -385,7 +392,7 @@ async function deleteVehicleSchedule() {
 
 // 删除车票的函数
 async function deleteVehicleTicket() {
-  const url = `https://123.60.14.84:11000/api/Vehicle/ticket/delete/${vehicleTicketData.value.TicketId}`;
+  const url = `https://123.60.14.84/api/Vehicle/ticket/delete/${vehicleTicketData.value.TicketId}`;
   console.log("url:", url);
   axios
     .delete(url)

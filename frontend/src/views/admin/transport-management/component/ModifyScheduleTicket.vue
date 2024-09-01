@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-button @click="showModifyScheduleForm">修改行程</el-button>
-    <el-button @click="showModifyVehicleTicketsForm">修改某列车的车票</el-button>
+    <!--<el-button @click="showModifyVehicleTicketsForm">修改某列车的车票</el-button>-->
     <el-button @click="showModifySpecificTicketForm">修改某张特定车票</el-button>
 
     <!-- 修改行程的对话框 -->
@@ -36,9 +36,9 @@
 
     <!-- 修改某张特定车票的对话框 -->
     <el-dialog v-model="modifySpecificTicketFormVisible" title="修改某张特定车票" :before-close="handleCloseModifySpecificTicketForm">
-      <el-form :model="specificTicketData" label-width="120px">
+      <el-form :model="vehicleTicketData" label-width="120px">
         <el-form-item label="车票ID">
-          <el-input v-model="specificTicketData.TicketId" placeholder="请输入车票ID"></el-input>
+          <el-input v-model="vehicleTicketData.ticketId" placeholder="请输入车票ID"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -50,39 +50,49 @@
     </el-dialog>
 
     <!-- 显示查询结果的卡片 -->
-    <el-card v-if="vehicleSchedule" shadow="hover">
+    <el-card v-if="vehicleScheduleData" shadow="hover">
       <template #header>
         <div>行程信息</div>
       </template>
       <el-row>
         <el-col :span="12">
-          <el-form :model="vehicleSchedule" label-width="120px">
+          <el-form :model="vehicleScheduleData" label-width="120px">
             <el-form-item label="班次ID">
-              <el-input v-model="vehicleSchedule.vehicleId" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-input v-model="vehicleScheduleData.vehicleId" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="出发城市">
-              <el-input v-model="vehicleSchedule.departureCity" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-input v-model="vehicleScheduleData.departureCity" :disabled="!isEditingVehicleSchedule"></el-input>
             </el-form-item>
             <el-form-item label="到达城市">
-              <el-input v-model="vehicleSchedule.arrivalCity" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-input v-model="vehicleScheduleData.arrivalCity" :disabled="!isEditingVehicleSchedule"></el-input>
             </el-form-item>
             <el-form-item label="出发车站">
-              <el-input v-model="vehicleSchedule.departureStation" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-input v-model="vehicleScheduleData.departureStation" :disabled="!isEditingVehicleSchedule"></el-input>
             </el-form-item>
             <el-form-item label="到达车站">
-              <el-input v-model="vehicleSchedule.arrivalStation" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-input v-model="vehicleScheduleData.arrivalStation" :disabled="!isEditingVehicleSchedule"></el-input>
             </el-form-item>
             <el-form-item label="出发时间">
-              <el-input v-model="vehicleSchedule.departureTime" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-date-picker
+                v-model="vehicleScheduleData.departureTime"
+                type="datetime"
+                placeholder="选择日期时间"
+                :disabled="!isEditingVehicleSchedule"
+              ></el-date-picker>
             </el-form-item>
             <el-form-item label="到达时间">
-              <el-input v-model="vehicleSchedule.arrivalTime" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-date-picker
+                v-model="vehicleScheduleData.arrivalTime"
+                type="datetime"
+                placeholder="选择日期时间"
+                :disabled="!isEditingVehicleSchedule"
+              ></el-date-picker>
             </el-form-item>
             <el-form-item label="交通工具类型">
-              <el-input v-model="vehicleSchedule.vehicleType" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-input v-model="vehicleScheduleData.vehicleType" :disabled="!isEditingVehicleSchedule"></el-input>
             </el-form-item>
             <el-form-item label="交通工具型号">
-              <el-input v-model="vehicleSchedule.vehicleModel" :disabled="!isEditingVehicleSchedule"></el-input>
+              <el-input v-model="vehicleScheduleData.vehicleModel" :disabled="!isEditingVehicleSchedule"></el-input>
             </el-form-item>
           </el-form>
         </el-col>
@@ -116,20 +126,56 @@
       </el-row>
     </el-card>
 
-    <el-card v-if="specificTicket" shadow="hover">
+    <el-card v-if="vehicleTicketData" shadow="hover">
       <template #header>
         <div>特定车票信息</div>
       </template>
       <el-row>
         <el-col :span="12">
-          <el-form :model="specificTicket" label-width="80px">
-            <el-form-item label="车票ID">
-              <el-input v-model="specificTicket.TicketId" :disabled="!isEditingSpecificTicket"></el-input>
+          <el-form :model="vehicleTicketData" label-width="80px">
+            <el-form-item label="票ID">
+              <el-input v-model="vehicleTicketData.ticketId" :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="车次号">
+              <el-input v-model="vehicleTicketData.vehicleId" :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="票类型">
+              <el-input v-model="vehicleTicketData.ticketType" :disabled="!isEditingSpecificTicket"></el-input>
             </el-form-item>
             <el-form-item label="票价">
-              <el-input v-model="specificTicket.TicketPrice" :disabled="!isEditingSpecificTicket"></el-input>
+              <el-input v-model="vehicleTicketData.ticketPrice" :disabled="!isEditingSpecificTicket"></el-input>
             </el-form-item>
-            <!-- 其他字段... -->
+            <el-form-item label="出发时间">
+              <el-date-picker
+                v-model="vehicleTicketData.ticketDepartureTime"
+                type="datetime"
+                placeholder="选择出发时间"
+                :disabled="!isEditingSpecificTicket"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item label="到达时间">
+              <el-date-picker
+                v-model="vehicleTicketData.ticketArrivalTime"
+                type="datetime"
+                placeholder="选择到达时间"
+                :disabled="!isEditingSpecificTicket"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item label="出发城市">
+              <el-input v-model="vehicleTicketData.ticketDepartureCity" :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="到达城市">
+              <el-input v-model="vehicleTicketData.ticketArrivalCity" :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="出发站点">
+              <el-input v-model="vehicleTicketData.ticketDepartureStation" :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="到达站点">
+              <el-input v-model="vehicleTicketData.ticketArrivalStation" :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="剩余票数">
+              <el-input v-model="vehicleTicketData.ticketRemaining" :disabled="!isEditingSpecificTicket"></el-input>
+            </el-form-item>
           </el-form>
         </el-col>
         <el-col :span="4">
@@ -146,6 +192,34 @@ import { ref, reactive } from 'vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
 
+
+interface VehicleScheduleRequest {
+  vehicleId?: string;
+  departureTime?: Date;
+  arrivalTime?: Date;
+  vehicleType?: string;
+  departureCity?: string;
+  arrivalCity?: string;
+  vehicleModel?: string;
+  arrivalStation?: string;
+  departureStation?: string;
+}
+
+// 定义票务数据结构
+interface VehicleTicketRequest {
+  vehicleId?: string;
+  ticketType?: string;
+  ticketPrice?: number;
+  ticketDepartureTime?: Date;
+  ticketArrivalTime?: Date;
+  ticketDepartureCity?: string;
+  ticketArrivalCity?: string;
+  ticketId?: string;
+  ticketRemaining?: number;
+  ticketDepartureStation?: string;
+  ticketArrivalStation?: string;
+}
+
 // 修改行程表单是否可见
 const modifyScheduleFormVisible = ref(false);
 
@@ -156,13 +230,66 @@ const modifyVehicleTicketsFormVisible = ref(false);
 const modifySpecificTicketFormVisible = ref(false);
 
 // 行程数据
-const vehicleSchedule = ref(null);
+const vehicleScheduleData = ref<Partial<VehicleScheduleRequest>>({
+  vehicleId: '',
+  departureTime: undefined,
+  arrivalTime: undefined,
+  vehicleType: 'plane',
+  departureCity: '',
+  arrivalCity: '',
+  vehicleModel: '',
+  arrivalStation: '',
+  departureStation: ''
+});
+
+function clearVehicleScheduleData() {
+  vehicleScheduleData.value = {
+    vehicleId: '',
+    departureTime: undefined,
+    arrivalTime: undefined,
+    vehicleType: 'plane',
+    departureCity: '',
+    arrivalCity: '',
+    vehicleModel: '',
+    arrivalStation: '',
+    departureStation: ''
+  };
+}
+// 票务数据
+const vehicleTicketData = ref<Partial<VehicleTicketRequest>>({
+  vehicleId: '',
+  ticketType: '',
+  ticketPrice: undefined,
+  ticketDepartureTime: undefined,
+  ticketArrivalTime: undefined,
+  ticketDepartureCity: '',
+  ticketArrivalCity: '',
+  ticketId: '',
+  ticketRemaining: undefined,
+  ticketDepartureStation: '',
+  ticketArrivalStation: ''
+});
+
+function clearVehicleTicketData() {
+  vehicleTicketData.value = {
+    vehicleId: '',
+    ticketType: '',
+    ticketPrice: undefined, // 票价
+    ticketDepartureTime: undefined, // 出发时间
+    ticketArrivalTime: undefined, // 到达时间
+    ticketDepartureCity: '', // 出发城市
+    ticketArrivalCity: '', // 到达城市
+    ticketId: '',
+    ticketRemaining: undefined,
+    ticketDepartureStation: '',
+    ticketArrivalStation: ''
+  };
+}
+
 
 // 车票数据
 const vehicleTickets = ref([]);
 
-// 特定车票数据
-const specificTicket = ref(null);
 
 // 是否正在编辑状态
 const isEditingVehicleSchedule = ref(false);
@@ -216,7 +343,7 @@ function handleCloseModifySpecificTicketForm(done: () => void) {
 
 // 查询并显示行程信息
 async function fetchVehicleSchedule() {
-  const vehicleId = vehicleScheduleData.VehicleId;
+  const vehicleId = vehicleScheduleData.value.vehicleId;
   if (!vehicleId) {
     ElMessage.error('请输入班次ID');
     return;
@@ -224,7 +351,7 @@ async function fetchVehicleSchedule() {
 
   try {
     const response = await axios.get(`https://123.60.14.84:11000/api/Vehicle/schedule/${vehicleId}`);
-    vehicleSchedule.value = response.data;
+    vehicleScheduleData.value = response.data;
     isEditingVehicleSchedule.value = false;
     modifyScheduleFormVisible.value = false;
   } catch (error) {
@@ -254,7 +381,7 @@ async function fetchVehicleTickets() {
 
 // 查询并显示某张特定车票信息
 async function fetchSpecificTicket() {
-  const ticketId = specificTicketData.value.TicketId;
+  const ticketId = vehicleTicketData.value.ticketId;
   if (!ticketId) {
     ElMessage.error('请输入车票ID');
     return;
@@ -262,7 +389,8 @@ async function fetchSpecificTicket() {
 
   try {
     const response = await axios.get(`https://123.60.14.84:11000/api/Vehicle/ticket/${ticketId}`);
-    specificTicket.value = response.data;
+    console.log(response.data);
+    vehicleTicketData.value = response.data;
     isEditingSpecificTicket.value = false;
     modifySpecificTicketFormVisible.value = false;
   } catch (error) {
@@ -278,15 +406,45 @@ function editVehicleSchedule() {
 
 // 更新行程信息
 async function updateVehicleSchedule() {
-  try {
-    //await axios.delete(`https://123.60.14.84:11000/api/Vehicle/schedule/${vehicleSchedule.value.VehicleId}`);
-    await axios.put(`https://123.60.14.84:11000/api/Vehicle/schedule/${vehicleSchedule.value.VehicleId}`, vehicleSchedule.value);
-    ElMessage.success('行程信息更新成功');
-    isEditingVehicleSchedule.value = false;
-  } catch (error) {
-    console.error(error);
-    ElMessage.error('更新失败');
+  console.log(vehicleScheduleData.value);
+  const deTimetobe = new Date(vehicleScheduleData.value.departureTime);
+  const arrTimetobe = new Date(vehicleScheduleData.value.arrivalTime);
+  const deTime = new Date(deTimetobe.getTime() + 8 * 60 * 60 * 1000);
+  const arrTime = new Date(arrTimetobe.getTime() + 8 * 60 * 60 * 1000);
+  const data = {
+    vehicleId: vehicleScheduleData.value.vehicleId,
+    departureTime: deTime,
+    arrivalTime: arrTime,
+    vehicleType: vehicleScheduleData.value.vehicleType,
+    departureCity: vehicleScheduleData.value.departureCity,
+    arrivalCity: vehicleScheduleData.value.arrivalCity,
+    vehicleModel: vehicleScheduleData.value.vehicleModel,
+    arrivalStation: vehicleScheduleData.value.arrivalStation,
+    departureStation: vehicleScheduleData.value.departureStation
   }
+  console.log("data", data);
+  await axios.delete(`https://123.60.14.84/api/Vehicle/schedule/delete/${vehicleScheduleData.value.vehicleId}`)
+    .then(response => {
+      console.log(response);
+      ElMessage.success('行程信息删除成功');
+    })
+    .catch(error => {
+      console.error(error);
+      ElMessage.error('删除失败');
+    });
+    console.log("data", data);
+  axios.post(`https://123.60.14.84/api/Vehicle/schedule`, data)
+    .then(response => {
+      console.log(response);
+      ElMessage.success('行程信息更新成功');
+      isEditingVehicleSchedule.value = false;
+    })
+    .catch(error => {
+      console.error(error);
+      ElMessage.error('更新失败');
+    });
+    console.log("data", data);
+  clearVehicleScheduleData();
 }
 
 // 编辑车票信息
@@ -313,26 +471,53 @@ function editSpecificTicket() {
 
 // 更新特定车票信息
 async function updateSpecificTicket() {
-  try {
-    await axios.put(`https://123.60.14.84:11000/api/Vehicle/ticket/${specificTicket.value.TicketId}`, specificTicket.value);
-    ElMessage.success('特定车票信息更新成功');
-    isEditingSpecificTicket.value = false;
-  } catch (error) {
-    console.error(error);
-    ElMessage.error('更新失败');
+  console.log("vehicleTicketData:", vehicleTicketData.value);
+  const res = await axios.get(`https://123.60.14.84/api/Vehicle/schedule/${vehicleTicketData.value.vehicleId}`);
+  console.log("res:", res);
+  const schedule = res.data;
+  console.log("schedule:", schedule);
+
+  const deTimetobe = new Date(vehicleTicketData.value.ticketDepartureTime);
+  const arrTimetobe = new Date(vehicleTicketData.value.ticketArrivalTime);
+
+  const deTime = new Date(deTimetobe.getTime() + 8 * 60 * 60 * 1000);
+  const arrTime = new Date(arrTimetobe.getTime() + 8 * 60 * 60 * 1000);
+  const data = {
+    VehicleId: vehicleTicketData.value.vehicleId,
+    TicketType: vehicleTicketData.value.ticketType,
+    TicketPrice: vehicleTicketData.value.ticketPrice,
+    TicketDepartureTime: deTime,
+    TicketArrivalTime: arrTime,
+    TicketDepartureCity: schedule.departureCity,
+    TicketArrivalCity: schedule.arrivalCity,
+    TicketId: vehicleTicketData.value.ticketId,
+    TicketRemaining: vehicleTicketData.value.ticketRemaining,
+    TicketDepartureStation: schedule.departureStation,
+    TicketArrivalStation: schedule.arrivalStation
   }
+
+  await axios
+    .delete(`https://123.60.14.84/api/Vehicle/ticket/delete/${vehicleTicketData.value.ticketId}`)
+    .then((response) => {
+      console.log(response);
+      ElMessage.success('车票信息删除成功');
+    })
+    .catch((error) => {
+      console.error(error);
+      ElMessage.error('删除失败');
+    });
+
+  await axios
+    .post(`https://123.60.14.84/api/Vehicle/ticket`, data)
+    .then((response) => {
+      console.log(response);
+      ElMessage.success('车票信息更新成功');
+      isEditingSpecificTicket.value = false;
+    })
+    .catch((error) => {
+      console.error(error);
+      ElMessage.error('更新失败');
+    });
+  clearVehicleTicketData();
 }
-
-// 定义数据模型
-const vehicleScheduleData = reactive({
-  VehicleId: '',
-});
-
-const vehicleTicketData = reactive({
-  VehicleId: '',
-});
-
-const specificTicketData = reactive({
-  TicketId: '',
-});
 </script>
