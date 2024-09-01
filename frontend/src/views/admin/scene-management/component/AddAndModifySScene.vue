@@ -8,12 +8,23 @@
     <el-dialog v-model="addScenicFormVisible" title="新增景区" :before-close="handleCloseAddScenicForm">
       <el-form :model="scenicToAdd" label-width="120px">
         <el-form-item label="景区名称">
-          <el-input v-model="scenicToAdd.ScenicName" placeholder="请输入景区名称"></el-input>
+          <el-input v-model="scenicToAdd.scenicName" placeholder="请输入景区名称"></el-input>
         </el-form-item>
         <el-form-item label="所在城市">
-          <el-input v-model="scenicToAdd.City" placeholder="请输入所在城市"></el-input>
+          <el-input v-model="scenicToAdd.city" placeholder="请输入所在城市"></el-input>
         </el-form-item>
-        <!-- 可以添加更多字段 -->
+        <el-form-item label="景区等级">
+          <el-input v-model="scenicToAdd.grade" placeholder="请输入景区等级"></el-input>
+        </el-form-item>
+        <el-form-item label="景区简介">
+          <el-input v-model="scenicToAdd.introduction" type="textarea" placeholder="请输入景区简介"></el-input>
+        </el-form-item>
+        <el-form-item label="景区位置">
+          <el-input v-model="scenicToAdd.location" placeholder="请输入景区位置"></el-input>
+        </el-form-item>
+        <el-form-item label="距离市中心远近评分">
+          <el-input v-model="scenicToAdd.remoteness" placeholder="请输入距离市中心远近评分"></el-input>
+        </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -27,7 +38,7 @@
     <el-dialog v-model="deleteScenicFormVisible" title="删除景区" :before-close="handleCloseDeleteScenicForm">
       <el-form :model="scenicToDelete" label-width="120px">
         <el-form-item label="景区ID">
-          <el-input v-model="scenicToDelete.ScenicId" placeholder="请输入景区ID"></el-input>
+          <el-input v-model="scenicToDelete.scenicId" placeholder="请输入景区ID"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -42,7 +53,7 @@
     <el-dialog v-model="modifyScenicFormVisible" title="修改景区" :before-close="handleCloseModifyScenicForm">
       <el-form :model="scenicToModify" label-width="120px">
         <el-form-item label="景区ID">
-          <el-input v-model="scenicToModify.ScenicId" placeholder="请输入景区ID"></el-input>
+          <el-input v-model="scenicToModify.scenicId" placeholder="请输入景区ID"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -70,7 +81,18 @@
             <el-form-item label="所在城市">
               <el-input v-model="scenic.City" :disabled="!isEditingScenic"></el-input>
             </el-form-item>
-            <!-- 其他字段... -->
+            <el-form-item label="景区等级">
+              <el-input v-model="scenic.Grade" :disabled="!isEditingScenic"></el-input>
+            </el-form-item>
+            <el-form-item label="景区简介">
+              <el-input v-model="scenic.Introduction" type="textarea" :disabled="!isEditingScenic"></el-input>
+            </el-form-item>
+            <el-form-item label="景区位置">
+              <el-input v-model="scenic.Location" :disabled="!isEditingScenic"></el-input>
+            </el-form-item>
+            <el-form-item label="距离市中心远近评分">
+              <el-input v-model="scenic.Remoteness" :disabled="!isEditingScenic"></el-input>
+            </el-form-item>
           </el-form>
         </el-col>
         <el-col :span="4">
@@ -159,6 +181,7 @@ async function addScenic() {
     await axios.post('https://123.60.14.84:11000/api/Scenic', scenicToAdd);
     ElMessage.success('景区添加成功');
     addScenicFormVisible.value = false;
+    scenic.value = null;
   } catch (error) {
     console.error(error);
     ElMessage.error('添加失败');
@@ -177,6 +200,7 @@ async function deleteScenic() {
     await axios.delete(`https://123.60.14.84:11000/api/Scenic/${scenicId}`);
     ElMessage.success('景区删除成功');
     deleteScenicFormVisible.value = false;
+    scenic.value = null;
   } catch (error) {
     console.error(error);
     ElMessage.error('删除失败');
@@ -223,13 +247,17 @@ async function updateScenic() {
 const scenicToAdd = reactive({
   ScenicName: '',
   City: '',
+  Grade: '',
+  Introduction: '',
+  Location: '',
+  Remoteness: ''
 });
 
 const scenicToDelete = reactive({
-  ScenicId: '',
+  ScenicId: ''
 });
 
 const scenicToModify = reactive({
-  ScenicId: '',
+  ScenicId: ''
 });
 </script>

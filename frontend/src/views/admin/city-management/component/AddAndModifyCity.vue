@@ -11,22 +11,22 @@
           <el-input v-model="cityToAdd.CityName" placeholder="请输入城市名称"></el-input>
         </el-form-item>
         <el-form-item label="省份">
-          <el-input v-model="cityToAdd.Province" placeholder="请输入省份（可选）"></el-input>
+          <el-input v-model="cityToAdd.Province" placeholder="请输入省份"></el-input>
         </el-form-item>
         <el-form-item label="城市介绍">
-          <el-input v-model="cityToAdd.CityIntroduction" placeholder="请输入城市介绍（可选）"></el-input>
+          <el-input v-model="cityToAdd.CityIntroduction" placeholder="请输入城市介绍"></el-input>
         </el-form-item>
         <el-form-item label="今日温度">
-          <el-input v-model.number="cityToAdd.TodayTemperature" placeholder="请输入今日温度（可选）"></el-input>
+          <el-input v-model.number="cityToAdd.TodayTemperature" placeholder="请输入今日温度"></el-input>
         </el-form-item>
         <el-form-item label="今日天气">
-          <el-input v-model="cityToAdd.TodayWeather" placeholder="请输入今日天气（可选）"></el-input>
+          <el-input v-model="cityToAdd.TodayWeather" placeholder="请输入今日天气"></el-input>
         </el-form-item>
         <el-form-item label="明日温度">
-          <el-input v-model.number="cityToAdd.TomorrowTemperature" placeholder="请输入明日温度（可选）"></el-input>
+          <el-input v-model.number="cityToAdd.TomorrowTemperature" placeholder="请输入明日温度"></el-input>
         </el-form-item>
         <el-form-item label="明日天气">
-          <el-input v-model="cityToAdd.TomorrowWeather" placeholder="请输入明日天气（可选）"></el-input>
+          <el-input v-model="cityToAdd.TomorrowWeather" placeholder="请输入明日天气"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -237,8 +237,8 @@ async function updateCity() {
   try {
     const cityToUpdate = city.value;
     console.log(cityToUpdate);
-    //await axios.patch(`https://123.60.14.84:11000/api/City/mod/intro/${cityToUpdate.CityName},${cityToUpdate.CityIntroduction}`);
-    //await axios.patch(`https://123.60.14.84:11000/api/City/mod/climate/${cityToUpdate.CityName},${cityToUpdate.TodayTemperature},${cityToUpdate.TodayWeather},${cityToUpdate.TomorrowTemperature},${cityToUpdate.TomorrowWeather}`);
+    await axios.patch(`https://123.60.14.84:11000/api/City/mod/intro/${cityToUpdate.CityName},${cityToUpdate.CityIntroduction}`);
+    await axios.patch(`https://123.60.14.84:11000/api/City/mod/climate/${cityToUpdate.CityName},${cityToUpdate.TodayTemperature},${cityToUpdate.TodayWeather},${cityToUpdate.TomorrowTemperature},${cityToUpdate.TomorrowWeather}`);
     ElMessage.success('城市信息更新成功');
     isEditingCity.value = false;
   } catch (error) {
