@@ -148,14 +148,14 @@ const searchByCategory = () => {
 
 // 按日期搜索交易记录
 const searchByDate = () => {
-  startDate.value = dateInput.value[0]
-  endDate.value = dateInput.value[1]
+  startDate.value = convertToDateOnly(dateInput.value[0])
+  endDate.value = convertToDateOnly(dateInput.value[1])
   if (startDate.value && endDate.value) {
     axios
-      .get(`${apiUrl}/date-range`, {
+      .get(`${apiUrl}/dateRange`, {
         params: {
-          start: startDate.value,
-          end: endDate.value
+          StartDate: startDate.value,
+          EndDate: endDate.value
         }
       })
       .then((response) => {
@@ -204,8 +204,8 @@ const search = () => {
       category.value = ""
       break
   }
-  const startDateValue = dateInput.value[0]
-  const endDateValue = dateInput.value[1]
+  const startDateValue = convertToDateOnly(dateInput.value[0])
+  const endDateValue = convertToDateOnly(dateInput.value[1])
   const requests = []
 
   //添加类型筛选请求
@@ -218,10 +218,10 @@ const search = () => {
   //添加日期筛选请求
   if (startDateValue && endDateValue) {
     requests.push(
-      axios.get(`${apiUrl}/date-range`, {
+      axios.get(`${apiUrl}/dateRange`, {
         params: {
-          start: startDateValue,
-          end: endDateValue
+          StartDate: startDateValue,
+          EndDate: endDateValue
         }
       })
     )
@@ -287,6 +287,19 @@ function formatDate(dateString?: string): string {
 
   // 格式化为需要的字符串
   return `${year}年${month}月${day}日 ${hours}:${minutes}:${seconds}`
+}
+
+function convertToDateOnly(dateString?: string): string {
+  if (!dateString) {
+    return ""
+  }
+  // 使用Date对象解析ISO 8601格式的日期时间字符串
+  const date = new Date(dateString)
+  // 获取年、月、日，并格式化为YYYY-MM-DD的形式
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0") // 月份从0开始，需要加1
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
 }
 
 // 格式化分类显示
