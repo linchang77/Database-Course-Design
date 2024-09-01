@@ -23,7 +23,7 @@ const startDate = route.query.startDate as string;
 const endDate = route.query.endDate as string;
 const departure = route.query.departure as string;
 const destination = route.query.destination as string;
-const guideName = route.query.guidename as string;
+const guideName = route.query.guideName as string;
 const imageUrl = route.query.imageUrl as string;
 const tourItineraries = JSON.parse(route.query.tourItineraries as string);
 const hotels = JSON.parse(route.query.hotels as string);
@@ -123,27 +123,23 @@ const purchase = async () => {
             <p class="title2">交通</p>
             <ul>
       <li>
-        <p><strong>去程票务信息</strong></p>
+        <p><strong>去程</strong></p>
+        <p>票务编号: {{ goTicket.ticketId }}</p>
         <p>交通工具编号: {{ goTicket.vehicleId }}</p>
         <p>票务类型: {{ goTicket.ticketType }}</p>
-        <p>票价: ￥{{ goTicket.ticketPrice }}</p>
-        <p>出发时间: {{ formatDateTime(goTicket.ticketDepartureTime) }}</p>
-        <p>到达时间: {{ formatDateTime(goTicket.ticketArrivalTime) }}</p>
-        <p>出发城市: {{ goTicket.ticketDepartureCity }}</p>
-        <p>到达城市: {{ goTicket.ticketArrivalCity }}</p>
-        <p>票务ID: {{ goTicket.ticketId }}</p>
+        <p>出发时间: {{ formatDateTime(goTicket.ticketDepartureTime) }} - 到达时间: {{ formatDateTime(goTicket.ticketArrivalTime) }}</p>
+        <p>出发城市: {{ goTicket.ticketDepartureCity }} - 到达城市: {{ goTicket.ticketArrivalCity }}</p>
         <hr class="custom-hr">
       </li>
       <li>
-        <p><strong>返程票务信息</strong></p>
+        <p><strong>返程</strong></p>
+        <p>票务编号: {{ returnTicket.ticketId }}</p>
         <p>交通工具编号: {{ returnTicket.vehicleId }}</p>
         <p>票务类型: {{ returnTicket.ticketType }}</p>
         <p>票价: ￥{{ returnTicket.ticketPrice }}</p>
-        <p>出发时间: {{ formatDateTime(returnTicket.ticketDepartureTime) }}</p>
-        <p>到达时间: {{ formatDateTime(returnTicket.ticketArrivalTime) }}</p>
-        <p>出发城市: {{ returnTicket.ticketDepartureCity }}</p>
-        <p>到达城市: {{ returnTicket.ticketArrivalCity }}</p>
-        <p>票务ID: {{ returnTicket.ticketId }}</p>
+        <p>出发时间: {{ formatDateTime(returnTicket.ticketDepartureTime) }} - 到达时间: {{ formatDateTime(returnTicket.ticketArrivalTime) }}</p>
+        <p>出发城市: {{ returnTicket.ticketDepartureCity }} - 到达城市: {{ returnTicket.ticketArrivalCity }}</p>
+        
       </li>
     </ul>
           </el-scrollbar>

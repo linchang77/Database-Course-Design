@@ -409,18 +409,15 @@ const filterOrders = () => {
   Promise.all(requests)
     .then((responses) => {
       let filteredOrders = responses[0].data // 以第一个请求的结果为基础
-
       // 合并其他请求的结果
       responses.slice(1).forEach((response) => {
         filteredOrders = filteredOrders.filter((order: Order) =>
           response.data.some((filteredOrder: Order) => filteredOrder.orderId === order.orderId)
         )
       })
-
       // 更新订单数据
       orders.value = filteredOrders
       total.value = filteredOrders.length
-
       if (filteredOrders.length === 0) {
         showEmptyMessage.value = true
       }
@@ -761,7 +758,14 @@ function formatDateToDay(dateString?: string): string {
                 </ul>
                 <ul v-if="order.orderType === 'VehicleOrder'">
                   <li>交通类型：{{ formatTransport((order as VehicleOrder).vehicleType) }}</li>
-                  <li>车次/航班号：{{ (order as VehicleOrder).vehicleId }}</li>
+                  <li>
+                    <template v-if="(order as VehicleOrder).vehicleType === 'plane'">
+                      航班号：{{ (order as VehicleOrder).vehicleId }}
+                    </template>
+                    <template v-else>
+                      车次号：{{ (order as VehicleOrder).vehicleId }}
+                    </template>
+                  </li>
                   <li>座位类型：{{ (order as VehicleOrder).ticketType }}</li>
                   <li>出行票号：{{ (order as VehicleOrder).ticketId }}</li>
                   <li>出发时间：{{ formatDate((order as VehicleOrder).ticketDepartureTime) }}</li>
