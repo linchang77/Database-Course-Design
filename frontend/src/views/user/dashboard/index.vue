@@ -107,7 +107,7 @@ const goToAttraction = (scenicSpotName, scenicSpotIntroduction, scenicSpotId) =>
 // 获取推荐旅游团
 const fetchTourGroups = () => {
   axios
-    .get("https://123.60.14.84:10000/api/TourGroup/recommendedtours")
+    .get("https://123.60.14.84/api/TourGroup/recommendedtours")
     .then((response) => {
       const data = response.data;
       if (Array.isArray(data)) {
@@ -130,14 +130,21 @@ const goToGroup = (group) => {
     path: `/group-travel/groups/detail`,
     query: {
       groupId: group.groupId.toString(),
-      groupName: group.groupName,
-      groupPrice: group.groupPrice.toString(),
+      guideId: group.guideId.toString(),
       startDate: group.startDate,
       endDate: group.endDate,
-      guideName: group.guideName,
-      imageUrl: group.imageUrl,
+      groupName: group.groupName,
+      groupPrice: group.groupPrice.toString(),
+      goTicketId: group.goTicketId.toString(),
+      returnTicketId: group.returnTicketId.toString(),
+      departure: group.departure,
+      destination: group.destination,
+      guidename: group.guidename,
+      goTicket:JSON.stringify(group.goTicket), 
+      returnTicket:JSON.stringify(group.returnTicket), 
       tourItineraries: JSON.stringify(group.tourItineraries), 
-      hotels: JSON.stringify(group.hotels)
+      hotels: JSON.stringify(group.hotels),
+      imageUrl: group.imageUrl
     }
   });
 }

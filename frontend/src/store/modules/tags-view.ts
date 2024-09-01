@@ -72,7 +72,7 @@ export const useTagsViewStore = defineStore("tags-view", () => {
   //#region delAll
   const delAllVisitedViews = () => {
     // 保留固定的 tags
-    visitedViews.value = visitedViews.value.filter((tag) => tag.meta?.affix)
+    visitedViews.value = [];
   }
 
   const delAllCachedViews = () => {
