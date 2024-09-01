@@ -6,7 +6,7 @@ import axios from 'axios';
 defineOptions({
   name: "Detail"
 })
-
+//定义酒店接口
 interface Hotel {
   hotelId: number;
   hotelName: string;
@@ -15,14 +15,14 @@ interface Hotel {
   hotelLocation: string;
   hotelIntroduction: string;
 }
-
+//定义酒店房间接口
 interface HotelRoom{
   hotelId: number;
   roomType: string;
   roomLeft: number;
   roomPrice: number; 
 }
-
+//酒店星级和数字转换
 const gradeToNumber = (grade: string): number => {
   const gradeMap: { [key: string]: number } = {
     "五星级": 5,
@@ -41,13 +41,13 @@ const hotels = ref<Hotel[]>([]);
 const hotelRooms = ref<HotelRoom[]>([]);
 const sortOrder = ref<'asc' | 'desc'>('asc');
 const sortBy = ref<'grade' | 'price'>('grade');
-
-
 const destination = decodeURIComponent(route.query.destination as string);
 
+//接收相关参数
 const checkInTime = route.query.checkInTime;
 const checkOutTime = route.query.checkOutTime;
 
+//将时间戳转换
 const startDate = computed(() => {
   return route.query.checkInTime ? new Date(parseInt(route.query.checkInTime as string)).toISOString() : null;
 });
@@ -59,7 +59,7 @@ console.log("start",startDate.value)
 console.log("end",endDate.value)
 
 
-
+//匹配相关酒店
 const fetchHotels = async (): Promise<Hotel[]> => {
   try {
     const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(destination)}`);
@@ -71,6 +71,7 @@ const fetchHotels = async (): Promise<Hotel[]> => {
   }
 };
 
+//匹配相关酒店房间
 const fetchHotelRooms = async (hotelId: number): Promise<HotelRoom[]> => {
   try {
     const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(hotelId)}/type`);
@@ -90,6 +91,7 @@ const fetchHotelRooms = async (hotelId: number): Promise<HotelRoom[]> => {
   }
 }
 
+//更新酒店信息
 const updateHotel = async () => {
   const hotels = await fetchHotels();
   for (const hotel of hotels) {
@@ -102,10 +104,11 @@ onMounted(() => {
   updateHotel();
 });
 
-
+//排序酒店
 const sortedHotels = computed(() => {
   return hotels.value.slice().sort((a, b) => {
     let comparison = 0;
+    //判断排序种类
     if (sortBy.value === 'price') {
       const priceA = hotelRooms.value.find(room => room.hotelId === a.hotelId)?.roomPrice ?? 0;
       const priceB = hotelRooms.value.find(room => room.hotelId === b.hotelId)?.roomPrice ?? 0;
@@ -119,6 +122,7 @@ const sortedHotels = computed(() => {
   });
 });
 
+//按等级排序逻辑
 const toggleSortBygrade = () => {
   if (sortBy.value === 'grade') {
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
@@ -127,18 +131,18 @@ const toggleSortBygrade = () => {
     sortOrder.value = 'asc';
   }
 };
-
+//获得某酒店最低价格
 const getLowestPriceForHotel = (hotelId: number): number => {
   const rooms = hotelRooms.value.filter(room => room.hotelId === hotelId);
   if (rooms.length === 0) return 0;
   return Math.min(...rooms.map(room => room.roomPrice));
 };
-
+//按价格排序逻辑
 const toggleSortByPrice = () => {
   sortBy.value = 'price'; 
   sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'; 
 };
-
+//传递参数
 const viewDetails = (selectedHotelId: number) => {
   console.log(checkInTime)
   const filteredHotel = hotels.value.filter(hotel => hotel.hotelId === selectedHotelId);

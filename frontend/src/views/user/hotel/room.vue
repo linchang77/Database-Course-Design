@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
+//酒店接口
 interface Hotel {
   hotelId: number;
   hotelName: string;
@@ -10,7 +10,7 @@ interface Hotel {
   hotelLocation: string;
   hotelIntroduction: string;
 }
-
+//酒店房间接口
 interface HotelRoom{
   hotelId: number;
   roomType: string;
@@ -20,14 +20,14 @@ interface HotelRoom{
 
 const route = useRoute();
 const router = useRouter();
-
-const checkInTime = route.query.checkInTime;
-const checkOutTime = route.query.checkOutTime;
-
 const hotel = ref<Hotel[]>([]);
 const hotelRooms = ref<HotelRoom[]>([]);
 
 
+const checkInTime = route.query.checkInTime;
+const checkOutTime = route.query.checkOutTime;
+
+//传递参数
 const viewOrder = (selectedRoomType: string, selectedHotelId: number) => {
   const filteredHotelRoom = hotelRooms.value.filter(room => room.roomType === selectedRoomType);
   router.push({

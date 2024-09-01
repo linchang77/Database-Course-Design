@@ -5,6 +5,7 @@ import TimeSelector from './components/TimeSelector.vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
+// 定义酒店接口
 interface Hotel {
   hotelId: number;
   hotelName: string;
@@ -12,10 +13,12 @@ interface Hotel {
   hotelGrade: string;
   hotelLocation: string;
   hotelIntroduction: string;
-  imageUrl: string; // 确保接口包含 imageUrl 属性
+  imageUrl: string; 
 }
 
+//酒店数组
 const hotels = ref<Hotel[]>([]);
+//城市键值对，用于地点选择器
 const cities = ref<Array<{ value: string; label: string }>>([]);
 
 const destination = ref<string>('');
@@ -24,18 +27,19 @@ const checkOutTime = ref<Date | undefined>(undefined);
 
 const router = useRouter();
 
+//设置目的城市
 const setDestination = (val: any) => {
   destination.value = val[val.length - 1];
 };
-
+//设置入住时间
 const setCheckInTime = (val: any) => {
   checkInTime.value = val;
 };
-
+//设置退房时间
 const setCheckOutTime = (val: any) => {
   checkOutTime.value = val;
 };
-
+//获得所有的酒店，将城市单独提取出来
 const fetchHotels = async (): Promise<Hotel[]> => {
   try {
     const response = await axios.get<Hotel[]>('https://123.60.14.84/api/Hotel/all');
@@ -49,8 +53,9 @@ const fetchHotels = async (): Promise<Hotel[]> => {
   }
 };
 
-
-const searchTickets = () => {
+//查找酒店
+const searchHotels = () => {
+  //传递参数
   router.push({
     name: 'Detail',
     query: {
@@ -61,6 +66,7 @@ const searchTickets = () => {
   });
 };
 
+//计算入住天数
 const numberOfNights = computed(() => {
   if (checkInTime.value && checkOutTime.value) {
     const timeDifference = checkOutTime.value.getTime() - checkInTime.value.getTime();
@@ -69,6 +75,7 @@ const numberOfNights = computed(() => {
   return 0;
 });
 
+//判断是否禁用搜索框
 const isSearchDisabled = computed(() => {
   return !destination.value || !checkInTime.value || !checkOutTime.value;
 });
@@ -98,7 +105,7 @@ onMounted(() => {
         <TimeSelector @updateValue="setCheckInTime">请选择入住时间</TimeSelector>
         <div class="date-container" :style="{ visibility: numberOfNights > 0 ? 'visible' : 'hidden' }">入住{{ numberOfNights }}晚</div>
         <TimeSelector @updateValue="setCheckOutTime">请选择退房时间</TimeSelector>
-        <el-button type="primary" size="large" icon="search" :disabled="isSearchDisabled" @click="searchTickets">搜索</el-button>
+        <el-button type="primary" size="large" icon="search" :disabled="isSearchDisabled" @click="searchHotels">搜索</el-button>
       </div>
     </el-card>
   </div>

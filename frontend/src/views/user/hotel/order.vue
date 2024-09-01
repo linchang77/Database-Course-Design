@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 
+//定义酒店接口
 interface Hotel {
   hotelId: number;
   hotelName: string;
@@ -12,6 +13,7 @@ interface Hotel {
   hotelIntroduction: string;
 }
 
+//定义酒店房间接口
 interface HotelRoom{
   hotelId: number;
   roomType: string;
@@ -22,6 +24,7 @@ interface HotelRoom{
 const route = useRoute();
 const selectedNumber = ref(0);
 
+//将时间戳进行转换
 const checkInTime = computed(() => {
   return route.query.checkInTime ? new Date(parseInt(route.query.checkInTime as string)).toISOString() : null;
 });
@@ -34,9 +37,9 @@ const selectedRoomType = route.query.orderRoomType
 
 const hotel = ref<Hotel[]>([]);
 const hotelRooms = ref<HotelRoom[]>([]);
-
 const isSubmitDisabled = computed(() => selectedNumber.value === 0);
 
+//提交订单逻辑
 const handleSubmit = async() => {
   console.log(Number(localStorage.getItem("id")))
   console.log(selectedHotelId)

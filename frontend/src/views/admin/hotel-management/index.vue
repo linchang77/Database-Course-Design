@@ -71,7 +71,7 @@ const handleAdd = () => {
         })
         .catch(() => {
           ElMessage.error("新增酒店失败");
-          resetForm(); // 失败时重置表单
+          resetForm(); 
         })
         .finally(() => {
           loading.value = false;
@@ -84,7 +84,7 @@ const handleAdd = () => {
 
 //重置表单
 const resetForm = () => {
-  formData.value = { ...DEFAULT_FORM_DATA }; // 使用深拷贝重置表单
+  formData.value = { ...DEFAULT_FORM_DATA }; 
 };
 
 //提交删除需求
@@ -118,7 +118,7 @@ const handleUpdate = () => {
         })
         .catch(() => {
           ElMessage.error("修改酒店失败");
-          resetForm(); // 失败时重置表单
+          resetForm(); 
         })
         .finally(() => {
           loading.value = false;
