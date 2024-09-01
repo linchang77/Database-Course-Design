@@ -1,62 +1,3 @@
-<template>
-<div>
-  <div class="header">
-    <img src="@\assets\layouts\logo.png" alt="Logo" class="logo">
-    <h1 class="title1">e行天下</h1>
-  </div>
-
-  <div>
-    <!-- 上部: 热门旅游团 -->
-    <section>
-      <h2 class="section-title">热门旅游团</h2>
-      <div class="group-container">
-        <div 
-          class="group-card" 
-          v-for="group in tourGroups" 
-          :key="group.groupId" 
-          @click="goToGroup(group)"
-        >
-          <div class="group-image">
-            <img :src="group.imageUrl" alt="旅游团图片" />
-          </div>
-          <div class="group-info">
-            <p class="title">{{ group.groupName }}</p>
-            <p>{{ formatDate(group.startDate) }} -- {{ formatDate(group.endDate) }}</p>
-          </div>
-          <div class="group-price">
-            <p>{{ group.groupPrice }} 元起</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 下部: 景点推荐 -->
-    <section>
-      <h2 class="section-title">景点推荐</h2>
-      <div class="content-wrapper">
-        <div v-if="scenicSpots.length" class="attraction-container">
-          <div 
-            v-for="spot in scenicSpots" 
-            :key="spot.scenicSpotId" 
-            class="attraction-card" 
-            @click="goToAttraction(spot.scenicSpotName, spot.scenicSpotIntroduction, spot.scenicSpotId)"
-          >
-            <div class="image-wrapper">
-              <img :src="`/images/${spot.scenicSpotName}.jpg`" :alt="spot.scenicSpotName" class="attraction-image" />
-            </div>
-            <div class="attraction-info">
-              <h3>{{ spot.scenicSpotName }} <span>{{ spot.scenicSpotGrade }}A</span></h3>
-              <span class="price">{{ childTicketPrices[spot.scenicSpotName] ? childTicketPrices[spot.scenicSpotName] + '元起' : '免费' }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="right-space"></div>
-      </div>
-    </section>
-  </div>
-</div>
-</template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
@@ -166,6 +107,65 @@ const imageMap = {
   23: 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
 }
 </script>
+
+<template>
+  <div>
+    <div class="header">
+      <img src="@\assets\layouts\logo.png" alt="Logo" class="logo">
+      <h1 class="title1">e行天下</h1>
+    </div>
+  
+    <div>
+      <!-- 上部: 热门旅游团 -->
+      <section>
+        <h2 class="section-title">热门旅游团</h2>
+        <div class="group-container">
+          <div 
+            class="group-card" 
+            v-for="group in tourGroups" 
+            :key="group.groupId" 
+            @click="goToGroup(group)"
+          >
+            <div class="group-image">
+              <img :src="group.imageUrl" alt="旅游团图片" />
+            </div>
+            <div class="group-info">
+              <p class="title">{{ group.groupName }}</p>
+              <p>{{ formatDate(group.startDate) }} -- {{ formatDate(group.endDate) }}</p>
+            </div>
+            <div class="group-price">
+              <p>{{ group.groupPrice }} 元起</p>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+      <!-- 下部: 景点推荐 -->
+      <section>
+        <h2 class="section-title">景点推荐</h2>
+        <div class="content-wrapper">
+          <div v-if="scenicSpots.length" class="attraction-container">
+            <div 
+              v-for="spot in scenicSpots" 
+              :key="spot.scenicSpotId" 
+              class="attraction-card" 
+              @click="goToAttraction(spot.scenicSpotName, spot.scenicSpotIntroduction, spot.scenicSpotId)"
+            >
+              <div class="image-wrapper">
+                <img :src="`/images/${spot.scenicSpotName}.jpg`" :alt="spot.scenicSpotName" class="attraction-image" />
+              </div>
+              <div class="attraction-info">
+                <h3>{{ spot.scenicSpotName }} <span>{{ spot.scenicSpotGrade }}A</span></h3>
+                <span class="price">{{ childTicketPrices[spot.scenicSpotName] ? childTicketPrices[spot.scenicSpotName] + '元起' : '免费' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="right-space"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .section-title {

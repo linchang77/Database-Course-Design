@@ -4,7 +4,7 @@ import { ElMessage, ElMessageBox } from "element-plus"
 import type { Action } from "element-plus"
 import { Search } from "@element-plus/icons-vue"
 import axios from "axios"
-import { useUserStoreHook } from '../../store/modules/user';
+import { useUserStoreHook } from '@/store/modules/user';
 
 const userStore = useUserStoreHook();
 const userRole = userStore.roles
