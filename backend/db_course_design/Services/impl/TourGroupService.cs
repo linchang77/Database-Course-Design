@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using db_course_design.Common;
 using AutoMapper;
 using db_course_design.Profiles;
+using NuGet.Packaging;
 
 namespace db_course_design.Services.impl
 {
@@ -26,6 +27,10 @@ namespace db_course_design.Services.impl
         public string? Departure { get; set; }
 
         public string? Destination { get; set; }
+
+        public ICollection<TourItineraryRequest> TourItineraries { get; set; } = new List<TourItineraryRequest>();
+
+        public ICollection<decimal> Hotels { get; set; } = new List<decimal>();
     }
 
     public class TourItineraryRequest
@@ -186,6 +191,8 @@ namespace db_course_design.Services.impl
             try
             {
                 var record = _mapper.Map<TourGroup>(request);
+                record.TourItineraries.AddRange(request.TourItineraries.Select(i => _mapper.Map<TourItinerary>(i)));
+                record.Hotels.AddRange(_context.Hotels.Where(h => request.Hotels.Contains(h.HotelId)));
                 _context.TourGroups.Add(record);
                 await _context.SaveChangesAsync();
                 return _mapper.Map<TourGroupResponse>(record);
@@ -228,6 +235,10 @@ namespace db_course_design.Services.impl
                 target.ReturnTicketId = request.ReturnTicketId;
                 target.Departure = request.Departure;
                 target.Destination = request.Destination;
+                target.TourItineraries.Clear();
+                target.TourItineraries.AddRange(request.TourItineraries.Select(i => _mapper.Map<TourItinerary>(i)));
+                target.Hotels.Clear();
+                target.Hotels.AddRange(_context.Hotels.Where(h => request.Hotels.Contains(h.HotelId)));
                 await _context.SaveChangesAsync();
                 return _mapper.Map<TourGroupResponse>(target);
             }
