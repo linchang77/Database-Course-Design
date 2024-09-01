@@ -15,8 +15,8 @@ namespace db_course_design.Controllers
      *          Get             获取交易记录(admin&user)
      *          search/
      *              {userId}    按userId搜索交易记录(admin)
-     *          {orderId}/
-     *              Get         按订单Id搜索交易记录(admin&user)
+     *          dateRange？StartDate&EndDate
+     *              Get         按交易时间搜索交易记录(admin&user)
      *          category/
      *              {category}/
      *                  Get     按订单类别筛选交易记录(admin&user)
@@ -79,6 +79,30 @@ namespace db_course_design.Controllers
             }
             else
                 return BadRequest(new { Message = "Role must be 'admin'." });
+        }
+
+        /*--按交易时间搜索交易记录(admin&user)--*/
+        [HttpGet("{role}/{Id}/dateRange")]
+        public async Task<IActionResult> GetTransactionByTime(string role, int? Id, DateTime? StartDate, DateTime? EndDate)
+        {
+            if (role.Equals("admin"))
+            {
+                var records = await _transactionService.GetTransactionByTimeAsync(StartDate, EndDate, null);
+                if (records == null || !records.Any())
+                {
+                    return NotFound(new { Message = "No record yet." });
+                }
+                return Ok(records);
+            }
+            else
+            {
+                var records = await _transactionService.GetTransactionByTimeAsync(StartDate, EndDate, Id);
+                if (records == null || !records.Any())
+                {
+                    return NotFound(new { Message = "No record yet." });
+                }
+                return Ok(records);
+            }
         }
 
         /*--按订单类别筛选交易记录(admin&user)--*/
