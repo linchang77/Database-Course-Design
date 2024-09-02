@@ -42,14 +42,25 @@ namespace db_course_design.Services.impl
             var Records = await query.ToListAsync();
             return Records;
         }
-        /*--根据orderId筛选--
-        public async Task<List<TransactionRecord>> GetTransactionByOrderAsync(int orderId, int? userId = null)
+        /*--根据交易时间筛选--*/
+        public async Task<List<TransactionRecord>> GetTransactionByTimeAsync(DateTime? StartDate, DateTime? EndDate, int? userId)
         {
             var query = _context.TransactionRecords.AsQueryable();
-            // 管理员
+
+            // admin
             if(userId == null)
-                query = query.Where(o => o)
-        }*/
+            {
+                query = query.Where(o => o.TransactionTime >= StartDate && o.TransactionTime <= EndDate);
+            }
+            // user
+            else
+            {
+                query = query.Where(o => o.UserId == userId && o.TransactionTime >= StartDate && o.TransactionTime <= EndDate);
+            }
+
+            var Records = await query.ToListAsync();
+            return Records;
+        }
         /*--流水统计--*/
         public async Task<decimal?> GetTransactionStatsAsync(int userId, int year, int? month = null)
         {
