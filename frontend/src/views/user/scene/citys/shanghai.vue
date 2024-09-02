@@ -177,6 +177,33 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
     <main class="main-content">
       <div v-if="currentPage === 'home'">
         <img src="/images/shanghai.jpg" alt="Shanghai" class="home-image" />
+        <div class="home-description">
+          <h2>上海 - 中国的东方明珠</h2>
+          <p>
+            上海，位于中国东部沿海，是中国最大的城市和重要的经济、金融、贸易、航运中心之一。作为中国最具现代化和国际化的大都市，上海不仅有着繁华的商业区和高楼大厦，还保留着丰富的历史文化遗产。
+          </p>
+          <p>
+            上海的地标之一是外滩，这里汇聚了中西方建筑风格的历史建筑，展现了上海作为东西方交流桥梁的历史。浦东新区则以现代化的摩天大楼著称，其中包括著名的东方明珠塔、上海环球金融中心和上海中心大厦等。
+          </p>
+          <p>
+            作为国际金融中心，上海拥有中国最大的证券交易所之一，并且吸引了众多跨国公司在此设立总部。此外，上海港是世界上最繁忙的集装箱港口之一，连接着全球的贸易网络。
+          </p>
+          <p>
+            在文化方面，上海也具有独特的魅力。这里是中国近现代文化的发源地之一，孕育了许多著名的作家、艺术家和思想家。如今，上海的文化生活丰富多彩，从传统的豫园、静安寺，到现代化的上海博物馆、当代艺术馆，都能让人感受到这座城市的深厚底蕴与创新活力。
+          </p>
+          <p>总之，上海是一座兼具传统与现代、历史与未来的城市，是中外游客、商人和文化爱好者的必游之地。</p>
+        </div>
+      </div>
+      <div class="home-description">
+        <h2>上海 - 中国的东方明珠</h2>
+        <p>
+          上海，位于中国东部沿海，是中国最大的城市和重要的经济、金融、贸易、航运中心之一。
+          作为国际化大都市，上海不仅拥有现代化的高楼大厦，还保留着丰富的历史文化遗产，如外滩和豫园。
+          浦东新区的摩天大楼和繁忙的上海港也是城市的重要象征。无论是历史爱好者、文化探寻者，还是商业人士，上海都能提供丰富的体验。
+        </p>
+        <p>
+          上海的夜景也非常迷人，黄浦江两岸的灯光璀璨，成为了这座城市的标志之一。无论你是漫步在外滩，还是登上高楼俯瞰，这座城市的繁华与魅力无处不在。
+        </p>
       </div>
       <div v-if="currentPage === 'attractions'" class="attractions-grid">
         <div v-if="attractions.length === 0" class="no-results">无结果</div>
@@ -253,6 +280,16 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
   border-bottom: 1px solid #ddd;
 }
 
+.home-description h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.home-description p {
+  font-size: 18px;
+  color: #555;
+}
+
 .search-bar {
   display: flex;
   margin-bottom: 20px;
@@ -264,6 +301,16 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.home-description h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.home-description p {
+  font-size: 18px;
+  color: #555;
 }
 
 .search-bar button {
@@ -317,15 +364,10 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
 .home-image {
   width: 100%;
   height: auto;
+  border-radius: 15px;
 }
 
-.attractions-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.attraction-card {
+.attraction-image {
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
