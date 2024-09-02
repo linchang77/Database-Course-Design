@@ -128,6 +128,15 @@ onMounted(() => {
 
 <template>
   <div class="app-container">
+    <el-card header="酒店查询" class="detail-container">
+      <div class="index-container">
+        <PlaceSelector :options="cities" @updateValue="setDestination">目的地</PlaceSelector>
+        <TimeSelector @updateValue="setCheckInTime">请选择入住时间</TimeSelector>
+        <div class="date-container" :style="{ visibility: numberOfNights > 0 ? 'visible' : 'hidden' }">入住{{ numberOfNights }}晚</div>
+        <TimeSelector @updateValue="setCheckOutTime">请选择退房时间</TimeSelector>
+        <el-button type="primary" size="large" icon="search" :disabled="isSearchDisabled" @click="searchHotels">搜索</el-button>
+      </div>
+    </el-card>
     <el-carousel :interval="4000" type="card" height="200px">
       <el-carousel-item
         v-for="hotel in hotels"
@@ -141,15 +150,6 @@ onMounted(() => {
         </div>
       </el-carousel-item>
     </el-carousel>
-    <el-card header="酒店查询" class="detail-container">
-      <div class="index-container">
-        <PlaceSelector :options="cities" @updateValue="setDestination">目的地</PlaceSelector>
-        <TimeSelector @updateValue="setCheckInTime">请选择入住时间</TimeSelector>
-        <div class="date-container" :style="{ visibility: numberOfNights > 0 ? 'visible' : 'hidden' }">入住{{ numberOfNights }}晚</div>
-        <TimeSelector @updateValue="setCheckOutTime">请选择退房时间</TimeSelector>
-        <el-button type="primary" size="large" icon="search" :disabled="isSearchDisabled" @click="searchHotels">搜索</el-button>
-      </div>
-    </el-card>
   </div>
 </template>
 
@@ -195,7 +195,8 @@ onMounted(() => {
   white-space: nowrap;
 }
 .detail-container{
-  margin-top: 70px;
+  margin-top: 30px;
+  margin-bottom: 60px;
 }
 
 .el-carousel__item:nth-child(2n) {
