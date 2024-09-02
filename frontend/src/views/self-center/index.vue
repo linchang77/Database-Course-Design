@@ -386,8 +386,8 @@ onMounted(() => {
         <div class="content">
           <span v-if="!isEditing.guideGender">{{ guide.Gender }}</span>
           <input v-else v-model="guide.Gender" />
-          <button @click="toggleEdit('guideName')" v-if="!isEditing.guideGender">修改</button>
-          <button @click="saveChanges('name', guide.Gender)" v-else>保存</button>
+          <button @click="toggleEdit('guideGender')" v-if="!isEditing.guideGender">修改</button>
+          <button @click="saveChanges('gender', guide.Gender)" v-else>保存</button>
         </div>
       </div>
       <div class="info-section">
