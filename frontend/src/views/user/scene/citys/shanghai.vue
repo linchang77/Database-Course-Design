@@ -336,7 +336,7 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
 }
 
 .home-image {
-  width: 60%;
+  width: 100%;
   height: auto;
   margin-right: 20px;
 }
