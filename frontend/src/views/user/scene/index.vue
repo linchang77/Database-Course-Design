@@ -55,18 +55,15 @@ const handleChange = (index: number) => {
       <el-main>
         <div v-if="showImages">
           <el-carousel :interval="4000" type="card" height="300px" @change="handleChange">
-            <el-carousel-item
-              v-for="(image, index) in images"
-              :key="index"
-            >
+            <el-carousel-item v-for="(image, index) in images" :key="index">
               <img :src="image" alt="Scenic Spot" class="carousel-image" />
             </el-carousel-item>
           </el-carousel>
           <div v-if="showImages" class="full-image">
-          <a :href="imagesHref[currentIndex]">
-            <img :src="images[currentIndex]" alt="Full Scenic Spot" class="scene-image1" />
-          </a>
-        </div>
+            <a :href="imagesHref[currentIndex]">
+              <img :src="images[currentIndex]" alt="Full Scenic Spot" class="scene-image1" />
+            </a>
+          </div>
         </div>
         <div v-else-if="selectedItem === '1'" class="city-links">
           <router-link :to="{ path: '/scene/shanghai' }">上海</router-link>
@@ -110,7 +107,6 @@ const handleChange = (index: number) => {
           <a>奥克兰</a>
           <a>皇后镇</a>
         </div>
-
       </el-main>
     </el-container>
   </div>
@@ -130,7 +126,7 @@ const handleChange = (index: number) => {
 }
 .el-menu-item {
   cursor: pointer;
-  height: 120px;
+  height: 100px;
 }
 .city-links a {
   display: inline-block;
@@ -239,7 +235,7 @@ li {
 
 .el-aside {
   display: block;
-  height: 840px;
+  height: 700px;
   background: #2d3a4b;
   color: white;
   margin-left: 10%;

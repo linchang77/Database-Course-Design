@@ -35,7 +35,7 @@ const admin = ref({
 const isEditing = ref({
   userName: false,
   userGender: false,
-  userPhoneNumbers: false,
+  userPhoneNumbers: [],
   guideName: false,
   guideIntroduction: false,
   guideGender: false,
@@ -181,30 +181,48 @@ function toggleEditPhone(index) {
 
 async function savePhoneNumber(index) {
   const oldPhoneNumber = isEditing.value.oldPhoneNumber // 获取保存的旧号码
-  const newPhoneNumber = guide.value.PhoneNumbers[index] // 获取用户输入的新的电话号码
+  if (userType.value === "guide") {
+    const newPhoneNumber = guide.value.PhoneNumbers[index] // 获取用户输入的新的电话号码
 
-  // 检查号码是否修改或无效
-  if (!newPhoneNumber || oldPhoneNumber === newPhoneNumber) {
-    alert("号码未修改或无效")
-    toggleEditPhone(index) // 退出编辑模式
-    return
-  }
+    // 检查号码是否修改或无效
+    if (!newPhoneNumber || oldPhoneNumber === newPhoneNumber) {
+      alert("号码未修改或无效")
+      toggleEditPhone(index) // 退出编辑模式
+      return
+    }
 
-  try {
-    if (userType.value === "guide") {
+    try {
       const apiUrl = `${baseUrl}/api/Profile/guide/${guide.value.Id}/phone/modify/${oldPhoneNumber},${newPhoneNumber}`
       await axios.put(apiUrl)
-    } else if (userType.value === "user") {
+      alert("号码已修改！")
+      toggleEditPhone(index)
+      fetchUserData() // 更新数据
+      window.location.reload()
+    } catch (error) {
+      console.error("Error saving phone number:", error)
+      alert("保存失败：" + (error.response?.data?.message || error.message))
+    }
+  } else {
+    const newPhoneNumber = user.value.PhoneNumbers[index] // 获取用户输入的新的电话号码
+
+    // 检查号码是否修改或无效
+    if (!newPhoneNumber || oldPhoneNumber === newPhoneNumber) {
+      alert("号码未修改或无效")
+      toggleEditPhone(index) // 退出编辑模式
+      return
+    }
+
+    try {
       const apiUrl = `${baseUrl}/api/Profile/user/${user.value.Id}/phone/modify/${oldPhoneNumber},${newPhoneNumber}`
       await axios.put(apiUrl)
+      alert("号码已修改！")
+      toggleEditPhone(index)
+      fetchUserData() // 更新数据
+      window.location.reload()
+    } catch (error) {
+      console.error("Error saving phone number:", error)
+      alert("保存失败：" + (error.response?.data?.message || error.message))
     }
-    alert("号码已修改！")
-    toggleEditPhone(index)
-    fetchUserData() // 更新数据
-    window.location.reload()
-  } catch (error) {
-    console.error("Error saving phone number:", error)
-    alert("保存失败：" + (error.response?.data?.message || error.message))
   }
 }
 
@@ -386,8 +404,8 @@ onMounted(() => {
         <div class="content">
           <span v-if="!isEditing.guideGender">{{ guide.Gender }}</span>
           <input v-else v-model="guide.Gender" />
-          <button @click="toggleEdit('guideName')" v-if="!isEditing.guideGender">修改</button>
-          <button @click="saveChanges('name', guide.Gender)" v-else>保存</button>
+          <button @click="toggleEdit('guideGender')" v-if="!isEditing.guideGender">修改</button>
+          <button @click="saveChanges('gender', guide.Gender)" v-else>保存</button>
         </div>
       </div>
       <div class="info-section">
