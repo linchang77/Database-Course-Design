@@ -14,6 +14,12 @@ namespace db_course_design.Profiles
 
             // GuideRequest -> Guide 映射
             CreateMap<GuideRequest, Guide>();
+
+            CreateMap<GuideOrder, GuideTimeRange>()
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.ServiceBeginDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.ServiceEndDate));
+
+            CreateMap<TourGroup, GuideTimeRange>();
         }
     }
 }
