@@ -269,16 +269,6 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
   border-bottom: 1px solid #ddd;
 }
 
-.home-description h2 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
-
-.home-description p {
-  font-size: 18px;
-  color: #555;
-}
-
 .search-bar {
   display: flex;
   margin-bottom: 20px;
@@ -290,16 +280,6 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
-}
-
-.home-description h2 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
-
-.home-description p {
-  font-size: 18px;
-  color: #555;
 }
 
 .search-bar button {
@@ -350,13 +330,38 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
   padding: 20px;
 }
 
-.home-image {
-  width: 100%;
-  height: auto;
-  border-radius: 15px;
+.home-container {
+  display: flex;
+  align-items: center;
 }
 
-.attraction-image {
+.home-image {
+  width: 60%;
+  height: auto;
+  margin-right: 20px;
+}
+
+.home-description {
+  flex: 1;
+}
+
+.home-description h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.home-description p {
+  font-size: 18px;
+  color: #555;
+}
+
+.attractions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.attraction-card {
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -387,14 +392,6 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
 .attraction-info p {
   margin: 5px 0;
   color: #555;
-}
-
-.no-results {
-  grid-column: span 3;
-  text-align: center;
-  font-size: 18px;
-  color: #777;
-  margin-top: 20px;
 }
 
 .no-results {
