@@ -4,89 +4,79 @@ import axios from "axios";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { CirclePlus } from "@element-plus/icons-vue";
 
-// 导游接口
-interface Guide {
-  guideGender: string;
-  guideId: number;
-  guideIntroduction: string;
-  guideName: string;
-  guidePerformanceLevel: string;
-  guidePrice: number;
-  guideSalary: number;
-  guideSeniority: string;
-  profilePicture: string;
-  guideFree: boolean,
+// 用户接口
+interface User{
+  id: number,
+  name: string,
+  gender: string,
+  phoneNumbers: Array<number>,
+  profilePicture: string,
+  registrationTime: Date,
   password: string
 }
 
+
 defineOptions({
-  name: "Guide-management"
+  name: "Users-management"
 });
 
 const loading = ref<boolean>(false);
-const tableData = ref<Guide[]>([]);
+const tableData = ref<User[]>([]);
 
 //加载数据
 const getTableData = async () => {
   loading.value = true;
   try {
-    const response = await axios.get("https://123.60.14.84/api/Guide/all");
+    const response = await axios.get("https://123.60.14.84/api/Profile/user/all");
     console.log(response.data);
     tableData.value = response.data;
   } catch (error) {
-    ElMessage.error("获取导游数据失败");
+    ElMessage.error("获取用户数据失败");
   } finally {
     loading.value = false;
   }
 };
 
 //空白数据格式
-const DEFAULT_FORM_DATA: Partial<Guide> = {
-  guideGender: "",
-  guideId: undefined,
-  guideIntroduction: "",
-  guideName: "",
-  guidePerformanceLevel: "",
-  guidePrice: undefined,
-  guideSalary: undefined,
-  guideSeniority: "",
+const DEFAULT_FORM_DATA: Partial<User> = {
+  id: undefined,
+  name: "",
+  gender: "",
+  phoneNumbers: [],
   profilePicture: "",
-  guideFree: true,
-  password: "",
+  registrationTime: undefined,
+  password:"",
 };
 
 const option =  ref<string>("add");
 const dialogVisible = ref<boolean>(false);
-const formData = ref<Partial<Guide>>(DEFAULT_FORM_DATA);
+const formData = ref<Partial<User>>(DEFAULT_FORM_DATA);
 
 //数据限制要求
 const rules = reactive({
-  guideGender: [{ required: true, message: "导游性别不能为空", trigger: "blur" }],
-  guideId: [{ required: false, trigger: "blur" }],
-  guideIntroduction: [{ required: true, message: "导游介绍不能为空", trigger: "blur" }],
-  guideName: [{ required: true, message: "导游姓名不能为空", trigger: "blur" }],
-  guidePerformanceLevel: [{ required: true, message: "导游表现不能为空", trigger: "blur" }],
-  guidePrice: [{ required: true, message: "导游价格不能为空", trigger: "blur" }],
-  guideSalary: [{ required: true, message: "导游薪水不能为空", trigger: "blur" }],
-  guideSeniority: [{ required: true, message: "导游资历不能为空", trigger: "blur" }],
-  profilePicture: [{ required: false,  trigger: "blur" }],
-  guideFree: [{ required: false,  trigger: "blur" }],
-  password:[{ required: false,  trigger: "blur" }],
+  id:  [{ required: false, trigger: "blur" }],
+  password:[{ required: true, message: "用户密码不能为空", trigger: "blur" }],
+  name:[{ required: true, message: "用户名不能为空", trigger: "blur" }],
+  gender:[{ required: false, trigger: "blur" }],
+  phoneNumbers: [{ required: false, trigger: "blur" }],
+  profilePicture: [{ required: false, trigger: "blur" }],
+  registrationTime:[{ required: false, trigger: "blur" }],
 });
 
 //提交增加需求
 const handleAdd = () => {
   (formRef.value as any).validate((valid: boolean) => {
     if (valid) {
-      axios.post(`https://123.60.14.84/api/Guide/add`, formData.value)
+      axios.post(`https://123.60.14.84/api/Profile/user/add`, formData.value)
         .then(() => {
-          ElMessage.success("新增导游成功");
+          ElMessage.success("新增用户成功");
+          console.log(formData.value.name)
           dialogVisible.value = false;
           getTableData();
-          resetForm(); // 重置表单数据
+          resetForm(); 
         })
         .catch(() => {
-          ElMessage.error("新增导游失败");
+          ElMessage.error("新增用户失败");
         })
         .finally(() => {
           loading.value = false;
@@ -103,13 +93,13 @@ const resetForm = () => {
 };
 
 //提交删除需求
-const handleDelete = (row: Guide) => {
-  ElMessageBox.confirm(`正在删除导游：${row.guideName}，确认删除？`, "提示", {
+const handleDelete = (row: User) => {
+  ElMessageBox.confirm(`正在删除用户：${row.name}，确认删除？`, "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
   }).then(() => {
-    axios.delete(`https://123.60.14.84/api/Guide/del/${encodeURIComponent(row.guideId)}`)
+    axios.delete(`https://123.60.14.84/api/Profile/user/del/${row.id}`)
       .then(() => {
         ElMessage.success("删除成功");
         getTableData();
@@ -124,15 +114,15 @@ const handleDelete = (row: Guide) => {
 const handleUpdate = () => {
   (formRef.value as any).validate((valid: boolean) => {
     if (valid) {
-      axios.put(`https://123.60.14.84/api/Guide/update/${encodeURIComponent(Number(formData.value.guideId))}`, formData.value)
+      axios.put(`https://123.60.14.84/api/Profile/user/update/${formData.value.id}`, formData.value)
         .then(() => {
-          ElMessage.success("修改导游成功");
+          ElMessage.success("修改用户成功");
           dialogVisible.value = false;
           getTableData();
           resetForm(); 
         })
         .catch(() => {
-          ElMessage.error("修改导游失败");
+          ElMessage.error("修改用户失败");
         })
         .finally(() => {
           loading.value = false;
@@ -146,12 +136,18 @@ const handleUpdate = () => {
 //进入添加页面
 const toAdd = () => {
   resetForm();
-  option.value = "add";
+  const nowTime = new Date();
+  // 更正时区
+  nowTime.setHours(nowTime.getHours() + 8);
+  const formattedTime = nowTime.toISOString().slice(0, 19);
+  // 确保 `registrationTime` 自动设置
+  formData.value = Object.assign({}, formData.value, { registrationTime: formattedTime });
   dialogVisible.value = true;
 };
 
+
 //进入更新页面
-const toUpdate = (row: Guide) => {
+const toUpdate = (row: User) => {
   resetForm();
   dialogVisible.value = true;
   formData.value = { ...DEFAULT_FORM_DATA, ...row };
@@ -167,20 +163,18 @@ const formRef = ref();
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" :icon="CirclePlus" @click="toAdd()">新增导游</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="toAdd()">新增用户</el-button>
         </div>
       </div>
       <div class="table-wrapper">
         <el-table :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="guideGender" label="导游性别" align="center" />
-          <el-table-column prop="guideId" label="导游Id" align="center"/>
-          <el-table-column prop="guideIntroduction" label="导游介绍" align="center" />
-          <el-table-column prop="guideName" label="导游姓名" align="center" />
-          <el-table-column prop="guidePerformanceLevel" label="导游表现" align="center"/>
-          <el-table-column prop="guidePrice" label="导游价格" align="center" />
-          <el-table-column prop="guideSalary" label="导游薪水介绍" align="center" />
-          <el-table-column prop="guideSeniority" label="导游资历介绍" align="center" />
+          <el-table-column prop="id" label="用户id" align="center" />
+          <el-table-column prop="name" label="用户姓名" align="center"/>
+          <el-table-column prop="gender" label="用户性别" align="center" />
+          <el-table-column prop="phoneNumbers" label="用户电话" align="center" />
+          <el-table-column prop="profilePicture" label="用户头像" align="center"/>
+          <el-table-column prop="registrationTime" label="用户注册时间" align="center" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button type="primary" text bg size="small" @click="toUpdate(scope.row)">修改</el-button>
@@ -194,43 +188,31 @@ const formRef = ref();
     <!-- 表单 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="option === 'add' ? '新增导游' : '修改导游'"
+      :title="option === 'add' ? '新增用户' : '修改用户'"
       @closed="resetForm"
       width="30%"
     >
       <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px" label-position="left">
-        <el-form-item prop="guideId" label="导游Id">
-          <el-input v-model="formData.guideId" placeholder="" :disabled=true />
+        <el-form-item prop="id" label="用户id">
+          <el-input v-model="formData.id" placeholder="" :disabled=true />
         </el-form-item>
-        <el-form-item prop="guideGender" label="导游性别">
-          <el-input v-model="formData.guideGender" placeholder="请输入导游性别"  />
+        <el-form-item prop="name" label="用户姓名">
+          <el-input v-model="formData.name" placeholder="请输入用户姓名"  />
         </el-form-item>
-        <el-form-item prop="guideIntroduction" label="导游介绍">
-          <el-input v-model="formData.guideIntroduction" placeholder="请输入导游介绍" />
+        <el-form-item prop="password" label="用户密码">
+          <el-input v-model="formData.password" placeholder="请输入用户密码" />
         </el-form-item>
-        <el-form-item prop="guideName" label="导游姓名">
-          <el-input v-model="formData.guideName" placeholder="请输入导游姓名" />
+        <el-form-item prop="gender" label="用户性别">
+          <el-input v-model="formData.gender" placeholder="请输入用户性别" />
         </el-form-item>
-        <el-form-item prop="guidePerformanceLevel" label="导游表现">
-          <el-input v-model="formData.guidePerformanceLevel" placeholder="请输入导游表现" />
+        <el-form-item prop="phoneNumbers" label="用户电话">
+          <el-input v-model="formData.phoneNumbers" placeholder="请输入用户电话" />
         </el-form-item>
-        <el-form-item prop="guidePrice" label="导游价格">
-          <el-input v-model="formData.guidePrice" placeholder="请输入导游价格" />
+        <el-form-item prop="profilePicture" label="用户头像">
+          <el-input v-model="formData.profilePicture" placeholder="请输入用户头像" />
         </el-form-item>
-        <el-form-item prop="guideSalary" label="导游薪水">
-          <el-input v-model="formData.guideSalary" placeholder="请输入导游薪水" />
-        </el-form-item>
-        <el-form-item prop="guideSeniority" label="导游资历">
-          <el-input v-model="formData.guideSeniority" placeholder="请输入导游资历" />
-        </el-form-item>
-        <el-form-item prop="profilePicture" label="导游图片链接">
-          <el-input v-model="formData.profilePicture" placeholder="请输入导游图片链接" />
-        </el-form-item>
-        <el-form-item prop="guideFree" label="导游是否空闲">
-          <el-input v-model="formData.guideFree" placeholder="请输入导游是否空闲" />
-        </el-form-item>
-        <el-form-item prop="password" label="导游密码">
-          <el-input v-model="formData.password" placeholder="请输入导游密码" />
+        <el-form-item prop="registrationTime" label="用户注册时间">
+          <el-input v-model="formData.registrationTime" placeholder="" :disabled=true />
         </el-form-item>
       </el-form>
       <template #footer>
