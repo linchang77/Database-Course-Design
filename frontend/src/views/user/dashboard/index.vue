@@ -179,11 +179,10 @@ const imageMap = {
 }
 
 .attraction-container {
+  margin-left: 40px;
+  margin-top: 10px;
   display: flex;
-  justify-content: space-between;
-  margin-left: 5%;
   gap: 20px;
-  width: 100%;
 }
 
 .attraction-card {
@@ -194,7 +193,7 @@ const imageMap = {
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   flex: 1;
-  max-width: 33%;
+  max-width: 30%;
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.2s;
@@ -224,13 +223,13 @@ const imageMap = {
 }
 
 .attraction-info h3 {
-  font-size: 16px;
+  font-size: 21px;
   margin: 0;
   text-align: left;
 }
 
 .attraction-info span {
-  font-size: 14px;
+  font-size: 18px;
   color: #555;
 }
 
@@ -243,7 +242,7 @@ const imageMap = {
 }
 
 .right-space {
-  width: 10%;
+  width: 0%;
 }
 
 /* 旅游团样式 */
@@ -317,6 +316,6 @@ const imageMap = {
 .title1 {
   font-size: 2.5em;
   font-weight: bold;
-  color: #000203;
+  color: #3498db;
 }
 </style>
