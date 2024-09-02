@@ -178,6 +178,17 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
       <div v-if="currentPage === 'home'">
         <img src="/images/shanghai.jpg" alt="Shanghai" class="home-image" />
       </div>
+      <div class="home-description">
+        <h2>上海 - 中国的东方明珠</h2>
+        <p>
+          上海，位于中国东部沿海，是中国最大的城市和重要的经济、金融、贸易、航运中心之一。
+          作为国际化大都市，上海不仅拥有现代化的高楼大厦，还保留着丰富的历史文化遗产，如外滩和豫园。
+          浦东新区的摩天大楼和繁忙的上海港也是城市的重要象征。无论是历史爱好者、文化探寻者，还是商业人士，上海都能提供丰富的体验。
+        </p>
+        <p>
+          上海的夜景也非常迷人，黄浦江两岸的灯光璀璨，成为了这座城市的标志之一。无论你是漫步在外滩，还是登上高楼俯瞰，这座城市的繁华与魅力无处不在。
+        </p>
+      </div>
       <div v-if="currentPage === 'attractions'" class="attractions-grid">
         <div v-if="attractions.length === 0" class="no-results">无结果</div>
         <div
@@ -251,6 +262,16 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
   padding: 20px;
   background-color: #f9f9f9;
   border-bottom: 1px solid #ddd;
+}
+
+.home-description h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.home-description p {
+  font-size: 18px;
+  color: #555;
 }
 
 .search-bar {

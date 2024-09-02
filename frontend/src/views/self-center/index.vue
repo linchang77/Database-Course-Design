@@ -98,7 +98,7 @@ async function updateUserData(field, value) {
 
     if (userType.value === "user") {
       const userId = user.value.Id
-      apiUrl = `${baseUrl}/api/Profile/guide/${userId}/${field}/${value}`
+      apiUrl = `${baseUrl}/api/Profile/user/${userId}/${field}/${value}`
     } else if (userType.value === "guide") {
       const guideId = guide.value.Id
       apiUrl = `${baseUrl}/api/Profile/guide/${guideId}/${field}/${value}`
@@ -127,7 +127,7 @@ async function addPhoneNumber() {
       const apiUrl = `${baseUrl}/api/Profile/guide/${guide.value.Id}/phone/add/${newPhoneNumber.value}`
       await axios.post(apiUrl)
     } else if (userType.value === "user") {
-      const apiUrl = `${baseUrl}/api/Profile/guide/${user.value.Id}/phone/add/${newPhoneNumber.value}`
+      const apiUrl = `${baseUrl}/api/Profile/user/${user.value.Id}/phone/add/${newPhoneNumber.value}`
       await axios.post(apiUrl)
     }
     fetchUserData() // 刷新数据
@@ -146,7 +146,7 @@ async function deletePhoneNumber(oldNumber) {
       const apiUrl = `${baseUrl}/api/Profile/guide/${guide.value.Id}/phone/delete/${oldNumber}`
       await axios.delete(apiUrl)
     } else if (userType.value === "user") {
-      const apiUrl = `${baseUrl}/api/Profile/guide/${user.value.Id}/phone/delete/${oldNumber}`
+      const apiUrl = `${baseUrl}/api/Profile/user/${user.value.Id}/phone/delete/${oldNumber}`
       await axios.delete(apiUrl)
     }
     alert("电话号码删除成功！")
@@ -159,14 +159,24 @@ async function deletePhoneNumber(oldNumber) {
 }
 
 function toggleEditPhone(index) {
-  if (!isEditing.value.guidePhoneNumbers[index]) {
-    // 开始编辑时，保存当前的旧号码
-    isEditing.value.oldPhoneNumber = guide.value.PhoneNumbers[index]
+  if (userType.value === "guide") {
+    if (!isEditing.value.guidePhoneNumbers[index]) {
+      // 开始编辑时，保存当前的旧号码
+      isEditing.value.oldPhoneNumber = guide.value.PhoneNumbers[index]
+    } else {
+      // 停止编辑时，清除旧号码
+      isEditing.value.oldPhoneNumber = null
+    }
+    isEditing.value.guidePhoneNumbers[index] = !isEditing.value.guidePhoneNumbers[index]
   } else {
-    // 停止编辑时，清除旧号码
-    isEditing.value.oldPhoneNumber = null
+    if (!isEditing.value.userPhoneNumbers[index]) {
+      isEditing.value.oldPhoneNumber = user.value.PhoneNumbers[index]
+    } else {
+      // 停止编辑时，清除旧号码
+      isEditing.value.oldPhoneNumber = null
+    }
+    isEditing.value.userPhoneNumbers[index] = !isEditing.value.userPhoneNumbers[index]
   }
-  isEditing.value.guidePhoneNumbers[index] = !isEditing.value.guidePhoneNumbers[index]
 }
 
 async function savePhoneNumber(index) {
@@ -185,7 +195,7 @@ async function savePhoneNumber(index) {
       const apiUrl = `${baseUrl}/api/Profile/guide/${guide.value.Id}/phone/modify/${oldPhoneNumber},${newPhoneNumber}`
       await axios.put(apiUrl)
     } else if (userType.value === "user") {
-      const apiUrl = `${baseUrl}/api/Profile/guide/${user.value.Id}/phone/modify/${oldPhoneNumber},${newPhoneNumber}`
+      const apiUrl = `${baseUrl}/api/Profile/user/${user.value.Id}/phone/modify/${oldPhoneNumber},${newPhoneNumber}`
       await axios.put(apiUrl)
     }
     alert("号码已修改！")
@@ -307,11 +317,6 @@ onMounted(() => {
 <template>
   <div class="profile-container">
     <h1 class="title">用户信息</h1>
-    <img
-      :src="userType === 'user' ? user.ProfilePicture : guide.ProfilePicture"
-      alt="Profile Picture"
-      class="profile-picture"
-    />
 
     <div v-if="userType === 'user'">
       <div class="info-section">
@@ -484,15 +489,6 @@ onMounted(() => {
   color: rgb(0, 157, 255);
 }
 
-.profile-picture {
-  display: block;
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
-  border: 2px solid rgb(0, 157, 255);
-  margin: 0 auto 20px;
-}
-
 .info-section {
   display: flex;
   margin-bottom: 15px;
@@ -561,4 +557,3 @@ button {
   justify-content: flex-end; /* 确保按钮靠右对齐 */
 }
 </style>
-
