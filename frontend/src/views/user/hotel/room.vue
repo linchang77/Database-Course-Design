@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import axios from 'axios';
 //酒店接口
 interface Hotel {
   hotelId: number;
@@ -43,12 +44,43 @@ const viewOrder = (selectedRoomType: string, selectedHotelId: number) => {
   });
 }
 
-onMounted(() => {
+//将时间戳转换
+const startDate = computed(() => {
+  return route.query.checkInTime ? new Date(parseInt(route.query.checkInTime as string)).toISOString() : null;
+});
+const endDate = computed(() => {
+  return route.query.checkOutTime ? new Date(parseInt(route.query.checkOutTime as string)).toISOString() : null;
+});
+
+
+
+const fetchHotelRooms = async (hotelRoom: HotelRoom) => {
+  try {
+    const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(hotelRoom.hotelId)}/detail`,{
+      params:{
+        roomType: hotelRoom.roomType,
+        StartDate: startDate.value,
+        EndDate: endDate.value
+      }
+    });
+    hotelRoom.roomLeft = response.data.roomLeft;
+  } catch (error) {
+    console.error(`Error fetching rooms for hotel`);
+  }
+}
+
+onMounted(async() => {
   const hotelQuery = route.query.hotel as string;
   const hotelRoomsQuery = route.query.hotelRoom as string;
 
   hotel.value = JSON.parse(decodeURIComponent(hotelQuery));
   hotelRooms.value = JSON.parse(decodeURIComponent(hotelRoomsQuery));
+  console.log("rooms",hotelRooms.value)
+
+  hotelRooms.value.forEach(async (hotelRoom) => {
+    await fetchHotelRooms(hotelRoom);
+  });
+
 })
 
 </script>

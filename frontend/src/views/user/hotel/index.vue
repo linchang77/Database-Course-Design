@@ -16,8 +16,16 @@ interface Hotel {
   imageUrl: string; 
 }
 
-//酒店数组
+//定义酒店房间接口
+interface HotelRoom{
+  hotelId: number;
+  roomType: string;
+  roomLeft: number;
+  roomPrice: number; 
+}
+
 const hotels = ref<Hotel[]>([]);
+const hotelRooms = ref<HotelRoom[]>([]);
 //城市键值对，用于地点选择器
 const cities = ref<Array<{ value: string; label: string }>>([]);
 
@@ -55,13 +63,15 @@ const fetchHotels = async (): Promise<Hotel[]> => {
 
 //查找酒店
 const searchHotels = () => {
+  const checkInTimestamp = checkInTime.value ? new Date(checkInTime.value).getTime() : null;
+  const checkOutTimestamp = checkOutTime.value ? new Date(checkOutTime.value).getTime() : null;
   //传递参数
   router.push({
     name: 'Detail',
     query: {
       destination: encodeURIComponent(destination.value),
-      checkInTime: checkInTime.value?.getTime(),
-      checkOutTime: checkOutTime.value?.getTime(),
+      checkInTime: checkInTimestamp,
+      checkOutTime: checkOutTimestamp
     },
   });
 };
@@ -69,7 +79,9 @@ const searchHotels = () => {
 //计算入住天数
 const numberOfNights = computed(() => {
   if (checkInTime.value && checkOutTime.value) {
-    const timeDifference = checkOutTime.value.getTime() - checkInTime.value.getTime();
+    const checkInDate = new Date(checkInTime.value);
+    const checkOutDate = new Date(checkOutTime.value);
+    const timeDifference = checkOutDate.getTime() - checkInDate.getTime();
     return timeDifference > 0 ? Math.ceil(timeDifference / (1000 * 60 * 60 * 24)) : 0;
   }
   return 0;
@@ -79,6 +91,35 @@ const numberOfNights = computed(() => {
 const isSearchDisabled = computed(() => {
   return !destination.value || !checkInTime.value || !checkOutTime.value;
 });
+
+//匹配相关酒店房间
+const fetchHotelRooms = async (hotelId: number): Promise<HotelRoom[]> => {
+  try {
+    const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(hotelId)}/type`);
+    hotelRooms.value = response.data
+    console.log("fetch room", hotelRooms.value);
+    return response.data; 
+  } catch (error) {
+    console.error(`Error fetching rooms for hotelId ${hotelId}:`, error);
+    return [];
+  }
+}
+
+//传递参数
+const viewDetails = async (selectedHotelId: number) => {
+  const filteredHotel = hotels.value.filter(hotel => hotel.hotelId === selectedHotelId);
+  await fetchHotelRooms(selectedHotelId);
+  const filteredHotelRooms = hotelRooms.value.filter(room => room.hotelId === selectedHotelId);
+  console.log("send",hotelRooms.value)
+  router.push({
+    name: 'Room', 
+    query: {
+      hotel: encodeURIComponent(JSON.stringify(filteredHotel)),
+      hotelRoom:encodeURIComponent(JSON.stringify(filteredHotelRooms)),
+    } 
+  });
+
+}
 
 onMounted(() => {
   fetchHotels();
@@ -92,6 +133,7 @@ onMounted(() => {
         v-for="hotel in hotels"
         :key="hotel.hotelId"
         class="carousel-item"
+        @click="viewDetails(hotel.hotelId)"
       >
         <div class="image-container">
           <img :src="`/images/hotel_${(hotel.hotelId)%9}.jpg`" alt="Hotel Image" />

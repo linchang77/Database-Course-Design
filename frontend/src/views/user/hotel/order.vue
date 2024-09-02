@@ -26,10 +26,10 @@ const selectedNumber = ref(0);
 
 //将时间戳进行转换
 const checkInTime = computed(() => {
-  return route.query.checkInTime ? new Date(parseInt(route.query.checkInTime as string)).toISOString() : null;
+  return route.query.checkInTime ? new Date(parseInt(route.query.checkInTime as string)).toLocaleString() : '';
 });
 const checkOutTime = computed(() => {
-  return route.query.checkOutTime ? new Date(parseInt(route.query.checkOutTime as string)).toISOString() : null;
+  return route.query.checkOutTime ? new Date(parseInt(route.query.checkOutTime as string)).toLocaleString() : '';
 });
 
 const selectedHotelId = route.query.orderHotelId
@@ -37,26 +37,47 @@ const selectedRoomType = route.query.orderRoomType
 
 const hotel = ref<Hotel[]>([]);
 const hotelRooms = ref<HotelRoom[]>([]);
-const isSubmitDisabled = computed(() => selectedNumber.value === 0);
+const checkInDate = ref<string | null>(null);
+const checkOutDate = ref<string | null>(null);
+const fromIndexPage =  ref<boolean>(false);
+
+//修改显示时间格式
+const formattedCheckInDate = computed(() => {
+  return checkInDate.value ? new Date(checkInDate.value).toLocaleString().split(' ')[0] : '';
+});
+const formattedCheckOutDate = computed(() => {
+  return checkOutDate.value ? new Date(checkOutDate.value).toLocaleString().split(' ')[0] : '';
+});
+
+const handleChange = () => {
+  if (checkInDate.value) {
+    checkInDate.value = new Date(checkInDate.value).toLocaleString(); 
+  }
+  if (checkOutDate.value) {
+    checkOutDate.value = new Date(checkOutDate.value).toLocaleString();
+  }
+};
 
 //提交订单逻辑
 const handleSubmit = async() => {
-  console.log(Number(localStorage.getItem("id")))
-  console.log(selectedHotelId)
-  console.log(checkInTime.value)
-  console.log(checkOutTime.value)
-  console.log(selectedRoomType)
+  if (!checkInDate.value || !checkOutDate.value) {
+    alert("请确保入住时间和退房时间都已填写");
+    return;
+  }
   for (let i = 0; i < selectedNumber.value; i++) {
+    console.log("inDate",checkInDate.value)
+    console.log("outDate",checkOutDate.value)
+    console.log("inTime",checkInTime.value)
+    console.log("outTime",checkOutTime.value)
     try {
       const response = await axios.post(`https://123.60.14.84/api/Hotel/create`, {
         userId: Number(localStorage.getItem("id")),
         hotelId: Number(selectedHotelId),
-        checkInDate: checkInTime.value,
-        checkOutDate: checkOutTime.value,
+        checkInDate: checkInDate.value,
+        checkOutDate: checkOutDate.value,
         roomType: selectedRoomType,
       })
-      alert("购买成功!")
-      console.log("Purchase successful:", response.data)
+      alert(`购买成功! ${JSON.stringify(response.data.message)}`)
     } catch (error) {
       alert("购买失败，请再尝试")
       console.error("Failed to complete purchase:", error)
@@ -64,15 +85,26 @@ const handleSubmit = async() => {
   }
 };
 
+//判断是否禁用
+const isSubmitDisabled = computed(() => {
+  return selectedNumber.value === 0 || !checkInDate.value || !checkOutDate.value;
+});
+
 onMounted(() => {
   const hotelQuery = route.query.hotel as string;
   const hotelRoomsQuery = route.query.hotelRoom as string;
 
+  // if(!checkInDate.value && !checkOutDate.value){
+  //   fromIndexPage.value = true;
+  // }
+
   hotel.value = JSON.parse(decodeURIComponent(hotelQuery));
   hotelRooms.value = JSON.parse(decodeURIComponent(hotelRoomsQuery));
 
-  console.log("hotel", hotel.value)
-  console.log("room",hotelRooms.value)
+  // date是提交的数据，time是原始的时间数据
+  checkInDate.value = checkInTime.value;
+  checkOutDate.value = checkOutTime.value;
+  
 });
 </script>
 
@@ -92,6 +124,28 @@ onMounted(() => {
               </div>
             </div>
             <div class="info-2">
+              <div class="date-selector">
+                <template v-if="checkInDate && checkOutDate && fromIndexPage === true">
+                  <p>入住时间：{{ formattedCheckInDate }}</p>
+                  <p>退房时间：{{ formattedCheckOutDate }}</p>
+                </template>
+                <template v-else>
+                  <p>入住时间：</p>
+                  <el-date-picker 
+                    v-model="checkInDate" 
+                    type="datetime-local" 
+                    placeholder="选择入住时间" 
+                    @update = "handleChange"
+                  />
+                  <p>退房时间：</p>
+                  <el-date-picker 
+                    v-model="checkOutDate" 
+                    type="datetime-local" 
+                    placeholder="选择退房时间" 
+                     @update = "handleChange"
+                  />
+                </template>
+              </div>
               <div class="quantity-selector">
                 <el-input-number 
                   v-model="selectedNumber" 
@@ -122,6 +176,9 @@ onMounted(() => {
   max-width: 600px;
   margin: 0 auto;
 }
+.hotel-container h2{
+  margin-left: 20px;
+}
 .info-container {
   margin-top: 10px;
   display: flex;
@@ -131,10 +188,12 @@ onMounted(() => {
 
 .info-1 {
   flex: 1;
+  margin:0 10px
 }
 
 .info-2 {
   text-align: center;
+  margin:0 10px
 }
 
 
@@ -163,8 +222,17 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.quantity-selector{
+  margin: 10px 0;
+}
+
 .quantity-selector input {
   width: 80px;
   margin-right: 10px;
 }
+
+.date-selector div{
+  margin: 10px 0;
+}
+
 </style>

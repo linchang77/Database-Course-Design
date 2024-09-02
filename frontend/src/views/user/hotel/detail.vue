@@ -47,18 +47,6 @@ const destination = decodeURIComponent(route.query.destination as string);
 const checkInTime = route.query.checkInTime;
 const checkOutTime = route.query.checkOutTime;
 
-//将时间戳转换
-const startDate = computed(() => {
-  return route.query.checkInTime ? new Date(parseInt(route.query.checkInTime as string)).toISOString() : null;
-});
-const endDate = computed(() => {
-  return route.query.checkOutTime ? new Date(parseInt(route.query.checkOutTime as string)).toISOString() : null;
-});
-
-console.log("start",startDate.value)
-console.log("end",endDate.value)
-
-
 //匹配相关酒店
 const fetchHotels = async (): Promise<Hotel[]> => {
   try {
@@ -75,13 +63,6 @@ const fetchHotels = async (): Promise<Hotel[]> => {
 const fetchHotelRooms = async (hotelId: number): Promise<HotelRoom[]> => {
   try {
     const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(hotelId)}/type`);
-    // const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(hotelId)}/detail`,{
-    //   params:{
-    //     roomType: "特色休闲房",
-    //     StartDate: startDate,
-    //     EndDate: endDate
-    //   }
-    // });
     hotelRooms.value = response.data
     console.log(response.data);
     return response.data; 
