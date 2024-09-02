@@ -4,7 +4,7 @@ import { ref, onMounted } from "vue"
 import { useRoute } from "vue-router"
 
 defineOptions({
-  name: "Tickets"
+  name: "SceneTickets"
 })
 
 const route = useRoute()

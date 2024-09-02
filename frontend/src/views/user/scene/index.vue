@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { ElCarousel, ElCarouselItem } from 'element-plus';
 import cairo from "@/assets/scene/cairo.jpg";
 import newyork from "@/assets/scene/newyork.jpg";
@@ -13,16 +14,21 @@ const selectedItem = ref("");
 const isAsideVisible = ref(false);
 const showImages = ref(true);
 const currentIndex = ref(0);
-const images = [shanghai, cairo, newyork, paris, sydney, tokyo, riodejaneiro];
-const imagesHref = [
-  "http://localhost:3333/#/scene/shanghai",
-  "http://localhost:3333/#/scene/cairo",
-  "http://localhost:3333/#/scene/newyork",
-  "http://localhost:3333/#/scene/paris",
-  "http://localhost:3333/#/scene/sydney",
-  "http://localhost:3333/#/scene/tokyo",
-  "http://localhost:3333/#/scene/riodejaneiro"
+const editedCities = ref<string[]>([]);
+
+const supportedCities = [
+  { lower: 'shanghai', upper: '上海' },
+  { lower: 'cairo', upper: '开罗' },
+  { lower: 'newyork', upper: '纽约' },
+  { lower: 'paris', upper: '巴黎' },
+  { lower: 'sydney', upper: '悉尼' },
+  { lower: 'tokyo', upper: '东京' },
+  { lower: 'riodejaneiro', upper: '里约热内卢' }
 ];
+
+const images = [shanghai, cairo, newyork, paris, sydney, tokyo, riodejaneiro];
+
+const router = useRouter();
 
 const handleSelect = (key: string) => {
   selectedItem.value = selectedItem.value === key ? "" : key;
@@ -33,7 +39,21 @@ const handleSelect = (key: string) => {
 const handleChange = (index: number) => {
   currentIndex.value = index;
 };
+
+// 添加点击城市跳转逻辑
+const handleCityClick = (cityLower: string) => {
+  const city = supportedCities.find(c => c.lower === cityLower);
+  if (city) {
+    router.push({ path: '/scene/city', query: { city: city.lower } });
+  }
+};
+
+// 确保所有支持的城市都是已编辑的城市
+onMounted(() => {
+  editedCities.value = supportedCities.map(city => city.upper);
+});
 </script>
+
 <template>
   <div class="no-scroll">
     <div>
@@ -56,53 +76,53 @@ const handleChange = (index: number) => {
         <div v-if="showImages">
           <el-carousel :interval="4000" type="card" height="300px" @change="handleChange">
             <el-carousel-item v-for="(image, index) in images" :key="index">
-              <img :src="image" alt="Scenic Spot" class="carousel-image" />
+              <img @click="handleCityClick(supportedCities[index].lower)" :src="image" alt="Scenic Spot" class="carousel-image" />
             </el-carousel-item>
           </el-carousel>
           <div v-if="showImages" class="full-image">
-            <a :href="imagesHref[currentIndex]">
+            <a @click.prevent="handleCityClick(supportedCities[currentIndex].lower)">
               <img :src="images[currentIndex]" alt="Full Scenic Spot" class="scene-image1" />
             </a>
           </div>
         </div>
         <div v-else-if="selectedItem === '1'" class="city-links">
-          <router-link :to="{ path: '/scene/shanghai' }">上海</router-link>
+          <a v-for="city in supportedCities.filter(city => city.lower === 'shanghai')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
           <a>北京</a>
           <a>天津</a>
           <a>广州</a>
         </div>
         <div v-else-if="selectedItem === '2'" class="city-links">
-          <router-link :to="{ path: '/scene/tokyo' }">东京</router-link>
+          <a v-for="city in supportedCities.filter(city => city.lower === 'tokyo')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
           <a>曼谷</a>
           <a>新加坡</a>
           <a>迪拜</a>
         </div>
         <div v-else-if="selectedItem === '3'" class="city-links">
-          <router-link :to="{ path: '/scene/cairo' }">开罗</router-link>
+          <a v-for="city in supportedCities.filter(city => city.lower === 'cairo')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
           <a>开普敦</a>
           <a>约翰内斯堡</a>
           <a>马拉喀什</a>
         </div>
         <div v-else-if="selectedItem === '4'" class="city-links">
-          <router-link :to="{ path: '/scene/paris' }">巴黎</router-link>
+          <a v-for="city in supportedCities.filter(city => city.lower === 'paris')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
           <a>伦敦</a>
           <a>威尼斯</a>
           <a>罗马</a>
         </div>
         <div v-else-if="selectedItem === '5'" class="city-links">
-          <router-link :to="{ path: '/scene/newyork' }">纽约</router-link>
+          <a v-for="city in supportedCities.filter(city => city.lower === 'newyork')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
           <a>多伦多</a>
           <a>洛杉矶</a>
           <a>温哥华</a>
         </div>
         <div v-else-if="selectedItem === '6'" class="city-links">
-          <router-link :to="{ path: '/scene/riodejaneiro' }">里约热内卢</router-link>
+          <a v-for="city in supportedCities.filter(city => city.lower === 'riodejaneiro')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
           <a>圣保罗</a>
           <a>基多</a>
           <a>圣地亚哥</a>
         </div>
         <div v-else-if="selectedItem === '7'" class="city-links">
-          <router-link :to="{ path: '/scene/sydney' }">悉尼</router-link>
+          <a v-for="city in supportedCities.filter(city => city.lower === 'sydney')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
           <a>墨尔本</a>
           <a>奥克兰</a>
           <a>皇后镇</a>
@@ -111,6 +131,7 @@ const handleChange = (index: number) => {
     </el-container>
   </div>
 </template>
+
 
 <style scoped>
 .el-container {

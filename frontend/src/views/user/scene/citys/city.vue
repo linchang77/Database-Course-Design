@@ -1,138 +1,160 @@
 <script lang="ts" setup>
-import { ref } from "vue"
-import axios from "axios"
-import { useRouter } from "vue-router"
+import { ref, onMounted } from "vue";
+import axios from "axios";
+import { useRouter, useRoute } from "vue-router";
 
 defineOptions({
-  name: "Shanghai"
-})
+  name: "City"
+});
 
 // 定义景点对象的接口
 interface Attraction {
-  scenicSpotId: string
-  scenicSpotName: string
-  scenicSpotGrade: string
-  scenicSpotIntroduction: string
-  scenicSpotLocation: string
+  scenicSpotId: string;
+  scenicSpotName: string;
+  scenicSpotGrade: string;
+  scenicSpotIntroduction: string;
+  scenicSpotLocation: string;
 }
 
-const router = useRouter()
-const currentPage = ref("home")
-const attractions = ref<Attraction[]>([])
+// 定义支持的城市名（大写和小写）
+const supportedCities = [
+  { chinese:"上海", upper: "SHANGHAI", lower: "shanghai" },
+  { chinese:"开罗", upper: "CAIRO", lower: "cairo" },
+  { chinese:"纽约",  upper: "NEWYORK", lower: "newyork" },
+  { chinese:"巴黎",  upper: "PARIS", lower: "paris" },
+  { chinese:"悉尼",  upper: "SYDNEY", lower: "sydney" },
+  { chinese:"东京",  upper: "TOKYO", lower: "tokyo" },
+  { chinese:"里约热内卢",  upper: "RIODEJANEIRO", lower: "riodejaneiro" }
+];
 
-const searchQuery = ref("")
-const starFilter = ref("全部")
-const distanceFilter = ref("全部")
+const route = useRoute();
+const router = useRouter();
+const currentPage = ref("home");
+const attractions = ref<Attraction[]>([]);
+
+const searchQuery = ref("");
+const starFilter = ref("全部");
+const distanceFilter = ref("全部");
 
 const navigateTo = (page: string) => {
-  currentPage.value = page
-}
+  currentPage.value = page;
+};
 
-const starOptions = ["全部", "1", "2", "3", "4", "5"]
-const distanceOptions = ["全部", "2km内", "2-5km", "5-20km", "20km以上"]
+// 根据传入参数获取城市名
+const city = ref(supportedCities[0]); // 默认城市
+onMounted(() => {
+  const cityName = route.query.city as string;
+  const matchedCity = supportedCities.find(c => c.lower === cityName);
+  if (matchedCity) {
+    city.value = matchedCity;
+  }
+});
+
+const starOptions = ["全部", "1", "2", "3", "4", "5"];
+const distanceOptions = ["全部", "2km内", "2-5km", "5-20km", "20km以上"];
 
 const fetchAttractions = () => {
   axios
-    .get<Attraction[]>(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent("上海")}`)
-    .then((response) => {
-      let filteredAttractions = response.data
+    .get<Attraction[]>(`https://123.60.14.84/api/ScenicSpot/${encodeURIComponent(city.value.chinese)}`)
+    .then(response => {
+      let filteredAttractions = response.data;
 
       // 星级筛选
       if (starFilter.value !== "全部") {
         filteredAttractions = filteredAttractions.filter(
-          (attraction) => attraction.scenicSpotGrade === starFilter.value
-        )
+          attraction => attraction.scenicSpotGrade === starFilter.value
+        );
       }
 
       // 距离筛选
       if (distanceFilter.value !== "全部") {
-        filteredAttractions = filteredAttractions.filter((attraction) => {
-          const distance = parseFloat(attraction.scenicSpotLocation)
+        filteredAttractions = filteredAttractions.filter(attraction => {
+          const distance = parseFloat(attraction.scenicSpotLocation);
           switch (distanceFilter.value) {
             case "2km内":
-              return distance <= 2
+              return distance <= 2;
             case "2-5km":
-              return distance > 2 && distance <= 5
+              return distance > 2 && distance <= 5;
             case "5-20km":
-              return distance > 5 && distance <= 20
+              return distance > 5 && distance <= 20;
             case "20km以上":
-              return distance > 20
+              return distance > 20;
             default:
-              return true
+              return true;
           }
-        })
+        });
       }
 
-      attractions.value = filteredAttractions
+      attractions.value = filteredAttractions;
     })
-    .catch((error) => {
+    .catch(error => {
       if (error.response && error.response.status === 404) {
-        attractions.value = []
+        attractions.value = [];
       } else {
-        console.error(error)
+        console.error(error);
       }
-    })
-}
+    });
+};
 
-fetchAttractions()
+fetchAttractions();
 
 const searchAttraction = () => {
   if (searchQuery.value) {
     if (!isNaN(Number(searchQuery.value))) {
       axios
         .get<Attraction>(`https://123.60.14.84/api/ScenicSpot/id/${searchQuery.value}`)
-        .then((response) => {
-          attractions.value = response.data ? [response.data] : []
+        .then(response => {
+          attractions.value = response.data ? [response.data] : [];
         })
-        .catch((error) => {
+        .catch(error => {
           if (error.response && error.response.status === 404) {
-            attractions.value = []
+            attractions.value = [];
           } else {
-            console.error(error)
+            console.error(error);
           }
-        })
+        });
     } else {
       axios
         .get<Attraction[]>(`https://123.60.14.84/api/ScenicSpot/name/${encodeURIComponent(searchQuery.value)}`)
-        .then((response) => {
-          attractions.value = response.data ? response.data : []
+        .then(response => {
+          attractions.value = response.data ? response.data : [];
         })
-        .catch((error) => {
+        .catch(error => {
           if (error.response && error.response.status === 404) {
-            attractions.value = []
+            attractions.value = [];
           } else {
-            console.error(error)
+            console.error(error);
           }
-        })
+        });
     }
   } else {
-    fetchAttractions()
+    fetchAttractions();
   }
-}
+};
 
 const setStarFilter = (option: string) => {
-  starFilter.value = option
-  fetchAttractions()
-}
+  starFilter.value = option;
+  fetchAttractions();
+};
 
 const setDistanceFilter = (option: string) => {
-  distanceFilter.value = option
-  fetchAttractions()
-}
+  distanceFilter.value = option;
+  fetchAttractions();
+};
 
 const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, scenicSpotId: string) => {
   router.push({
-    path: "shanghai/tickets",
+    path: `city/tickets`,
     query: { name: scenicSpotName, introduction: scenicSpotIntroduction, id: scenicSpotId }
-  })
-}
+  });
+};
 </script>
 
 <template>
   <div class="app-container">
     <header class="header">
-      <div class="title">上海</div>
-      <div class="title1">SHANGHAI</div>
+      <div class="title">{{ city.chinese }}</div>
+      <div class="title1">{{ city.upper }}</div>
       <nav class="nav">
         <button
           v-for="page in ['home', 'attractions', 'accommodation']"
@@ -176,22 +198,13 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
 
     <main class="main-content">
       <div v-if="currentPage === 'home'">
-        <img src="/images/shanghai.jpg" alt="Shanghai" class="home-image" />
+        <img :src="`/images/${city.lower}.jpg`" :alt="city.lower" class="home-image" />
         <div class="home-description">
-          <h2>上海 - 中国的东方明珠</h2>
+          <h2>{{ city.chinese }} - 中国的东方明珠</h2>
           <p>
             上海，位于中国东部沿海，是中国最大的城市和重要的经济、金融、贸易、航运中心之一。作为中国最具现代化和国际化的大都市，上海不仅有着繁华的商业区和高楼大厦，还保留着丰富的历史文化遗产。
           </p>
-          <p>
-            上海的地标之一是外滩，这里汇聚了中西方建筑风格的历史建筑，展现了上海作为东西方交流桥梁的历史。浦东新区则以现代化的摩天大楼著称，其中包括著名的东方明珠塔、上海环球金融中心和上海中心大厦等。
-          </p>
-          <p>
-            作为国际金融中心，上海拥有中国最大的证券交易所之一，并且吸引了众多跨国公司在此设立总部。此外，上海港是世界上最繁忙的集装箱港口之一，连接着全球的贸易网络。
-          </p>
-          <p>
-            在文化方面，上海也具有独特的魅力。这里是中国近现代文化的发源地之一，孕育了许多著名的作家、艺术家和思想家。如今，上海的文化生活丰富多彩，从传统的豫园、静安寺，到现代化的上海博物馆、当代艺术馆，都能让人感受到这座城市的深厚底蕴与创新活力。
-          </p>
-          <p>总之，上海是一座兼具传统与现代、历史与未来的城市，是中外游客、商人和文化爱好者的必游之地。</p>
+          <!-- 其他描述内容省略 -->
         </div>
       </div>
       <div v-if="currentPage === 'attractions'" class="attractions-grid">
