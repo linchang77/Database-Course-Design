@@ -8,7 +8,7 @@ using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace db_course_design.Controllers
 {
-    /* 
+    /* 用户界面
      * 路由设计
      *api/Guide/
      *      all/
@@ -18,7 +18,10 @@ namespace db_course_design.Controllers
      *      ability/?{minCost}&{maxCost}&{grade}
      *              Get     根据价格区间、级别筛选
      *      reservation/
-     *          Post        预约导游[GuideReservationResponse:GuideId,StartDate,EndDate]
+     *          {GuideId}/
+     *              Get         获取某个导游可预约时间
+     *          create/
+     *              Post        创建一个导游订单
      */
     [ApiController]
     [Route("api/[controller]")]
@@ -70,10 +73,44 @@ namespace db_course_design.Controllers
             }
             return Ok(guide);
         }
+        /*--获取某个导游可预约时间--*/
+        [HttpGet("reservation/{GuideId}")]
+        public async Task<IActionResult> GetGuideFreeTime(byte GuideId)
+        {
+            var free = await _guideService.GetGuideFreeTimesAsync(GuideId);
+            if(free == null)
+            {
+                return NotFound(new { Message = "No Free Time this year" });
+            }
+            return Ok(free);
+        }
+        /*--创建一个导游订单--*/
+        [HttpPost("reservation/create")]
+        public async Task<IActionResult> CreateGuideOrderAsync(GuideReservationRequest request)
+        {
+            var flag = await _guideService.CreateGuideOrderAsync(request);
+            if(!flag)
+                return BadRequest(new { Message = "create failed"});
+            return Ok();
+        }
+        /*导游界面补充
+         * api/Guide/
+         *    {GuideId}/
+         *        filter/？{OrderType}&{UserId}&{StartDate}&{EndDate}
+         *            Get         按条件筛选
+         */
+        [HttpGet("{GuideId}/filter")]
+        public async Task<IActionResult> GetGuideOrderByFilterAsync
+            (byte GuideId, [FromQuery] string? OrderType, [FromQuery] int? UserId, [FromQuery] DateTime? StartDate, [FromQuery] DateTime? EndDate)
+        {
+            var orders = await _guideService.OrderFilterofGuide(GuideId, OrderType, UserId, StartDate, EndDate);
+            if (orders == null)
+                return NotFound(new { Message = "未筛选到此类订单" });
+            return Ok(orders);
+        }
         /*
          业务逻辑：导游信息的增删改
-
-         
+        管理员界面
          */
         /*--添加导游信息--*/
         [HttpPost("add")]
