@@ -54,7 +54,7 @@ async function newSchedule(){
   const url = "https://123.60.14.84:11000/api/Vehicle/schedule"
   console.log("url:", url)
   const vehicleScheduleData: VehicleScheduleRequest = {
-  VehicleId: 'MN11', // 示例值
+  VehicleId: 'Tryzone', // 示例值
   DepartureTime: new Date('2024-08-18T16:10:00'), // 示例值
   ArrivalTime: new Date('2024-08-18T17:35:00'), // 示例值
   VehicleType: 'car', // 示例值
@@ -112,7 +112,7 @@ async function addVehicleTicket() {
   const url = "https://123.60.14.84:11000/api/Vehicle/ticket"
   console.log("url:", url)
   const vehicleTicketData: VehicleTicketRequest = {
-  VehicleId: 'MN11', // 示例值
+  VehicleId: 'TRYzone', // 示例值
   TicketType: '硬座', // 示例值
   TicketPrice: 479.0, // 示例值
   TicketDepartureTime: new Date('2024-08-18T16:10:00'), // 示例值
@@ -158,7 +158,7 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
 <template>
   <div class="app">
     <div class="app-container">
-      <el-card header="机票查询">
+      <el-card header="车票查询">
         <div class="index-container">
           <PlaceSelector @updateValue="setDestination">目的地</PlaceSelector>
           <PlaceSelector @updateValue="setDeparture">出发地</PlaceSelector>
@@ -168,9 +168,9 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
           >
         </div>
       </el-card>
-<!--
+ <!--
       <el-button type="primary" id="submit" @click="newSchedule">新增航班</el-button>
-      <el-button type="primary" id="submit" @click="addVehicleTicket">新增机票</el-button>
+   <el-button type="primary" id="submit" @click="addVehicleTicket">新增机票</el-button>
 -->
     </div>
 
@@ -201,7 +201,7 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
                           <div class="time">{{ flight.departureTime.split("T")[1] }}</div>
                           <div class="airport">
                             <span>Departure</span>
-                            <span>Airport</span>
+                            <span>Station</span>
                             <br />
                             <span>{{ flight.departureStation }}</span>
                           </div>
@@ -213,7 +213,7 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
                           <div class="time">{{ flight.arrivalTime.split("T")[1] }}</div>
                           <div class="airport">
                             <span>Arrival</span>
-                            <span>Airport</span>
+                            <span>Station</span>
                             <br />
                             <span>{{ flight.arrivalStation }}</span>
                           </div>

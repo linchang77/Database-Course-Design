@@ -1,16 +1,19 @@
 <script lang="ts" setup>
-import { ref } from "vue"
+
 
 defineOptions({
   name: "City-management"
 })
 
-const text = ref("")
+import AddAndModifyCity from "./component/AddAndModifyCity.vue";
+
 </script>
 
 <template>
   <div class="app-container">
-    <el-card header="城市管理">
+    <AddAndModifyCity />
+    <!-- <el-card header="城市管理">
     </el-card>
+  -->
   </div>
 </template>
