@@ -39,7 +39,7 @@ const dateInput = ref("")
 const categoryFilter = ref("")
 const startDate = ref("")
 const endDate = ref("")
-const apiUrl = "https://123.60.14.84:11100/api/Transaction/admin/1"
+const apiUrl = "https://123.60.14.84/api/Transaction/admin/1"
 
 // 获取交易列表
 const fetchTransactions = () => {
@@ -66,32 +66,31 @@ const fetchTransactions = () => {
 // 按用户ID搜索交易记录
 async function searchByUserId() {
   const userId = userIdInput.value
-  categoryInput.value = "全部"
+  categoryInput.value = ""
   dateInput.value = ""
-  if (!userId) {
-    try {
-      await fetchTransactions()
-      showEmptyMessage.value = transactions.value.length === 0
-    } catch (error) {
-      console.error("Error fetching all transactions:", error)
-      transactions.value = [] // 确保 transactions 不为空
-      total.value = 0
-      showEmptyMessage.value = true
-    }
-    return
-  }
-
-  try {
-    const response = await axios.get(`${apiUrl}/search/userId`)
-    console.log("API Response:", response.data)
-    transactions.value = response.data
-    total.value = response.data.length || 0
-    showEmptyMessage.value = transactions.value.length === 0
-  } catch (error) {
-    console.error("Error searching by user ID:", error)
-    transactions.value = [] // 确保 transactions 不为空
-    total.value = 0
-    showEmptyMessage.value = true
+  if (userId !== "") {
+    axios
+      .get(`${apiUrl}/search/${userId}`)
+      .then((response) => {
+        if (response.data && response.data.length > 0) {
+          transactions.value = response.data
+          total.value = response.data.length || 0
+          showEmptyMessage.value = transactions.value.length === 0
+        } else {
+          transactions.value = [] // 确保 transactions 不为空
+          total.value = 0
+          showEmptyMessage.value = true
+        }
+      })
+      .catch((error) => {
+        console.error("Error searching by userId:", error)
+        transactions.value = [] // 确保 transactions 不为空
+        total.value = 0
+        showEmptyMessage.value = true
+      })
+  } else {
+    console.log("userId is empty")
+    fetchTransactions()
   }
 }
 
@@ -231,7 +230,7 @@ const search = () => {
 
   //添加用户ID筛选请求
   if (userIdInput.value) {
-    requests.push(axios.get(`${apiUrl}/search/userId`))
+    requests.push(axios.get(`${apiUrl}/search/${userIdInput.value}`))
   } else {
     requests.push(axios.get(`${apiUrl}`))
   }
@@ -262,10 +261,12 @@ const search = () => {
 }
 
 const resetSearch = () => {
-  searchForm.value = {
-    userId: "",
-    category: ""
-  }
+  userIdInput.value = ""
+  categoryInput.value = "全部"
+  categoryFilter.value = ""
+  startDate.value = ""
+  endDate.value = ""
+  dateInput.value = ""
   fetchTransactions()
 }
 
@@ -345,10 +346,10 @@ onMounted(() => {
     <el-card class="filter-card">
       <el-form :inline="true" :model="searchForm" class="demo-form-inline">
         <el-form-item label="用户ID">
-          <el-input v-model="searchForm.userId" placeholder="请输入用户ID" style="width: 200px" />
+          <el-input v-model="userIdInput" placeholder="请输入用户ID" style="width: 200px" />
         </el-form-item>
         <el-form-item label="订单类别">
-          <el-select v-model="searchForm.category" placeholder="请选择交易类别" style="width: 200px">
+          <el-select v-model="categoryInput" placeholder="请选择交易类别" style="width: 200px">
             <el-option v-for="item in categoryOptions" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
