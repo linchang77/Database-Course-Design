@@ -54,8 +54,16 @@ namespace db_course_design.Services.impl
         public async Task<List<GuideResponse>> GetGuideByPersonAsync(byte? GuideId, string? name)
         {
             var query = _context.Guides.AsQueryable();
-            query = query.Where(o => o.GuideId == GuideId && o.GuideName.Equals(name));
 
+            if (GuideId.HasValue)
+            {
+                query = query.Where(o => o.GuideId == GuideId);
+            }
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(o => o.GuideName.Equals(name));
+            }
+            
             var guides = await query
                 .Select(o => _mapper.Map<GuideResponse>(o)).ToListAsync();
             return guides;
@@ -64,9 +72,23 @@ namespace db_course_design.Services.impl
         public async Task<List<GuideResponse>> GetGuideByAbilityAsync(decimal? minCost,decimal? maxCost,string? grade)
         {
             var query = _context.Guides.AsQueryable();
-            query = query.Where(o => o.GuidePerformanceLevel.Equals(grade)
-                && o.GuidePrice >= minCost
-                && o.GuidePrice <= maxCost);
+
+            if (!string.IsNullOrEmpty(grade))
+            {
+                query = query.Where(o => o.GuidePerformanceLevel.Equals(grade));
+            }
+            if (minCost.HasValue)
+            {
+                Console.WriteLine("get minCost" + minCost.Value);
+                query = query.Where(o => o.GuidePrice.HasValue
+                && decimal.Compare(o.GuidePrice.Value, minCost.Value) >= 0);
+            }
+            if (maxCost.HasValue)
+            {
+                Console.WriteLine("get maxCost" + maxCost.Value);
+                query = query.Where(o => o.GuidePrice.HasValue
+                && decimal.Compare(o.GuidePrice.Value, maxCost.Value) <= 0);
+            }
 
             var guides = await query
                 .Select(o => _mapper.Map<GuideResponse>(o)).ToListAsync();

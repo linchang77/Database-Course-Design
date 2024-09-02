@@ -123,14 +123,36 @@ namespace db_course_design.Services.impl
         {
             string RoomNumber = null;
 
-            var query = await _context.HotelRoomTypes
+            var query = (await _context.HotelRoomTypes
                 .Where(o => o.RoomType.Equals(request.RoomType) && o.HotelId == request.HotelId)
-                .FirstOrDefaultAsync();
+                .Include(o => o.HotelRooms)
+                .ToListAsync()).SingleOrDefault();
+
+            if (query == null)
+            {
+                // 输出调试信息或日志
+                Console.WriteLine("No matching room type found.");
+                return null;
+            }
+            if (query.HotelRooms == null || !query.HotelRooms.Any())
+            {
+                // 输出调试信息或日志
+                Console.WriteLine("No rooms available for this room type.");
+                return null;
+            }
+
+
 
             // 找合适的房间
-            foreach(var room in query.HotelRooms)
+            foreach (var room in query.HotelRooms)
             {
                 bool isAvailable = await CheckRoomClear(room, request.CheckInDate, request.CheckOutDate);
+
+                if (!isAvailable)
+                {
+                    // 输出调试信息或日志
+                    Console.WriteLine($"Room {room.RoomNumber} is not available from {request.CheckInDate} to {request.CheckOutDate}.");
+                }
 
                 if (isAvailable)
                 {
@@ -139,25 +161,36 @@ namespace db_course_design.Services.impl
                 }
             }
 
-            // 添加数据到Hotel_Order表，并同步Order_Data
-            var roomDetail = new HotelOrder
+            if (RoomNumber == null)
             {
-                HotelId = request.HotelId,
-                CheckInDate = request.CheckInDate,
-                CheckOutDate = request.CheckOutDate,
-                RoomNumber = RoomNumber,
-            };
-            var orderDatum = new OrderDatum
+                // 输出调试信息或日志
+                Console.WriteLine("No available rooms found.");
+            }
+
+            if (RoomNumber != null)
             {
-                OrderType = "hotel",
-                OrderDate = DateTime.Now,
-                UserId = request.userId,
-                Status = "Pending",
-                Price = query.RoomPrice * (request.CheckOutDate.Value - request.CheckInDate.Value).Days,
-            };
-            _context.HotelOrders.Add(roomDetail);
-            _context.OrderData.Add(orderDatum);
-            await _context.SaveChangesAsync();
+                // 添加数据到Order_Data表，保存后同步Hotel_Order
+                var orderDatum = new OrderDatum
+                {
+                    OrderType = "hotel",
+                    OrderDate = DateTime.Now,
+                    UserId = request.userId,
+                    Status = "Pending",
+                    Price = query.RoomPrice * (request.CheckOutDate.Value - request.CheckInDate.Value).Days,
+                };
+                _context.OrderData.Add(orderDatum);
+                await _context.SaveChangesAsync();
+                var roomDetail = new HotelOrder
+                {
+                    OrderId = orderDatum.OrderId,
+                    HotelId = request.HotelId,
+                    CheckInDate = request.CheckInDate,
+                    CheckOutDate = request.CheckOutDate,
+                    RoomNumber = RoomNumber,
+                };
+                _context.HotelOrders.Add(roomDetail);
+                await _context.SaveChangesAsync();
+            }
 
             return RoomNumber;
         }

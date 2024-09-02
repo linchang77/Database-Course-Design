@@ -94,11 +94,14 @@ namespace db_course_design.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateHotelOrder([FromBody] CreateHotelOrderRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _hotelService.CreateHotelOrderAsync(request);
 
             if (result == null)
             {
-                return StatusCode(404, "create failed.");
+                return StatusCode(404, "未查询到符合条件的房间");
             }
 
             return Ok(new { Message = "您的房间号为" + result });

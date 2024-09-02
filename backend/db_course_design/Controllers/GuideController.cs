@@ -13,14 +13,12 @@ namespace db_course_design.Controllers
      *api/Guide/
      *      all/
      *          Get         获取全部导游信息
-     *      person/
-     *          {GuideId},{name}/
-     *              Get     根据导游id、姓名筛选
-     *      ability/
-     *          {minCost},{maxCost},{grade}/
+     *      person/?{GuideId}&{name}
+     *          Get         根据导游id或姓名筛选
+     *      ability/?{minCost}&{maxCost}&{grade}
      *              Get     根据价格区间、级别筛选
      *      reservation/
-     *          Post    预约导游[GuideReservationResponse:GuideId,StartDate,EndDate]
+     *          Post        预约导游[GuideReservationResponse:GuideId,StartDate,EndDate]
      */
     [ApiController]
     [Route("api/[controller]")]
@@ -40,8 +38,8 @@ namespace db_course_design.Controllers
             return Ok(guides);
         }
         /*--根据导游id、姓名筛选--*/
-        [HttpGet("person/{GuideId},{name}")]
-        public async Task<IActionResult> GetGuidesByPersonAsync(byte? GuideId, string? name)
+        [HttpGet("person")]
+        public async Task<IActionResult> GetGuidesByPersonAsync([FromQuery] byte? GuideId, [FromQuery] string? name)
         {
             var guides = await _guideService.GetGuideByPersonAsync(GuideId, name);
             if (guides == null || !guides.Any())
@@ -51,8 +49,8 @@ namespace db_course_design.Controllers
             return Ok(guides);
         }
         /*--根据价格区间、级别筛选--*/
-        [HttpGet("ability/{minCost},{maxCost},{grade}")]
-        public async Task<IActionResult> GetGuidesByAbilityAsync(decimal? minCost, decimal? maxCost, string? grade)
+        [HttpGet("ability")]
+        public async Task<IActionResult> GetGuidesByAbilityAsync([FromQuery] decimal? minCost, [FromQuery] decimal? maxCost, [FromQuery] string? grade)
         {
             var guides = await _guideService.GetGuideByAbilityAsync(minCost, minCost, grade);
             if (guides == null || !guides.Any())
