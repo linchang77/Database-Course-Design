@@ -104,7 +104,7 @@ async function updateUserData(field, value) {
       apiUrl = `${baseUrl}/api/Profile/guide/${guideId}/${field}/${value}`
     } else if (userType.value === "admin") {
       const adminId = admin.value.Id
-      apiUrl = `${baseUrl}/api/Profile/guide/${adminId}/${field}/${value}`
+      apiUrl = `${baseUrl}/api/Profile/admin/${adminId}/${field}/${value}`
     }
 
     await axios.put(apiUrl, {})
