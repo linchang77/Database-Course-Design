@@ -269,6 +269,16 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
   border-bottom: 1px solid #ddd;
 }
 
+.home-description h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.home-description p {
+  font-size: 18px;
+  color: #555;
+}
+
 .search-bar {
   display: flex;
   margin-bottom: 20px;
