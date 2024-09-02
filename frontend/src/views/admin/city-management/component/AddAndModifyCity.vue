@@ -16,18 +16,6 @@
         <el-form-item label="城市介绍">
           <el-input v-model="cityToAdd.cityIntroduction" placeholder="请输入城市介绍"></el-input>
         </el-form-item>
-        <el-form-item label="今日温度">
-          <el-input v-model.number="cityToAdd.todayTemperature" placeholder="请输入今日温度"></el-input>
-        </el-form-item>
-        <el-form-item label="今日天气">
-          <el-input v-model="cityToAdd.todayWeather" placeholder="请输入今日天气"></el-input>
-        </el-form-item>
-        <el-form-item label="明日温度">
-          <el-input v-model.number="cityToAdd.tomorrowTemperature" placeholder="请输入明日温度"></el-input>
-        </el-form-item>
-        <el-form-item label="明日天气">
-          <el-input v-model="cityToAdd.tomorrowWeather" placeholder="请输入明日天气"></el-input>
-        </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -76,25 +64,13 @@
         <el-col :span="12">
           <el-form :model="city" label-width="80px">
             <el-form-item label="城市名称">
-              <el-input v-model="city.cityName" :disabled="!isEditingCity"></el-input>
+              <el-input v-model="city.cityName" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="省份">
-              <el-input v-model="city.province" :disabled="!isEditingCity"></el-input>
+              <el-input v-model="city.province" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="城市介绍">
               <el-input v-model="city.cityIntroduction" :disabled="!isEditingCity"></el-input>
-            </el-form-item>
-            <el-form-item label="今日温度">
-              <el-input v-model.number="city.todayTemperature" :disabled="!isEditingCity"></el-input>
-            </el-form-item>
-            <el-form-item label="今日天气">
-              <el-input v-model="city.todayWeather" :disabled="!isEditingCity"></el-input>
-            </el-form-item>
-            <el-form-item label="明日温度">
-              <el-input v-model.number="city.tomorrowTemperature" :disabled="!isEditingCity"></el-input>
-            </el-form-item>
-            <el-form-item label="明日天气">
-              <el-input v-model="city.tomorrowWeather" :disabled="!isEditingCity"></el-input>
             </el-form-item>
           </el-form>
         </el-col>
@@ -184,6 +160,7 @@ async function addCity() {
     await axios.post('https://123.60.14.84/api/City/add', cityToadd);
     ElMessage.success('城市添加成功');
     addCityFormVisible.value = false;
+    city.value = null;
   } catch (error) {
     console.error(error);
     ElMessage.error('添加失败');
@@ -202,6 +179,7 @@ async function deleteCity() {
     await axios.delete(`https://123.60.14.84/api/City/del/${cityName}`);
     ElMessage.success('城市删除成功');
     deleteCityFormVisible.value = false;
+    city.value = null;
   } catch (error) {
     console.error(error);
     ElMessage.error('删除失败');
@@ -238,9 +216,10 @@ async function updateCity() {
     const cityToUpdate = city.value;
     console.log(cityToUpdate);
     await axios.patch(`https://123.60.14.84/api/City/mod/intro/${cityToUpdate.cityName},${cityToUpdate.cityIntroduction}`);
-    await axios.patch(`https://123.60.14.84/api/City/mod/climate/${cityToUpdate.cityName},${cityToUpdate.todayTemperature},${cityToUpdate.todayWeather},${cityToUpdate.tomorrowTemperature},${cityToUpdate.tomorrowWeather}`);
+
     ElMessage.success('城市信息更新成功');
     isEditingCity.value = false;
+    city.value = null;
   } catch (error) {
     console.error(error);
     ElMessage.error('更新失败');
@@ -252,10 +231,7 @@ const cityToAdd = reactive({
   cityName: '',
   province: '',
   cityIntroduction: '',
-  todayTemperature: undefined,
-  todayWeather: '',
-  tomorrowTemperature: undefined,
-  tomorrowWeather: ''
+
 });
 
 const cityToDelete = reactive({
