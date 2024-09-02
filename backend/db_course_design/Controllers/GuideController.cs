@@ -52,7 +52,7 @@ namespace db_course_design.Controllers
         [HttpGet("ability")]
         public async Task<IActionResult> GetGuidesByAbilityAsync([FromQuery] decimal? minCost, [FromQuery] decimal? maxCost, [FromQuery] string? grade)
         {
-            var guides = await _guideService.GetGuideByAbilityAsync(minCost, minCost, grade);
+            var guides = await _guideService.GetGuideByAbilityAsync(minCost, maxCost, grade);
             if (guides == null || !guides.Any())
             {
                 return NotFound(new { Message = "No guide found" });
