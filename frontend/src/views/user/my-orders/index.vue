@@ -686,7 +686,7 @@ function formatDateToDay(dateString?: string): string {
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
 
-        <span class="word"> 日期 </span>
+        <span class="word"> 使用日期 </span>
         <el-date-picker
           v-model="date_input"
           type="daterange"

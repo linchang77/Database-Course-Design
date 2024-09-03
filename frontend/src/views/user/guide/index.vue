@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from "vue"
-import axios from "axios";
-import { ElButton, ElDialog, ElRate, ElMessage } from 'element-plus';
+import { onMounted, ref } from "vue"
+import axios from "axios"
+import { ElButton, ElDialog, ElRate, ElMessage } from 'element-plus'
 import { Search } from "@element-plus/icons-vue"
+import { useUserStoreHook } from '@/store/modules/user'
 
-// 1、导游6星等级太高了无法显示
-// 2、根据id和姓名筛选：只输入一个属性api调用失败
-// 3、根据等级和价格筛选：只输入一个属性api调用失败，价格筛选部分有问题
-// 4、预定：想要一个预定成功的body截图（时间输入格式：2024-08-22T16:00:00.000Z？），boby是不是还要加上userId产生一个pending的订单
+const userStore = useUserStoreHook()
+const userRole = userStore.roles
+const userId = ref<string | null>(localStorage.getItem('id'))
 
 // 接口部分
 interface Guide {
@@ -22,24 +22,32 @@ interface Guide {
 }
 
 // 数据部分
-const guides = ref<Guide[]>([]);
+const guides = ref<Guide[]>([])
 const guideId_input = ref('')
 const guideName_input = ref('')
-const guidePrice_input = ref<number[]>([]); // 定义为 Ref 数组
+const guidePrice_input = ref<number[]>([])
 const guideGrade_input = ref('')
 const dialogVisible = ref(false)
-const selectedGuide = ref<Guide | null>(null);
+const input = ref('')
+const selectedGuide = ref<Guide | null>(null)
 const date_input = ref('')
+const showEmptyMessage = ref(false)
+const busyDates = ref<{ startDate: Date; endDate: Date }[]>([])
+
 
 const imageMap: Record<number, string> = {
   2: 'https://th.bing.com/th/id/R.d68dcaee479f08cce46b46d2f268691f?rik=1gR2azuO%2fp1%2b3g&riu=http%3a%2f%2fgss0.baidu.com%2f9fo3dSag_xI4khGko9WTAnF6hhy%2fzhidao%2fpic%2fitem%2f37d12f2eb9389b50053be23b8635e5dde6116e96.jpg&ehk=bvj7ZF98h7hwoPr%2b12EMgI%2fmXfSvZfSfzyvvz6vgjqw%3d&risl=&pid=ImgRaw&r=0',
   5: 'https://th.bing.com/th/id/OIP.IXH5Twk0zpHOuxDpyhRfdwHaKl?rs=1&pid=ImgDetMain',
-  13: 'https://th.bing.com/th/id/OIP.qVCyjt_e3_xM60_2q0frjQHaKY?rs=1&pid=ImgDetMain',
-  33: 'https://th.bing.com/th/id/OIP.JoJ-AVHAUxutTyGUa3uHuAHaKk?rs=1&pid=ImgDetMain',
-  9: 'https://th.bing.com/th/id/R.36ca40fef9c4da005b251a3820d6fb4a?rik=Q6IQFoVA3Gs9Ew&riu=http%3a%2f%2ffiles.photops.com%3a81%2fattachment%2fMon_1203%2f61_207514_57205c36941dcd2.jpg%3f207&ehk=wpZxbNylcejNwiUkNkUEbVucC0%2fMWuICMBVH%2f%2bn7dNg%3d&risl=&pid=ImgRaw&r=0',
+  //13: 'https://th.bing.com/th/id/OIP.qVCyjt_e3_xM60_2q0frjQHaKY?rs=1&pid=ImgDetMain',
+  13: 'https://th.bing.com/th/id/OIP.Ugi7catGMRr-tq36HUf2RQHaJ4?rs=1&pid=ImgDetMain',
+  //33: 'https://th.bing.com/th/id/OIP.JoJ-AVHAUxutTyGUa3uHuAHaKk?rs=1&pid=ImgDetMain',
+  33: 'https://th.bing.com/th/id/OIP.TKN6MUV8TpXRSTGsXymxMwHaKX?rs=1&pid=ImgDetMain',
+  //9: 'https://th.bing.com/th/id/R.36ca40fef9c4da005b251a3820d6fb4a?rik=Q6IQFoVA3Gs9Ew&riu=http%3a%2f%2ffiles.photops.com%3a81%2fattachment%2fMon_1203%2f61_207514_57205c36941dcd2.jpg%3f207&ehk=wpZxbNylcejNwiUkNkUEbVucC0%2fMWuICMBVH%2f%2bn7dNg%3d&risl=&pid=ImgRaw&r=0',
+  9: 'https://th.bing.com/th/id/OIP.x1wS-uaZTmUA-q3Zyz-KeAHaKi?rs=1&pid=ImgDetMain',
   10: 'https://img1.baidu.com/it/u=3838128346,2925275137&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=742',
   1: 'https://img0.baidu.com/it/u=3193702081,1747174116&fm=253&fmt=auto&app=120&f=JPEG?w=417&h=581',
-  3: 'https://th.bing.com/th/id/OIP.TKN6MUV8TpXRSTGsXymxMwHaKX?rs=1&pid=ImgDetMain',
+  //3: 'https://th.bing.com/th/id/OIP.TKN6MUV8TpXRSTGsXymxMwHaKX?rs=1&pid=ImgDetMain',
+  3: 'https://th.bing.com/th/id/R.814f0706c70345be7cc174eeef22cf97?rik=kk3NKkFwCuuGSA&riu=http%3a%2f%2fwww.86ps.com%2fUploadFiles%2fArticle%2f2018-7%2f0722%2f6.jpg&ehk=LyPuGBequu%2bBPj2lgiknapEXiLuR2RQfjKwtTPcUKFk%3d&risl=&pid=ImgRaw&r=0',
   4: 'https://gss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/zhidao/wh%3D450%2C600/sign=5cf347cf97dda144da5c64b68787fc94/7af40ad162d9f2d30708c733a9ec8a136227ccd5.jpg',
   26: 'https://img2.baidu.com/it/u=2793308119,144286892&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=700',
   34: 'https://gss0.baidu.com/-4o3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/caef76094b36acaff26b35af78d98d1000e99cde.jpg'
@@ -51,8 +59,8 @@ const fetchGuides = () => {
   axios
     .get("https://123.60.14.84:11100/api/Guide/all")
     .then((response) => {
-      console.log("API Response:", response.data);
-      const data = response.data;
+      console.log("API Response:", response.data)
+      const data = response.data
       if (Array.isArray(data)) {
         guides.value = data.map((guide: any) => ({
           guideId: guide.guideId,            
@@ -63,24 +71,31 @@ const fetchGuides = () => {
           guidePerformanceLevel: Number(guide.guidePerformanceLevel),
           guideSeniority: guide.guideSeniority,
           guidePrice: guide.guidePrice,
-        }));
-        console.log("Guides:", guides);
+        }))
+        showEmptyMessage.value = false
       } else {
-        console.error("Unexpected response format.");
+        console.error("Unexpected response format.")
+        showEmptyMessage.value = true
       }
     })
     .catch((error) => {
-      console.error("Error fetching guides:", error);
-    });
-};
+      console.error("Error fetching guides:", error)
+      showEmptyMessage.value = true
+    })
+}
 
 // 根据编号、姓名筛选
 const fetchById = () => {
   axios
-    .get(`https://123.60.14.84:11100/api/Guide/person/${guideId_input.value},${guideName_input.value}`)
+  .get(`https://123.60.14.84/api/Guide/person`, {
+      params: {
+        GuideId: guideId_input.value,
+        name: guideName_input.value
+      }
+    })
     .then((response) => {
-      console.log("API Response:", response.data);
-      const data = response.data;
+      const data = response.data
+      console.log("da:", response.data)
       if (Array.isArray(data)) {
         guides.value = data.map((guide: any) => ({
           guideId: guide.guideId,            
@@ -91,24 +106,32 @@ const fetchById = () => {
           guidePerformanceLevel: Number(guide.guidePerformanceLevel),
           guideSeniority: guide.guideSeniority,
           guidePrice: guide.guidePrice,
-        }));
-        console.log("Guides:", guides);
+        }))
+        showEmptyMessage.value = false
       } else {
-        console.error("Unexpected response format.");
+        console.error("Unexpected response format.")
+        showEmptyMessage.value = true
       }
     })
     .catch((error) => {
-      console.error("Error fetching guides:", error);
-    });
-};
+      console.error("Error fetching guides:", error)
+      showEmptyMessage.value = true
+    })
+}
 
 // 根据星级、价格筛选
 const fetchByGrade = () => {
   axios
-    .get(`https://123.60.14.84:11100/api/Guide/ability/${guidePrice_input.value[0]},${guidePrice_input.value[1]},${guideGrade_input.value}`)
+  .get(`https://123.60.14.84/api/Guide/ability`, {
+      params: {
+        minCost: guidePrice_input.value[0],
+        maxCost: guidePrice_input.value[1],
+        Grade: guideGrade_input.value
+      }
+    })
     .then((response) => {
-      console.log("API Response:", response.data);
-      const data = response.data;
+      console.log("API Response:", response.data)
+      const data = response.data
       if (Array.isArray(data)) {
         guides.value = data.map((guide: any) => ({
           guideId: guide.guideId,            
@@ -119,70 +142,77 @@ const fetchByGrade = () => {
           guidePerformanceLevel: Number(guide.guidePerformanceLevel),
           guideSeniority: guide.guideSeniority,
           guidePrice: guide.guidePrice,
-        }));
-        console.log("Guides:", guides);
+        }))
+        showEmptyMessage.value = false
       } else {
-        console.error("Unexpected response format.");
+        console.error("Unexpected response format.")
+        showEmptyMessage.value = true
       }
     })
     .catch((error) => {
-      console.error("Error fetching guides:", error);
-    });
-};
-
-// 预定导游
-const reserve = () => {
-  axios
-    .post(`https://123.60.14.84:11100/api/Guide/reservation/${guidePrice_input.value[0]},${guidePrice_input.value[1]},${guideGrade_input.value}`)
-    .then((response) => {
-      ElMessage.success(`预定成功！`)
-      console.log("API Response:", response.data);
-      const data = response.data;
-      if (Array.isArray(data)) {
-        guides.value = data.map((guide: any) => ({
-          guideId: guide.guideId,            
-          guideName: guide.guideName,
-          guideGender: guide.guideGender,
-          guideIntroduction: guide.guideIntroduction,
-          guideSalary: guide.guideSalary,
-          guidePerformanceLevel: Number(guide.guidePerformanceLevel),
-          guideSeniority: guide.guideSeniority,
-          guidePrice: guide.guidePrice,
-        }));
-        console.log("Guides:", guides);
-      } else {
-        console.error("Unexpected response format.");
-      }
+      console.error("Error fetching guides:", error)
+      showEmptyMessage.value = true
     })
-    .catch((error) => {
-      console.error("Error fetching guides:", error);
-    });
-};
+}
 
-onMounted(() => {
-  fetchGuides()
-});
-
-const openDialog = (guide: Guide) => {
+// 预定导游start
+// 时间格式化
+const formatDate = (dateString: string, time: string): string => {
+  if (!dateString) {
+    return "暂无"
+  }
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}T${time}`
+}
+// 获取不可用时间
+const disabledDateFun = (time: Record<string, any>): boolean => {  
+  return !busyDates.value.some((busyDate) => {
+    const isDisabled = time.getTime() >= busyDate.startDate && time.getTime() <= busyDate.endDate
+    console.log(isDisabled)
+    return isDisabled
+  })
+}
+// 预定弹窗
+const openDialog = async (guide: Guide) => {
   selectedGuide.value = guide
   dialogVisible.value = true
-};
-
+  input.value = ''
+  busyDates.value = []
+  try {
+    const response = await axios.get(`https://123.60.14.84/api/Guide/reservation/${guide.guideId}`)
+    busyDates.value = response.data.map((reservation: any) => ({
+      startDate: new Date(reservation.startDate).getTime(), 
+      endDate: new Date(reservation.endDate).getTime() 
+    }))
+  } catch (error) {
+    console.error('获取导游非空闲时间失败', error)
+  }
+}
+// 预定
 const confirm = async () => {
+  console.log(userId.value,selectedGuide.value,formatDate(date_input.value[0], "00:00:00"),formatDate(date_input.value[1], "23:00:00"),input.value)
   if (selectedGuide.value && date_input.value) {
-    const url = `https://123.60.14.84:11100/api/Guide/reservation`;
+    const url = `https://123.60.14.84/api/Guide/reservation/create`
     try {
       const response = await axios.post(url, {
-        GuideId: selectedGuide.value,
-        StartDate: date_input.value[0],
-        EndDate: date_input.value[1]
+        userId: userId.value,
+        GuideId: selectedGuide.value.guideId,
+        StartDate: formatDate(date_input.value[0], "00:00:00"),
+        EndDate: formatDate(date_input.value[1], "23:59:59"),
+        Service: input.value
       }, {
         headers: {
           'Content-Type': 'application/json',
           'accept': '*/*'
         }
       })
-      ElMessage.success(`预定成功！导游: ${selectedGuide.value.guideName}`)
+      ElMessage({
+            type: "success",
+            message: "预定成功！"
+          })
       dialogVisible.value = false
       selectedGuide.value = null
       date_input.value = ''
@@ -196,12 +226,17 @@ const confirm = async () => {
     ElMessage.info(`请选择时间`)
   }
 }   
-
+// 取消预定
 const cancel = () => {
-  dialogVisible.value = false;
+  dialogVisible.value = false
   selectedGuide.value = null
   date_input.value = ''
-};
+}
+
+onMounted(() => {
+  fetchGuides()
+})
+
 
 </script>
 
@@ -243,7 +278,10 @@ const cancel = () => {
     </div>
 
     <div class="guide-container">
-        <div v-for="guide in guides" :key="guide.guideId" class="guide-card">
+        <div class="holder-container" v-if="guides.length === 0 || showEmptyMessage">
+        <el-empty description="暂无导游" />
+        </div>
+        <div v-else v-for="guide in guides" :key="guide.guideId" class="guide-card">
             <div class="first">
                 <img :src="imageMap[guide.guideId]" alt="导游照片" class="photo"/>
                 <div class="guide-name-gender">
@@ -264,29 +302,28 @@ const cancel = () => {
                     text-color="#ff9900"
                     score-template="{value}星"
                 />
-        
             </div>
 
             <div class="third">
-              
                 <el-button type="primary" @click="openDialog(guide)">立即预定</el-button>
-              
-              <!--
-              <el-button type="primary" @click="reserve">立即预定</el-button>
-              -->
-              </div>
+            </div>
         </div>
     </div>
     
     <el-dialog v-model="dialogVisible" title="导游预定" width="500px">
-        <el-date-picker
-          v-model="date_input"
-          type="daterange"
-          range-separator="To"
-          start-placeholder="开始时间"
-          end-placeholder="结束时间"
-          size="default"
-        />
+      <div>
+        <span> 服务内容 </span>
+        <el-input v-model="input" style="width: 210px; margin-bottom: 5px;" placeholder="请输入内容" />
+      </div>
+      <el-date-picker
+        v-model="date_input"
+        type="daterange"
+        range-separator="To"
+        start-placeholder="开始时间"
+        end-placeholder="结束时间"
+        size="default"
+        :disabledDate="disabledDateFun"
+      />
     <template #footer>
       <div class="dialog-footer">
         <el-button type="primary" @click="confirm">确认</el-button>
@@ -319,6 +356,8 @@ const cancel = () => {
   display: grid;
   grid-template-columns: repeat(4, 1fr); 
   gap: 20px; 
+  justify-content: center;
+  align-items: center;  
 }
 
 .guide-card {
@@ -330,6 +369,7 @@ const cancel = () => {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 100%; 
+  overflow: hidden;
 }
 
 .photo {
@@ -368,5 +408,13 @@ const cancel = () => {
   justify-content: center;
   width: 100%;
   padding: 10px;
+}
+
+.holder-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  width: 100vw;
 }
 </style>
