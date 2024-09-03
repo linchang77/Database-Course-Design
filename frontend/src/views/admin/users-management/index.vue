@@ -67,7 +67,13 @@ const handleAdd = () => {
   (formRef.value as any).validate((valid: boolean) => {
     if (valid) {
       axios
-        .post(`https://123.60.14.84/api/Profile/user/add`, formData.value)
+        .post(`https://123.60.14.84/api/Profile/user/add`, {
+          userName: formData.value.name,
+          registrationTime: formData.value.registrationTime,
+          password: formData.value.password,
+          profilePicture: formData.value.profilePicture,
+          userGender: formData.value.gender
+        })
         .then(() => {
           ElMessage.success("新增用户成功");
           console.log(formData.value.name)
@@ -116,7 +122,13 @@ const handleUpdate = () => {
   (formRef.value as any).validate((valid: boolean) => {
     if (valid) {
       axios
-        .put(`https://123.60.14.84/api/Profile/user/update/${formData.value.id}`, formData.value)
+        .put(`https://123.60.14.84/api/Profile/user/update/${formData.value.id}`, {
+          userName: formData.value.name,
+          registrationTime: formData.value.registrationTime,
+          password: formData.value.password,
+          profilePicture: formData.value.profilePicture,
+          userGender: formData.value.gender
+        })
         .then(() => {
           ElMessage.success("修改用户成功");
           dialogVisible.value = false;
@@ -138,10 +150,6 @@ const handleUpdate = () => {
 // 进入添加页面
 const toAdd = () => {
   resetForm();
-  //const nowTime = new Date();
-  //nowTime.setHours(nowTime.getHours() + 8);
-  //const formattedTime = nowTime.toISOString().slice(0, 19);
-  //formData.value = Object.assign({}, formData.value, { registrationTime: formattedTime });
   option.value = "add";
   dialogVisible.value = true;
 };
