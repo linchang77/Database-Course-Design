@@ -24,4 +24,17 @@ namespace db_course_design.DTOs
         public virtual ICollection<GuideSalaryRecord> GuideSalaryRecords { get; set; } = new List<GuideSalaryRecord>();
 
     }
+    public class GuideTimeRange
+    {
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+    }
+    public class GuideReservationRequest
+    {
+        public int userId { get; set; }
+        public byte GuideId { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string? Service { get; set; }
+    }
 }

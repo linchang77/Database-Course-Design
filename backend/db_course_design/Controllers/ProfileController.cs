@@ -3,6 +3,7 @@ using db_course_design.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing;
 using AutoMapper.Execution;
+using db_course_design.Services.impl;
 
 namespace db_course_design.Controllers
 {
@@ -78,6 +79,55 @@ namespace db_course_design.Controllers
         public ProfileController(IProfileService profileService)
         {
             _profileService = profileService;
+        }
+        /*
+         业务逻辑：user信息的增删改查
+
+         
+         */
+        /*--添加用户信息--*/
+        [HttpPost("user/add")]
+        public async Task<IActionResult> AddUserAsync([FromBody] UserRequest userRequest)
+        {
+            var addedUser = await _profileService.AddUserAsync(userRequest);
+            if (addedUser == null)
+            {
+                return BadRequest(new { Message = "Failed to add user" });
+            }
+
+            // 返回添加用户信息
+            return Ok(addedUser);
+        }
+
+        /*--修改用户信息--*/
+        [HttpPut("user/update/{UserId}")]
+        public async Task<IActionResult> UpdateUserAsync(int UserId, [FromBody] UserRequest userRequest)
+        {
+            var updatedUser = await _profileService.UpdateUserAsync(UserId, userRequest);
+            if (updatedUser == null)
+            {
+                return NotFound(new { Message = "User not found" });
+            }
+            return Ok(updatedUser);
+        }
+
+        /*--删除用户信息--*/
+        [HttpDelete("user/del/{UserId}")]
+        public async Task<IActionResult> DeleteUserAsync(int UserId)
+        {
+            var result = await _profileService.DeleteUserAsync(UserId);
+            if (!result)
+            {
+                return NotFound(new { Message = "User not found" });
+            }
+            return NoContent();
+        }
+        [HttpGet("user/all")]
+        public async Task<IActionResult> GetAllUsersAsync()
+        {
+            var guides = await _profileService.GetAllUsersAsync();
+
+            return Ok(guides);
         }
 
         [HttpGet("user/{id}")]

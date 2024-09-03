@@ -35,60 +35,6 @@ import axios from "axios"
 
 const store = useSearchResultsStore()
 const { searchResults } = storeToRefs(store)
-// let searchResults = toRefs(useSearchResultsStore().searchResults)
-
-// const searchResults = ref([
-//    {
-//   "arrivalCity": "北京",
-//   "vehicleId": "KN5978",
-//   "departureTime": "2024-08-18T08:10:00",
-//   "arrivalTime": "2024-08-18T10:35:00",
-//   "vehicleType": "plane",
-//   "departureCity": "上海",
-//   "vehicleModel": "波音373(中)",
-//   "arrivalStation": "大兴国际机场",
-//   "departureStation": "浦东国际机场T1"
-// }
-// ])
-
-interface VehicleScheduleRequest {
-  ArrivalCity?: string;
-  VehicleId: string;
-  DepartureTime?: Date;
-  ArrivalTime?: Date;
-  VehicleType?: string;
-  DepartureCity?: string;
-  VehicleModel?: string;
-  ArrivalStation?: string;
-  DepartureStation?: string;
-}
-
-// 定义行程请求的数据
-
-async function newSchedule(){
-  const url = "https://123.60.14.84:11000/api/Vehicle/schedule"
-  console.log("url:", url)
-  const vehicleScheduleData: VehicleScheduleRequest = {
-  VehicleId: 'MN0001', // 示例值
-  DepartureTime: new Date('2024-08-18T16:10:00'), // 示例值
-  ArrivalTime: new Date('2024-08-18T17:35:00'), // 示例值
-  VehicleType: 'plane', // 示例值
-  DepartureCity: '上海', // 示例值
-  ArrivalCity: '北京', // 示例值
-  VehicleModel: '波音373(中)', // 示例值
-  ArrivalStation: '大兴国际机场', // 示例值
-  DepartureStation: '浦东国际机场T1', // 示例值
-};
-  console.log("vehicleScheduleData:", vehicleScheduleData)
-  axios
-    .post(url, vehicleScheduleData)
-    .then((response) => {
-      console.log("response:", response)
-    })
-    .catch((error) => {
-      console.error(error)
-    })
-}
 
 async function fetchTickets() {
   const url = `https://123.60.14.84/api/Vehicle/info/plane,${destination.value},${departure.value},${encodeURIComponent(departureTime.value)}`
@@ -98,51 +44,6 @@ async function fetchTickets() {
     .then((response) => {
       store.setSearchResults(response.data)
       console.log("searchResults:", response.data)
-    })
-    .catch((error) => {
-      console.error(error)
-    })
-}
-
-
-// 定义票务请求的数据结构
-interface VehicleTicketRequest {
-  VehicleId?: string;
-  TicketType?: string;
-  TicketPrice?: number;
-  TicketDepartureTime?: Date;
-  TicketArrivalTime?: Date;
-  TicketDepartureCity?: string;
-  TicketArrivalCity?: string;
-  TicketRemaining?: number;
-  TicketDepartureStation?: string;
-  TicketArrivalStation?: string;
-}
-
-// 定义票务请求的数据
-
-
-// 添加票务信息的函数
-async function addVehicleTicket() {
-  const url = "https://123.60.14.84:11000/api/Vehicle/ticket"
-  console.log("url:", url)
-  const vehicleTicketData: VehicleTicketRequest = {
-  VehicleId: 'MN0001', // 示例值
-  TicketType: '经济舱', // 示例值
-  TicketPrice: 1479.0, // 示例值
-  TicketDepartureTime: new Date('2024-08-18T08:10:00'), // 示例值
-  TicketArrivalTime: new Date('2024-08-18T10:35:00'), // 示例值
-  TicketDepartureCity: '上海', // 示例值
-  TicketArrivalCity: '北京', // 示例值
-  TicketRemaining: 100.0, // 示例值
-  TicketDepartureStation: '浦东国际机场T1', // 示例值
-  TicketArrivalStation: '大兴国际机场', // 示例值
-};
-  console.log("vehicleScheduleData:", vehicleTicketData)
-  axios
-    .post(url, vehicleTicketData)
-    .then((response) => {
-      console.log("response:", response)
     })
     .catch((error) => {
       console.error(error)
@@ -169,12 +70,6 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
   return { hours, minutes };
 }
 
-function returnId() {
-  const id = localStorage.getItem("id");
-  console.log("id:", id)
-  return id
-}
-
 </script>
 
 <template>
@@ -190,11 +85,6 @@ function returnId() {
           >
         </div>
       </el-card>
-      <!--
-      <el-button type="primary" id="submit" @click="newSchedule">新增航班</el-button>
-      <el-button type="primary" id="submit" @click="addVehicleTicket">新增机票</el-button>
-
-      <el-button type="primary" id="submit" @click="returnId">id</el-button>-->
     </div>
 
     <div class="flight-list">

@@ -315,6 +315,25 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
+      roles: ["user"]
+    },
+    children: [
+      {
+        path: "my-orders",
+        component: () => import("@/views/user/my-orders/index.vue"),
+        name: "My-orders",
+        meta: {
+          title: "我的订单",
+          svgIcon: "my-orders",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/",
+    component: Layouts,
+    meta:{
       roles: ["guide"]
     },
     children: [
@@ -334,13 +353,13 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     meta:{
-      roles: ["user","guide"]
+      roles: ["guide"]
     },
     children: [
       {
-        path: "my-orders",
-        component: () => import("@/views/my-orders/index.vue"),
-        name: "My-orders",
+        path: "my-orders-for-guide",
+        component: () => import("@/views/guide/my-orders/index.vue"),
+        name: "My-orders-for-guide",
         meta: {
           title: "我的订单",
           svgIcon: "my-orders",

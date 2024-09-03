@@ -1,35 +1,20 @@
 <script lang="ts" setup>
-import { ref } from "vue"
-import { ElMenu, ElMenuItem, ElContainer, ElAside, ElMain } from "element-plus"
-import cairo from "@/assets/scene/cairo.jpg"
-import newyork from "@/assets/scene/newyork.jpg"
-import paris from "@/assets/scene/paris.jpg"
-import shanghai from "@/assets/scene/shanghai.jpg"
-import sydney from "@/assets/scene/sydney.jpg"
-import tokyo from "@/assets/scene/tokyo.jpg"
-import riodejaneiro from "@/assets/scene/riodejaneiro.jpg"
+import { ref, onMounted } from 'vue';
+import { ElCarousel, ElCarouselItem } from 'element-plus';
+import cairo from "@/assets/scene/cairo.jpg";
+import newyork from "@/assets/scene/newyork.jpg";
+import paris from "@/assets/scene/paris.jpg";
+import shanghai from "@/assets/scene/shanghai.jpg";
+import sydney from "@/assets/scene/sydney.jpg";
+import tokyo from "@/assets/scene/tokyo.jpg";
+import riodejaneiro from "@/assets/scene/riodejaneiro.jpg";
 
-defineOptions({
-  name: "Scene"
-})
-const selectedItem = ref("")
-const isAsideVisible = ref(false)
-const showImages = ref(true) // 控制图片和滚动按钮显示的变量
-const handleSelect = (key: string) => {
-  if (selectedItem.value === key) {
-    selectedItem.value = ""
-    isAsideVisible.value = false
-    showImages.value = true // 恢复显示图片和滚动按钮
-  } else {
-    selectedItem.value = key
-    isAsideVisible.value = true
-    showImages.value = false // 隐藏图片和滚动按钮
-  }
-}
-
-const currentIndex = ref(0)
-const images = [shanghai, cairo, newyork, paris, sydney, tokyo, riodejaneiro]
-const images_herf = [
+const selectedItem = ref("");
+const isAsideVisible = ref(false);
+const showImages = ref(true);
+const currentIndex = ref(0);
+const images = [shanghai, cairo, newyork, paris, sydney, tokyo, riodejaneiro];
+const imagesHref = [
   "http://localhost:3333/#/scene/shanghai",
   "http://localhost:3333/#/scene/cairo",
   "http://localhost:3333/#/scene/newyork",
@@ -37,15 +22,17 @@ const images_herf = [
   "http://localhost:3333/#/scene/sydney",
   "http://localhost:3333/#/scene/tokyo",
   "http://localhost:3333/#/scene/riodejaneiro"
-]
+];
 
-const nextImage = () => {
-  currentIndex.value = (currentIndex.value + 1) % images.length
-}
+const handleSelect = (key: string) => {
+  selectedItem.value = selectedItem.value === key ? "" : key;
+  isAsideVisible.value = selectedItem.value !== "";
+  showImages.value = selectedItem.value === "";
+};
 
-const prevImage = () => {
-  currentIndex.value = (currentIndex.value - 1 + images.length) % images.length
-}
+const handleChange = (index: number) => {
+  currentIndex.value = index;
+};
 </script>
 <template>
   <div class="no-scroll">
@@ -66,13 +53,18 @@ const prevImage = () => {
         </el-menu>
       </el-aside>
       <el-main>
-        <!-- 使用 showImages 控制图片和滚动按钮的显示 -->
-        <div v-if="showImages" class="image-gallery">
-          <a :href="images_herf[currentIndex]">
-            <img :src="images[currentIndex]" alt="Scene 1" class="scene-image1" />
-          </a>
+        <div v-if="showImages">
+          <el-carousel :interval="4000" type="card" height="300px" @change="handleChange">
+            <el-carousel-item v-for="(image, index) in images" :key="index">
+              <img :src="image" alt="Scenic Spot" class="carousel-image" />
+            </el-carousel-item>
+          </el-carousel>
+          <div v-if="showImages" class="full-image">
+            <a :href="imagesHref[currentIndex]">
+              <img :src="images[currentIndex]" alt="Full Scenic Spot" class="scene-image1" />
+            </a>
+          </div>
         </div>
-
         <div v-else-if="selectedItem === '1'" class="city-links">
           <router-link :to="{ path: '/scene/shanghai' }">上海</router-link>
           <a>北京</a>
@@ -115,23 +107,12 @@ const prevImage = () => {
           <a>奥克兰</a>
           <a>皇后镇</a>
         </div>
-
-        <div v-if="showImages" class="scrollbar">
-          <button @click="prevImage" class="scroll-button"><<</button>
-          <div class="scroll-images">
-            <img :src="images[currentIndex]" alt="Scene" class="scroll-image" />
-            <img :src="images[(currentIndex + 1) % images.length]" alt="Scene" class="scroll-image" />
-            <img :src="images[(currentIndex + 2) % images.length]" alt="Scene" class="scroll-image" />
-          </div>
-          <button @click="nextImage" class="scroll-button">>></button>
-        </div>
       </el-main>
     </el-container>
   </div>
 </template>
 
 <style scoped>
-/* 保持原有样式 */
 .el-container {
   height: 100%;
 }
@@ -145,7 +126,7 @@ const prevImage = () => {
 }
 .el-menu-item {
   cursor: pointer;
-  height: 120px;
+  height: 100px;
 }
 .city-links a {
   display: inline-block;
@@ -230,7 +211,7 @@ li {
   border-bottom: 1px solid #ddd;
 }
 .image-gallery {
-  width: 808px;
+  width: 100%;
   height: 292px;
   gap: 20px;
 }
@@ -241,34 +222,54 @@ li {
   gap: 30px;
 }
 .scene-image1 {
-  width: 808px;
-  height: 292px;
+  margin-top: 30px;
+  width: 100%;
+  height: auto;
   display: block;
   border-radius: 15px;
   object-fit: contain;
 }
-.scrollbar {
-  display: flex;
-  margin-left: 10px;
-  gap: 10px;
-  margin-top: 20px;
+.el-container {
+  height: 100%;
 }
-.scroll-button {
-  font-size: 2em;
-  background: none;
-  border: none;
+
+.el-aside {
+  display: block;
+  height: 700px;
+  background: #2d3a4b;
+  color: white;
+  margin-left: 10%;
   cursor: pointer;
-  color: #000;
 }
-.scroll-button:hover {
-  color: rgb(0, 157, 255);
-}
-.scroll-image {
-  width: 220px;
-  height: 200px;
-  border-radius: 15px;
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  gap: 20px;
-  margin: 5px;
+  border-radius: 10px;
+}
+
+.Search-Scene {
+  padding: 12px;
+  margin: 20px 0;
+  margin-right: 10%;
+  width: 10%;
+  box-sizing: border-box;
+  color: #fef9f9;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  background-color: rgb(0, 157, 255);
+  border: 2px rgb(0, 157, 255) solid;
+  cursor: pointer;
+}
+
+.city-links a {
+  display: inline-block;
+  margin-right: 20px;
+  text-decoration: none;
+  color: black;
+}
+.city-links a:hover {
+  color: rgb(0, 157, 255);
 }
 </style>

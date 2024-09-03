@@ -96,18 +96,23 @@ const getInfo = async () => {
     window.location.reload();
   };
   /** 登出 */
-const logout = () => {
-  removeToken();
-  token.value = "";
-  roles.value = [];
-  resetRouter();
-  _resetTagsView();
-
-  // Clear localStorage
-  localStorage.removeItem("username");
-  localStorage.removeItem("role");
-  localStorage.removeItem("id");
-};
+  const logout = () => {
+    // 清除 Token 和用户角色
+    removeToken();
+    token.value = "";
+    roles.value = [];
+    
+    // 重置路由
+    resetRouter();
+  
+    // 重置 TagsView
+    _resetTagsView();
+  
+    // 清除本地存储
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    localStorage.removeItem("id");
+  };
 
   /** 重置 Token */
   const resetToken = () => {

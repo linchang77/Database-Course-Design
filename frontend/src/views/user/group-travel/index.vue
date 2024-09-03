@@ -60,7 +60,7 @@ interface TourGroup {
   returnTicketId: number
   departure: string
   destination: string
-  guidename: string
+  guideName: string
   goTicket: GoTicket
   returnTicket: ReturnTicket
   tourItineraries: TourItinerary[]
@@ -110,7 +110,7 @@ const fetchTourGroups = () => {
           returnTicketId: group.returnTicketId,
           departure: group.departure,
           destination: group.destination,
-          guidename: group.guidename,
+          guideName: group.guideName,
           goTicket: {
             vehicleId: group.goTicket.vehicleId,
             ticketType: group.goTicket.ticketType,
@@ -183,7 +183,7 @@ const fetchId = () => {
           returnTicketId: data.returnTicketId,
           departure: data.departure,
           destination: data.destination,
-          guidename: data.guidename,
+          guideName: data.guideName,
           goTicket: {
             vehicleId: data.goTicket.vehicleId,
             ticketType: data.goTicket.ticketType,
@@ -261,7 +261,7 @@ const fetchFilter = () => {
           returnTicketId: group.returnTicketId,
           departure: group.departure,
           destination: group.destination,
-          guidename: group.guidename,
+          guideName: group.guideName,
           goTicket: {
             vehicleId: group.goTicket.vehicleId,
             ticketType: group.goTicket.ticketType,
@@ -325,7 +325,7 @@ const goToGroup = (group: TourGroup) => {
       returnTicketId: group.returnTicketId.toString(),
       departure: group.departure,
       destination: group.destination,
-      guidename: group.guidename,
+      guideName: group.guideName,
       goTicket:JSON.stringify(group.goTicket), 
       returnTicket:JSON.stringify(group.returnTicket), 
       tourItineraries: JSON.stringify(group.tourItineraries), 
@@ -345,7 +345,7 @@ onMounted(() => {
 <div>
   <div class="group-filter-container">
     <div class="first-row">
-        <span class="word"> 旅行团编号号 </span>
+        <span class="word"> 旅行团编号 </span>
         <el-input
           v-model="groupId_input"
           style="width: 210px"
@@ -411,7 +411,7 @@ onMounted(() => {
       <p>旅行团编号： {{ group.groupId }}</p>
       <p>出发地：{{ group.departure }} - 目的地：{{ group.destination }}</p>
       <p>时间：{{ new Date(group.startDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) }} -- {{ new Date(group.endDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) }}</p>
-      <p>导游：{{ group.guidename }}</p>
+      <p>导游：{{ group.guideName }}</p>
     </div>
     <div class="group-price">
       <p>{{ group.groupPrice }} 元起</p>
@@ -437,7 +437,7 @@ onMounted(() => {
   margin-top: 20px;
   display: flex;
   gap: 20px; 
-  justify-content: center; /* 水平居中 */
+  justify-content: center;
   align-items: center;  
 }
 

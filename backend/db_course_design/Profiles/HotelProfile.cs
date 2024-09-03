@@ -14,6 +14,7 @@ namespace db_course_design.Profiles
             CreateMap<Hotel, HotelResponse>();
             CreateMap<HotelRoomType, HotelRoomDetail>();
             CreateMap<HotelRoom, HotelRoomResponse>();
+            CreateMap<HotelRoomType, HotelTypeDetail>();
         }
     }
 }

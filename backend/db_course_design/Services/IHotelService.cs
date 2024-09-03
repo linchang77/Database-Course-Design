@@ -13,12 +13,14 @@ namespace db_course_design.Services
         Task<List<HotelResponse>> GetAllHotelsAsync();
         // 根据城市获取酒店信息
         Task<List<HotelResponse>> GetHotelByCityAsync(string city);
+        // 查询酒店房型和价格
+        Task<List<HotelTypeDetail>> GetHotelTypeDetailAsync(decimal hotelId);
         // 返回某酒店各种房型剩余房间数和房型价格
-        Task<List<HotelRoomDetail>> GetHotelRoomDetailsAsync(decimal hotelId);
+        Task<HotelRoomDetail?> GetHotelRoomDetailsAsync(decimal hotelId, string roomType, DateTime? StartDate, DateTime? EndDate);
         // 返回某酒店指定房型的所有房间
         Task<List<HotelRoomResponse>> GetAllHotelRoomsAsync(decimal hotelId, string roomType);
         // 创建一个酒店订单并分配房间
-        Task<CreateHotelOrderResponse?> CreateHotelOrderAsync(CreateHotelOrderRequest request);
+        Task<string> CreateHotelOrderAsync(CreateHotelOrderRequest request);
         // 添加酒店信息
         Task<HotelResponse?> AddHotelAsync(HotelRequest request);
         // 删除酒店信息

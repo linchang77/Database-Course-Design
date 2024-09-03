@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 namespace db_course_design.Common;
 public class SaltedPassword
 {
+    public static string salt = "jleyrCCO8Z+JT5mez87yuw==";
     // 使用盐对密码进行哈希运算
     public static string HashPassword(string password, string salt)
     {

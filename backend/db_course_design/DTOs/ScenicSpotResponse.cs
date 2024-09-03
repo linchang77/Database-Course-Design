@@ -15,6 +15,8 @@ namespace db_course_design.DTOs
         public string? ScenicSpotIntroduction { get; set; }
 
         public string? ScenicSpotLocation { get; set; }
+
+        public decimal? ScenicSpotRemoteness { get; set; }
     }
     public class ScenicSpotTicketResponse
     {

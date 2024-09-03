@@ -1,62 +1,3 @@
-<template>
-<div>
-  <div class="header">
-    <img src="@\assets\layouts\logo.png" alt="Logo" class="logo">
-    <h1 class="title1">e行天下</h1>
-  </div>
-
-  <div>
-    <!-- 上部: 热门旅游团 -->
-    <section>
-      <h2 class="section-title">热门旅游团</h2>
-      <div class="group-container">
-        <div 
-          class="group-card" 
-          v-for="group in tourGroups" 
-          :key="group.groupId" 
-          @click="goToGroup(group)"
-        >
-          <div class="group-image">
-            <img :src="group.imageUrl" alt="旅游团图片" />
-          </div>
-          <div class="group-info">
-            <p class="title">{{ group.groupName }}</p>
-            <p>{{ formatDate(group.startDate) }} -- {{ formatDate(group.endDate) }}</p>
-          </div>
-          <div class="group-price">
-            <p>{{ group.groupPrice }} 元起</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 下部: 景点推荐 -->
-    <section>
-      <h2 class="section-title">景点推荐</h2>
-      <div class="content-wrapper">
-        <div v-if="scenicSpots.length" class="attraction-container">
-          <div 
-            v-for="spot in scenicSpots" 
-            :key="spot.scenicSpotId" 
-            class="attraction-card" 
-            @click="goToAttraction(spot.scenicSpotName, spot.scenicSpotIntroduction, spot.scenicSpotId)"
-          >
-            <div class="image-wrapper">
-              <img :src="`/images/${spot.scenicSpotName}.jpg`" :alt="spot.scenicSpotName" class="attraction-image" />
-            </div>
-            <div class="attraction-info">
-              <h3>{{ spot.scenicSpotName }} <span>{{ spot.scenicSpotGrade }}A</span></h3>
-              <span class="price">{{ childTicketPrices[spot.scenicSpotName] ? childTicketPrices[spot.scenicSpotName] + '元起' : '免费' }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="right-space"></div>
-      </div>
-    </section>
-  </div>
-</div>
-</template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
@@ -107,7 +48,7 @@ const goToAttraction = (scenicSpotName, scenicSpotIntroduction, scenicSpotId) =>
 // 获取推荐旅游团
 const fetchTourGroups = () => {
   axios
-    .get("https://123.60.14.84:10000/api/TourGroup/recommendedtours")
+    .get("https://123.60.14.84/api/TourGroup/recommendedtours")
     .then((response) => {
       const data = response.data;
       if (Array.isArray(data)) {
@@ -130,14 +71,21 @@ const goToGroup = (group) => {
     path: `/group-travel/groups/detail`,
     query: {
       groupId: group.groupId.toString(),
-      groupName: group.groupName,
-      groupPrice: group.groupPrice.toString(),
+      guideId: group.guideId.toString(),
       startDate: group.startDate,
       endDate: group.endDate,
-      guideName: group.guideName,
-      imageUrl: group.imageUrl,
+      groupName: group.groupName,
+      groupPrice: group.groupPrice.toString(),
+      goTicketId: group.goTicketId.toString(),
+      returnTicketId: group.returnTicketId.toString(),
+      departure: group.departure,
+      destination: group.destination,
+      guidename: group.guidename,
+      goTicket:JSON.stringify(group.goTicket), 
+      returnTicket:JSON.stringify(group.returnTicket), 
       tourItineraries: JSON.stringify(group.tourItineraries), 
-      hotels: JSON.stringify(group.hotels)
+      hotels: JSON.stringify(group.hotels),
+      imageUrl: group.imageUrl
     }
   });
 }
@@ -160,6 +108,65 @@ const imageMap = {
 }
 </script>
 
+<template>
+  <div>
+    <div class="header">
+      <img src="@\assets\layouts\logo.png" alt="Logo" class="logo">
+      <h1 class="title1">e行天下</h1>
+    </div>
+  
+    <div>
+      <!-- 上部: 热门旅游团 -->
+      <section>
+        <h2 class="section-title">热门旅游团</h2>
+        <div class="group-container">
+          <div 
+            class="group-card" 
+            v-for="group in tourGroups" 
+            :key="group.groupId" 
+            @click="goToGroup(group)"
+          >
+            <div class="group-image">
+              <img :src="group.imageUrl" alt="旅游团图片" />
+            </div>
+            <div class="group-info">
+              <p class="title">{{ group.groupName }}</p>
+              <p>{{ formatDate(group.startDate) }} -- {{ formatDate(group.endDate) }}</p>
+            </div>
+            <div class="group-price">
+              <p>{{ group.groupPrice }} 元起</p>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+      <!-- 下部: 景点推荐 -->
+      <section>
+        <h2 class="section-title">景点推荐</h2>
+        <div class="content-wrapper">
+          <div v-if="scenicSpots.length" class="attraction-container">
+            <div 
+              v-for="spot in scenicSpots" 
+              :key="spot.scenicSpotId" 
+              class="attraction-card" 
+              @click="goToAttraction(spot.scenicSpotName, spot.scenicSpotIntroduction, spot.scenicSpotId)"
+            >
+              <div class="image-wrapper">
+                <img :src="`/images/${spot.scenicSpotName}.jpg`" :alt="spot.scenicSpotName" class="attraction-image" />
+              </div>
+              <div class="attraction-info">
+                <h3>{{ spot.scenicSpotName }} <span>{{ spot.scenicSpotGrade }}A</span></h3>
+                <span class="price">{{ childTicketPrices[spot.scenicSpotName] ? childTicketPrices[spot.scenicSpotName] + '元起' : '免费' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="right-space"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</template>
+
 <style scoped>
 .section-title {
   font-size: 1.8em;
@@ -172,11 +179,10 @@ const imageMap = {
 }
 
 .attraction-container {
+  margin-left: 40px;
+  margin-top: 10px;
   display: flex;
-  justify-content: space-between;
-  margin-left: 5%;
   gap: 20px;
-  width: 100%;
 }
 
 .attraction-card {
@@ -187,7 +193,7 @@ const imageMap = {
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   flex: 1;
-  max-width: 33%;
+  max-width: 30%;
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.2s;
@@ -217,13 +223,13 @@ const imageMap = {
 }
 
 .attraction-info h3 {
-  font-size: 16px;
+  font-size: 21px;
   margin: 0;
   text-align: left;
 }
 
 .attraction-info span {
-  font-size: 14px;
+  font-size: 18px;
   color: #555;
 }
 
@@ -236,7 +242,7 @@ const imageMap = {
 }
 
 .right-space {
-  width: 10%;
+  width: 0%;
 }
 
 /* 旅游团样式 */
@@ -310,6 +316,6 @@ const imageMap = {
 .title1 {
   font-size: 2.5em;
   font-weight: bold;
-  color: #000203;
+  color: #3498db;
 }
 </style>

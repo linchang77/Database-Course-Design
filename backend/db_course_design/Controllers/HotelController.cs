@@ -4,26 +4,27 @@ using db_course_design.Services;
 using db_course_design.Services.impl;
 using db_course_design.DTOs;
 using EntityFramework.Models;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace db_course_design.Controllers
 {
-    /*业务逻辑：
-        根据城市获取酒店信息
-        返回某酒店各种房型剩余房间数和房型价格
-        接收用户下单信息并分配房间
-    路由：
-    api/Hotel/
-        all/
-            Get
-        {city}/
-            Get
-        detail/
-            {hotelId}/
-                Get
-        rooms/
-            {hotelId},{roomType}
-        create/
-            Post
+    /*
+     * 用户路由：
+     * api/Hotel/
+     *  all/
+     *      Get         获取全部酒店信息
+     *  {city}/
+     *      Get         根据城市获取酒店信息
+     *  create/
+     *      Post        创建一个酒店订单并分配房间
+     *  {hotelId}/
+     *      type/
+     *          Get     查询酒店房型和价格
+     *      detail?roomType&StartDate&EndDate
+     *          Get     返回某酒店各种房型剩余房间数和房型价格
+     *      rooms/
+     *          {roomType}/
+     *              Get 返回某酒店指定房型的所有房间信息
     */
     [ApiController]
     [Route("api/[controller]")]
@@ -54,21 +55,31 @@ namespace db_course_design.Controllers
             }
             return Ok(hotels);
         }
-
-        /*--返回某酒店各种房型剩余房间数和房型价格--*/
-        [HttpGet("detail/{hotelId}")]
-        public async Task<IActionResult> GetRoomDetail(decimal hotelId)
+        /*--查询酒店房型和价格--*/
+        [HttpGet("{hotelId}/type")]
+        public async Task<IActionResult> GetRoomType(decimal hotelId)
         {
-            var details = await _hotelService.GetHotelRoomDetailsAsync(hotelId);
-            if (details == null || !details.Any()) 
+            var types = await _hotelService.GetHotelTypeDetailAsync(hotelId);
+            if (!types.Any())
             {
                 return NotFound(new { Message = "this Hotel is closed" });
             }
-            return Ok(details);
+            return Ok(types);
+        }
+        /*--返回某酒店各种房型剩余房间数和房型价格--*/
+        [HttpGet("{hotelId}/detail")]
+        public async Task<IActionResult> GetRoomDetail(decimal hotelId, string roomType,  DateTime? StartDate, DateTime? EndDate)
+        {
+            var detail = await _hotelService.GetHotelRoomDetailsAsync(hotelId, roomType, StartDate, EndDate);
+            if (detail == null) 
+            {
+                return NotFound(new { Message = "this Hotel has no room left" });
+            }
+            return Ok(detail);
         }
 
         /*--返回某酒店指定房型的所有房间信息--*/
-        [HttpGet("rooms/{hotelId},{roomType}")]
+        [HttpGet("{hotelId}/rooms/{roomType}")]
         public async Task<IActionResult> GetAllRooms(decimal hotelId, string roomType)
         {
             var rooms = await _hotelService.GetAllHotelRoomsAsync(hotelId, roomType);
@@ -83,14 +94,17 @@ namespace db_course_design.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateHotelOrder([FromBody] CreateHotelOrderRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _hotelService.CreateHotelOrderAsync(request);
 
             if (result == null)
             {
-                return StatusCode(404, "create failed.");
+                return StatusCode(404, "未查询到符合条件的房间");
             }
 
-            return Ok();
+            return Ok(new { Message = "您的房间号为" + result });
         }
 
         /*
@@ -121,6 +135,9 @@ namespace db_course_design.Controllers
         [HttpPost("add/hotel")]
         public async Task<IActionResult> AddHotel([FromBody] HotelRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var target = await _hotelService.AddHotelAsync(request);
 
             if (target == null)
@@ -131,6 +148,9 @@ namespace db_course_design.Controllers
         [HttpPost("add/roomtype")]
         public async Task<IActionResult> AddHotelRoomType([FromBody] HotelRoomTypeRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var target = await _hotelService.AddHotelRoomTypeAsync(request);
 
             if (target == null)
@@ -141,6 +161,9 @@ namespace db_course_design.Controllers
         [HttpPost("add/room")]
         public async Task<IActionResult> AddHotelRoom([FromBody] HotelRoomRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var target = await _hotelService.AddHotelRoomAsync(request);
 
             if (target == null)

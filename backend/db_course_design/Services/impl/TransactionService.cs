@@ -14,19 +14,16 @@ namespace db_course_design.Services.impl
     {
         /*--上下文连接数据库--*/
         private readonly ModelContext _context;
-        /*--映射交易记录的所有属性--*/
-        public IMapper _mapper { get; }
-
+        
         public TransactionService(ModelContext context)
         {
             _context = context;
-            _mapper = new MapperConfiguration(cfg => cfg.AddProfile<HotelProfile>()).CreateMapper();
         }
 
         /*--管理员获取全部交易记录--*/
         public async Task<List<TransactionRecord>> GetAllTransactionAsync()
         {
-            return await _context.TransactionRecords.Select(r => _mapper.Map<TransactionRecord>(r)).ToListAsync();
+            return await _context.TransactionRecords.ToListAsync();
         }
         /*--与类别和用户有关的筛选--*/
         public async Task<List<TransactionRecord>> GetFilteredTransactionsAsync(string? category = null, int? userId = null)
@@ -42,18 +39,28 @@ namespace db_course_design.Services.impl
             else
                 query = query.Where(o => o.UserId == userId && o.TransactionCategory.Equals(category));
 
-            var Records = await query
-                .Select(o => _mapper.Map<TransactionRecord>(o)).ToListAsync();
+            var Records = await query.ToListAsync();
             return Records;
         }
-        /*--根据orderId筛选--
-        public async Task<List<TransactionRecord>> GetTransactionByOrderAsync(int orderId, int? userId = null)
+        /*--根据交易时间筛选--*/
+        public async Task<List<TransactionRecord>> GetTransactionByTimeAsync(DateTime? StartDate, DateTime? EndDate, int? userId)
         {
             var query = _context.TransactionRecords.AsQueryable();
-            // 管理员
+
+            // admin
             if(userId == null)
-                query = query.Where(o => o)
-        }*/
+            {
+                query = query.Where(o => o.TransactionTime >= StartDate && o.TransactionTime <= EndDate);
+            }
+            // user
+            else
+            {
+                query = query.Where(o => o.UserId == userId && o.TransactionTime >= StartDate && o.TransactionTime <= EndDate);
+            }
+
+            var Records = await query.ToListAsync();
+            return Records;
+        }
         /*--流水统计--*/
         public async Task<decimal?> GetTransactionStatsAsync(int userId, int year, int? month = null)
         {
