@@ -57,7 +57,7 @@ namespace db_course_design.Services.impl
             }
             if (guideId.HasValue)
             {
-                query = query.Where(o => o.Order.GuideOrder.GuideId == guideId.Value);
+                query = query.Where(o => o.Order.GuideOrder.GuideId == guideId.Value && o.Order.Status.Equals("Completed"));
             }
 
             var guideOrders = await query
@@ -131,7 +131,7 @@ namespace db_course_design.Services.impl
             }
             if (guideId.HasValue)
             {
-                query = query.Where(o => o.Order.TourOrder.Group.GuideId == guideId);
+                query = query.Where(o => o.Order.TourOrder.Group.GuideId == guideId && o.Order.Status.Equals("Completed"));
             }
 
             var tourOrders = await query
