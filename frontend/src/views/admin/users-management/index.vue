@@ -1,29 +1,28 @@
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { CirclePlus } from "@element-plus/icons-vue";
 
 // 用户接口
-interface User{
-  id: number,
-  name: string,
-  gender: string,
-  phoneNumbers: Array<number>,
-  profilePicture: string,
-  registrationTime: Date,
-  password: string
+interface User {
+  id: number;
+  name: string;
+  gender: string;
+  phoneNumbers: Array<number>;
+  profilePicture: string;
+  registrationTime: Date;
+  password: string;
 }
 
-
 defineOptions({
-  name: "Users-management"
+  name: "Users-management",
 });
 
 const loading = ref<boolean>(false);
 const tableData = ref<User[]>([]);
 
-//加载数据
+// 加载数据
 const getTableData = async () => {
   loading.value = true;
   try {
@@ -37,7 +36,7 @@ const getTableData = async () => {
   }
 };
 
-//空白数据格式
+// 空白数据格式
 const DEFAULT_FORM_DATA: Partial<User> = {
   id: undefined,
   name: "",
@@ -45,35 +44,36 @@ const DEFAULT_FORM_DATA: Partial<User> = {
   phoneNumbers: [],
   profilePicture: "",
   registrationTime: undefined,
-  password:"",
+  password: "",
 };
 
-const option =  ref<string>("add");
+const option = ref<string>("add");
 const dialogVisible = ref<boolean>(false);
 const formData = ref<Partial<User>>(DEFAULT_FORM_DATA);
 
-//数据限制要求
+// 动态数据限制要求
 const rules = reactive({
-  id:  [{ required: false, trigger: "blur" }],
-  password:[{ required: true, message: "用户密码不能为空", trigger: "blur" }],
-  name:[{ required: true, message: "用户名不能为空", trigger: "blur" }],
-  gender:[{ required: false, trigger: "blur" }],
+  id: [{ required: false, trigger: "blur" }],
+  name: [{ required: true, message: "用户名不能为空", trigger: "blur" }],
+  password: computed(() => option.value === "add" ? [{ required: true, message: "用户密码不能为空", trigger: "blur" }] : [{ required: false }]),
+  gender: [{ required: false, trigger: "blur" }],
   phoneNumbers: [{ required: false, trigger: "blur" }],
   profilePicture: [{ required: false, trigger: "blur" }],
-  registrationTime:[{ required: false, trigger: "blur" }],
+  registrationTime: [{ required: false, trigger: "blur" }],
 });
 
-//提交增加需求
+// 提交增加需求
 const handleAdd = () => {
   (formRef.value as any).validate((valid: boolean) => {
     if (valid) {
-      axios.post(`https://123.60.14.84/api/Profile/user/add`, formData.value)
+      axios
+        .post(`https://123.60.14.84/api/Profile/user/add`, formData.value)
         .then(() => {
           ElMessage.success("新增用户成功");
           console.log(formData.value.name)
           dialogVisible.value = false;
           getTableData();
-          resetForm(); 
+          resetForm();
         })
         .catch(() => {
           ElMessage.error("新增用户失败");
@@ -87,19 +87,20 @@ const handleAdd = () => {
   });
 };
 
-//重置表单
+// 重置表单
 const resetForm = () => {
   formData.value = { ...DEFAULT_FORM_DATA };
 };
 
-//提交删除需求
+// 提交删除需求
 const handleDelete = (row: User) => {
   ElMessageBox.confirm(`正在删除用户：${row.name}，确认删除？`, "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
-    type: "warning"
+    type: "warning",
   }).then(() => {
-    axios.delete(`https://123.60.14.84/api/Profile/user/del/${row.id}`)
+    axios
+      .delete(`https://123.60.14.84/api/Profile/user/del/${row.id}`)
       .then(() => {
         ElMessage.success("删除成功");
         getTableData();
@@ -110,16 +111,17 @@ const handleDelete = (row: User) => {
   });
 };
 
-//提交更新需求
+// 提交更新需求
 const handleUpdate = () => {
   (formRef.value as any).validate((valid: boolean) => {
     if (valid) {
-      axios.put(`https://123.60.14.84/api/Profile/user/update/${formData.value.id}`, formData.value)
+      axios
+        .put(`https://123.60.14.84/api/Profile/user/update/${formData.value.id}`, formData.value)
         .then(() => {
           ElMessage.success("修改用户成功");
           dialogVisible.value = false;
           getTableData();
-          resetForm(); 
+          resetForm();
         })
         .catch(() => {
           ElMessage.error("修改用户失败");
@@ -133,26 +135,25 @@ const handleUpdate = () => {
   });
 };
 
-//进入添加页面
+// 进入添加页面
 const toAdd = () => {
   resetForm();
-  const nowTime = new Date();
-  // 更正时区
-  nowTime.setHours(nowTime.getHours() + 8);
-  const formattedTime = nowTime.toISOString().slice(0, 19);
-  // 确保 `registrationTime` 自动设置
-  formData.value = Object.assign({}, formData.value, { registrationTime: formattedTime });
+  //const nowTime = new Date();
+  //nowTime.setHours(nowTime.getHours() + 8);
+  //const formattedTime = nowTime.toISOString().slice(0, 19);
+  //formData.value = Object.assign({}, formData.value, { registrationTime: formattedTime });
+  option.value = "add";
   dialogVisible.value = true;
 };
 
-
-//进入更新页面
+// 进入更新页面
 const toUpdate = (row: User) => {
   resetForm();
   dialogVisible.value = true;
   formData.value = { ...DEFAULT_FORM_DATA, ...row };
   option.value = "update";
 };
+
 onMounted(() => getTableData());
 
 const formRef = ref();
