@@ -6,6 +6,7 @@ import nanjing from "/images/nanjing.jpg";
 import shanghai from "/images/shanghai.jpg";
 import chengdu from "/images/chengdu.jpg";
 import beijing from "/images/beijing.jpg";
+import wuhan from "/images/wuhan.jpg";
 const selectedItem = ref("");
 const isAsideVisible = ref(false);
 const showImages = ref(true);
@@ -17,11 +18,10 @@ const supportedCities = [
   { lower: 'nanjing', upper: '南京' },
   { lower: 'chengdu', upper: '成都' },
   { lower: 'beijing', upper: '北京' },
-  { lower: 'guangzhou', upper: '广州' },
   { lower: 'wuhan', upper: '武汉' },
 ];
 
-const images = [shanghai, nanjing, chengdu, beijing];
+const images = [shanghai, nanjing, chengdu, beijing, wuhan];
 
 const router = useRouter();
 
@@ -84,9 +84,8 @@ onMounted(() => {
           <a v-for="city in supportedCities.filter(city => city.lower === 'shanghai')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
           <a v-for="city in supportedCities.filter(city => city.lower === 'nanjing')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
           <a v-for="city in supportedCities.filter(city => city.lower === 'chengdu')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
-          <a>北京</a>
-          <a>天津</a>
-          <a>广州</a>
+          <a v-for="city in supportedCities.filter(city => city.lower === 'beijing')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
+          <a v-for="city in supportedCities.filter(city => city.lower === 'wuhan')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
         </div>
         <div v-else-if="selectedItem === '2'" class="city-links">
           <a>东京</a>
