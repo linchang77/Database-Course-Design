@@ -8,7 +8,9 @@ import { useUserStoreHook } from '@/store/modules/user';
 
 const userStore = useUserStoreHook();
 const userRole = userStore.roles
-const userId = ref<string | null>(localStorage.getItem('id'))
+//const userId = ref<string | null>(localStorage.getItem('id'))
+//const userRole = "guide"
+const userId = ref(5)
 
 // 定义订单的响应类型
 interface BaseOrder {
@@ -23,8 +25,8 @@ interface BaseOrder {
 interface GuideOrder extends BaseOrder {
   orderType: "GuideOrder"
   service: string
-  guideName: string
-  guideGender: string
+  userName: string
+  userId: number
   serviceBeginDate?: string
   serviceEndDate?: string
 }
@@ -33,9 +35,8 @@ interface TourOrder extends BaseOrder {
   orderType: "TourOrder"
   groupId?: number
   groupName?: string
-  guideId?: number
-  guideName: string
-  guideGender: string
+  userId: number
+  userName: string
   orderNumber: number
   startDate?: string
   endDate?: string
@@ -44,7 +45,7 @@ interface TourOrder extends BaseOrder {
 // 更多筛选选项
 const options = [
   { value: "全部订单", label: "全部订单" },
-  { value: "用户预定", label: "用户预定" },
+  { value: "导游", label: "导游" },
   { value: "旅行团", label: "旅行团" }
 ]
 
@@ -118,7 +119,7 @@ const fetchOrders = () => {
 // 按订单ID搜索订单
 async function searchOrder() {
   const orderId = order_id_input.value
-  user_id_input.value = "全部订单"
+  user_id_input.value = ""
   order_type_input.value = "全部订单"
   date_input.value = ""
   if (!orderId) {
@@ -136,7 +137,6 @@ async function searchOrder() {
     }
     return
   }
-
   try {
     // 调用后端 API 获取订单详情
     const response = await axios.get(`${apiUrl}/${userRole}/${userId.value}/${orderId}`, {})
@@ -154,89 +154,12 @@ async function searchOrder() {
   }
 }
 
-// 按订单分类筛选订单
-const filterOrdersByCategory = () => {
-  switch (order_type_input.value) {
-    case "全部订单":
-      categoryFilter.value = ""
-      break
-    case "导游":
-      categoryFilter.value = "GuideOrder"
-      break
-    case "酒店":
-      categoryFilter.value = "HotelOrder"
-      break
-    case "景点":
-      categoryFilter.value = "ScenicOrder"
-      break
-    case "出行":
-      categoryFilter.value = "VehicleOrder"
-      break
-    case "旅行团":
-      categoryFilter.value = "TourOrder"
-      break
-    default:
-      categoryFilter.value = ""
-  }
-  if (categoryFilter.value) {
-    axios
-      .get(`${apiUrl}/${userRole}/${userId.value}/category/${categoryFilter.value}`, {})
-      .then((response) => {
-        if (response.data && response.data.length > 0) {
-          orders.value = response.data
-          total.value = response.data.length
-        } else {
-          orders.value = []
-          showEmptyMessage.value = true
-          total.value = 0
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-        orders.value = []
-        total.value = 0
-      })
-  } else {
-    fetchOrders()
-  }
-}
-
-// 按时间段筛选订单
-const filterByDate = () => {
-  startDate.value = date_input.value[0]
-  endDate.value = date_input.value[1]
-  if (startDate.value && endDate.value) {
-    axios
-      .get(`${apiUrl}/${userRole}/${userId.value}/date-range`, {
-        params: {
-          start: startDate.value,
-          end: endDate.value
-        }
-      })
-      .then((response) => {
-        if (response.data && response.data.length > 0) {
-          orders.value = response.data
-          total.value = response.data.length
-        } else {
-          orders.value = []
-          total.value = 0
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-        orders.value = []
-        total.value = 0
-      })
-  } else {
-    fetchOrders()
-  }
-}
-
-// 同时按类型、状态和日期筛选订单
+// 同时筛选订单
 const filterOrders = () => {
+  order_id_input.value = ""
   const category = ref("")
-  const status = ref("")
-
+  const startDateValue = date_input.value[0]
+  const endDateValue = date_input.value[1]
   switch (order_type_input.value) {
     case "全部订单":
       category.value = ""
@@ -244,76 +167,61 @@ const filterOrders = () => {
     case "导游":
       category.value = "GuideOrder"
       break
-    case "酒店":
-      category.value = "HotelOrder"
-      break
-    case "景点":
-      category.value = "ScenicOrder"
-      break
-    case "出行":
-      category.value = "VehicleOrder"
-      break
     case "旅行团":
       category.value = "TourOrder"
       break
     default:
       category.value = ""
   }
-  const startDateValue = date_input.value[0]
-  const endDateValue = date_input.value[1]
-
-  const requests = []
-
-  // 添加类型筛选请求
-  if (category.value != '') {
-    requests.push(axios.get(`${apiUrl}/${userRole}/${userId.value}/category/${category.value}`))
-  }else{
-    requests.push(axios.get(`${apiUrl}/${userRole}/${userId.value}`))
-  }
-
-  // 添加状态筛选请求
-  if (status.value != '') {
-    requests.push(axios.get(`${apiUrl}/${userRole}/${userId.value}/status/${status.value}`))
-  }else{
-    requests.push(axios.get(`${apiUrl}/${userRole}/${userId.value}`))
-  }
-
-  // 添加日期筛选请求
-  if (startDateValue && endDateValue) {
-    requests.push(
-      axios.get(`${apiUrl}/${userRole}/${userId.value}/date-range`, {
-        params: {
-          start: startDateValue,
-          end: endDateValue
-        }
-      })
-    )
-  }else{
-    requests.push(axios.get(`${apiUrl}/${userRole}/${userId.value}`))
-  }
-
-  // 同时执行所有请求
-  Promise.all(requests)
-    .then((responses) => {
-      let filteredOrders = responses[0].data // 以第一个请求的结果为基础
-      // 合并其他请求的结果
-      responses.slice(1).forEach((response) => {
-        filteredOrders = filteredOrders.filter((order: Order) =>
-          response.data.some((filteredOrder: Order) => filteredOrder.orderId === order.orderId)
-        )
-      })
-      // 更新订单数据
-      orders.value = filteredOrders
-      total.value = filteredOrders.length
-      if (filteredOrders.length === 0) {
+  axios
+    .get(`https://123.60.14.84/api/Guide/${userId.value}/filter/`, {
+    params: {
+        OrderType: category.value,
+        UserId: user_id_input.value,
+        startDate: startDateValue,
+        EndDate: endDateValue
+      }
+    })
+    .then((response) => {
+      console.log("API Response:", response.data) // 调试输出查看返回的数据结构
+      // 遍历返回的数据并根据 orderType 将不同类型的订单添加到 orders 数组中
+      const orderData = response.data // 直接使用 response.data 作为订单数据
+      if (orderData && Array.isArray(orderData)) {
+        orders.value = orderData.map((order: any) => {
+          switch (order.orderType) {
+            case "GuideOrder":
+              return {
+                ...order,
+                service: order.service,
+                guideId: order.guideId,
+                guideName: order.guideName,
+                guideGender: order.guideGender,
+                serviceBeginDate: order.serviceBeginDate,
+                serviceEndDate: order.serviceEndDate
+              } as GuideOrder
+            case "TourOrder":
+              return { ...order, ...order.TourOrderDetail }
+            default:
+              return order
+          }
+        })
+        total.value = response.data.length || 0
+        showEmptyMessage.value = orders.value.length === 0
+      } else {
+        console.error("Orders data is missing or not an array.")
+        orders.value = [] // 确保 orders 不为空
+        total.value = 0
         showEmptyMessage.value = true
       }
     })
     .catch((error) => {
-      console.error(error)
-      orders.value = []
-      total.value = 0
+      console.error("Error fetching orders:", error)
+      showEmptyMessage.value = true
     })
+
+
+
+
 }
 
 // 取消订单
@@ -350,45 +258,6 @@ async function deleteOrder(orderId: number) {
       // 非 axios 错误
       console.error("Error:", error)
       alert("取消订单时发生错误。")
-    }
-  }
-}
-
-// 标记订单为已付款
-async function PayOrder(orderId: number) {
-  const url = `${apiUrl}/${userRole}/${userId.value}/${orderId}`
-  try {
-    const response = await axios.patch(url, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    // 直接使用 axios 解析好的数据
-    const data = response.data
-    console.log(data.message) // 显示成功消息
-    alert(`订单号${orderId}的订单已支付.`)
-    fetchOrders() // 刷新订单列表
-  } catch (error) {
-    // 判断错误类型并处理
-    if (axios.isAxiosError(error)) {
-      // 处理响应错误
-      if (error.response) {
-        // 请求已发出，服务器响应状态码不在2xx范围内
-        console.error("Error:", error.response.data.Message)
-        alert(`支付订单失败: ${error.response.data.Message}`)
-      } else if (error.request) {
-        // 请求已发出，但没有收到响应
-        console.error("Error:", error.request)
-        alert("支付订单时发生错误。")
-      } else {
-        // 其他错误
-        console.error("Error:", error.message)
-        alert("支付订单时发生错误。")
-      }
-    } else {
-      // 非 axios 错误
-      console.error("Error:", error)
-      alert("支付订单时发生错误。")
     }
   }
 }
@@ -430,28 +299,6 @@ const formatTransport = (status: string) => {
   return stateMap[status] || "未知类型"
 }
 
-// 确认付款弹窗
-const openPayment = (orderId: number) => {
-  ElMessageBox.confirm("确认要付款吗？", "付款确认", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-    type: "warning",
-    callback: (action: Action) => {
-      if (action === "confirm") {
-        PayOrder(orderId)
-        ElMessage({
-          type: "success",
-          message: "正在进行付款！"
-        })
-      } else {
-        ElMessage({
-          type: "info",
-          message: "付款已取消！"
-        })
-      }
-    }
-  })
-}
 
 // 确认取消订单弹窗
 const openCancel = (orderId: number) => {
@@ -474,49 +321,6 @@ const openCancel = (orderId: number) => {
       }
     }
   })
-}
-
-//确认退款弹窗
-const openRefund = (orderId: number) => {
-  ElMessageBox.confirm("确认要退款吗？", "退款确认", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-    type: "warning",
-    callback: (action: Action) => {
-      if (action === "confirm") {
-        deleteOrder(orderId)
-        ElMessage({
-          type: "success",
-          message: "正在进行退款！"
-        })
-      } else {
-        ElMessage({
-          type: "info",
-          message: "退款已取消！"
-        })
-      }
-    }
-  })
-}
-
-// 格式化时间到秒
-function formatDate(dateString?: string): string {
-  if (!dateString) {
-    return "暂无"
-  }
-  // 解析日期字符串
-  const date = new Date(dateString)
-
-  // 获取年、月、日、时、分、秒
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  const hours = String(date.getHours()).padStart(2, "0")
-  const minutes = String(date.getMinutes()).padStart(2, "0")
-  const seconds = String(date.getSeconds()).padStart(2, "0")
-
-  // 格式化为需要的字符串
-  return `${year}年${month}月${day}日 ${hours}:${minutes}:${seconds}`
 }
 
 // 格式化时间到日
@@ -547,10 +351,10 @@ function formatDateToDay(dateString?: string): string {
           style="width: 210px"
           placeholder="请输入订单号"
           :prefix-icon="Search"
-          @keyup.enter=""
+          @keyup.enter="searchOrder"
         />
 
-        <el-button type="primary" class="button" @click=""> 搜索 </el-button>
+        <el-button type="primary" class="button" @click="searchOrder"> 搜索 </el-button>
       </div>
       <div class="second=row" style="margin-top: 5px">
         <span class="word"> 用户编号 </span>
@@ -559,7 +363,6 @@ function formatDateToDay(dateString?: string): string {
           style="width: 210px"
           placeholder="请输入用户编号"
           :prefix-icon="Search"
-          @keyup.enter=""
         />
 
         <span class="word"> 订单类型 </span>
@@ -567,12 +370,11 @@ function formatDateToDay(dateString?: string): string {
           v-model="order_type_input"
           placeholder="请选择订单类型"
           style="width: 210px"
-          @change=""
         >
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
 
-        <span class="word"> 日期 </span>
+        <span class="word"> 服务日期 </span>
         <el-date-picker
           v-model="date_input"
           type="daterange"
@@ -580,10 +382,9 @@ function formatDateToDay(dateString?: string): string {
           start-placeholder="开始时间"
           end-placeholder="结束时间"
           size="default"
-          @change=""
         />
 
-        <el-button type="primary" class="button" @click=""> 筛选 </el-button>
+        <el-button type="primary" class="button" @click="filterOrders"> 筛选 </el-button>
       </div>
     </div>
 
@@ -613,34 +414,27 @@ function formatDateToDay(dateString?: string): string {
                 <!-- 导游订单 -->
                 <ul v-if="order.orderType === 'GuideOrder'">
                   <li>服务内容：{{ (order as GuideOrder).service }}</li>
-                  <li>导游姓名：{{ (order as GuideOrder).guideName }}</li>
-                  <li>导游性别：{{ (order as GuideOrder).guideGender }}</li>
+                  <li>用户编号：{{ (order as GuideOrder).userId }}</li>
+                  <li>用户姓名：{{ (order as GuideOrder).userName }}</li>
                   <li>
-                    服务时间：{{ formatDateToDay((order as GuideOrder).serviceBeginDate) }} 至
+                    服务时间：{{ formatDateToDay((order as GuideOrder).serviceBeginDate) }} 至 
                     {{ formatDateToDay((order as GuideOrder).serviceEndDate) }}
                   </li>
                 </ul>
                 <ul v-if="order.orderType === 'TourOrder'">
                   <li>旅行团编号：{{ (order as TourOrder).groupId }}</li>
-                  <li>旅行目的地：{{ (order as TourOrder).groupName }}</li>
+                  <li>旅行团：{{ (order as TourOrder).groupName }}</li>
                   <li>人数：{{ (order as TourOrder).orderNumber }}</li>
-                  <li>导游编号：{{ (order as TourOrder).guideId }}</li>
-                  <li>导游姓名：{{ (order as TourOrder).guideName }}</li>
-                  <li>导游性别：{{ (order as TourOrder).guideGender }}</li>
-                  <li>开始日期：{{ formatDateToDay((order as TourOrder).startDate) }}</li>
-                  <li>结束日期：{{ formatDateToDay((order as TourOrder).endDate) }}</li>
+                  <li>用户编号：{{ (order as TourOrder).userId }}</li>
+                  <li>用户姓名：{{ (order as TourOrder).userName }}</li>
+                  <li>服务时间：{{ formatDateToDay((order as TourOrder).startDate) }} 至 
+                  {{ formatDateToDay((order as TourOrder).endDate) }}</li>
                 </ul>
               </div>
               <div class="column state">
                 <!-- 根据订单状态显示不同的操作按钮 -->
-                <p v-if="order.status === 'Pending'">
-                  <a href="javascript:;" class="pay" @click="openPayment(order.orderId)">立即付款</a>
-                </p>
-                <p v-if="order.status === 'Pending'">
-                  <a href="javascript:;" class="del" @click="openCancel(order.orderId)">取消订单</a>
-                </p>
                 <p v-if="order.status === 'Completed'">
-                  <a href="javascript:;" class="del" @click="openRefund(order.orderId)">申请退款</a>
+                  <a href="javascript:;" class="del" @click="openCancel(order.orderId)">申请取消</a>
                 </p>
               </div>
               <div class="column amount">
@@ -692,7 +486,7 @@ function formatDateToDay(dateString?: string): string {
 
   .main-container {
     min-height: 500px;
-    padding: 10px 0; /* 调整整体容器的上下内边距 */
+    padding: 10px 0; 
 
     .holder-container {
       min-height: 500px;
@@ -713,21 +507,21 @@ function formatDateToDay(dateString?: string): string {
 .order-item {
   margin-bottom: 15px;
   border: 1px solid #dcdcdc;
-  background-color: #fff; /* 设置白色背景颜色 */
-  border-radius: 5px; /* 让订单项的边角稍微圆润 */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
   .head {
     height: 50px;
     line-height: 50px;
-    background: #f0f0f0; /* 提升背景色的对比度 */
+    background: #f0f0f0; 
     padding: 0 20px;
     overflow: hidden;
-    font-weight: bold; /* 加粗订单头部信息 */
+    font-weight: bold; 
 
     span {
       margin-right: 20px;
-      color: #333; /* 提升文字颜色对比度 */
+      color: #333; 
 
       &.down-time {
         margin-right: 0;
@@ -740,7 +534,7 @@ function formatDateToDay(dateString?: string): string {
 
         b {
           vertical-align: middle;
-          font-weight: bold; /* 加粗时间信息 */
+          font-weight: bold; 
         }
       }
     }
@@ -749,7 +543,7 @@ function formatDateToDay(dateString?: string): string {
   .body {
     display: flex;
     align-items: stretch;
-    padding: 0px 20px; /* 增加内容区域的内边距，减少内容之间的行间距 */
+    padding: 0px 20px; 
 
     .column {
       border-left: 1px solid #f5f5f5;
@@ -758,8 +552,8 @@ function formatDateToDay(dateString?: string): string {
 
       > p {
         padding-top: 10px;
-        margin-bottom: 5px; /* 缩小段落之间的间距 */
-        color: #555; /* 提升文字颜色对比度 */
+        margin-bottom: 5px;
+        color: #555; 
       }
 
       &:first-child {
@@ -798,7 +592,7 @@ function formatDateToDay(dateString?: string): string {
 
                 &.name {
                   height: 38px;
-                  font-weight: bold; /* 加粗名称信息 */
+                  font-weight: bold; 
                 }
 
                 &.attr {
@@ -814,14 +608,14 @@ function formatDateToDay(dateString?: string): string {
 
             .price {
               width: 100px;
-              font-weight: bold; /* 加粗价格信息 */
+              font-weight: bold; 
               font-size: larger;
-              color: #cf4444; /* 使用红色强调价格信息 */
+              color: #cf4444; 
             }
 
             .count {
               width: 80px;
-              font-weight: bold; /* 加粗数量信息 */
+              font-weight: bold; 
             }
           }
         }
@@ -829,27 +623,27 @@ function formatDateToDay(dateString?: string): string {
 
       &.state {
         width: 120px;
-        display: flex; /* 使用flex布局 */
-        flex-direction: column; /* 垂直排列子元素 */
-        justify-content: center; /* 子元素上下居中 */
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
         padding-bottom: 5%;
         .pay:hover {
           color: #3498db;
         }
         .del:hover {
-          color: #ff4d4f; /* 使用鲜明的颜色显示删除操作 */
+          color: #ff4d4f;
         }
       }
 
       &.amount {
         width: 150px;
-        display: flex; /* 使用flex布局 */
-        flex-direction: column; /* 垂直排列子元素 */
-        justify-content: center; /* 子元素上下居中 */
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
         padding-bottom: 5%;
         .red {
           color: #3498db;
-          font-weight: bold; /* 加粗金额信息 */
+          font-weight: bold; 
           font-size: larger;
         }
       }

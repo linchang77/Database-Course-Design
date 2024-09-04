@@ -86,6 +86,8 @@ const fetchGuides = () => {
 
 // 根据编号、姓名筛选
 const fetchById = () => {
+  guideGrade_input.value = "1"
+  guidePrice_input.value = []
   axios
   .get(`https://123.60.14.84/api/Guide/person`, {
       params: {
@@ -121,6 +123,8 @@ const fetchById = () => {
 
 // 根据星级、价格筛选
 const fetchByGrade = () => {
+  guideId_input.value = ""
+  guideName_input.value = ""
   axios
   .get(`https://123.60.14.84/api/Guide/ability`, {
       params: {
@@ -262,7 +266,7 @@ onMounted(() => {
           @keyup.enter="fetchById"
         />
 
-        <el-button type="primary" class="button" style="margin-left: 10px;" @click="fetchById"> 搜索 </el-button>
+        <el-button type="primary" class="button" style="margin-left: 10px;" @click="fetchById" icon="Search"> 搜索 </el-button>
       </div>
 
       <div class="second_row">
@@ -273,7 +277,7 @@ onMounted(() => {
         - 
         <el-input-number v-model="guidePrice_input[1]" :min="1" :max="500000"/>
         
-        <el-button type="primary" class="button" @click="fetchByGrade"> 筛选 </el-button>
+        <el-button type="primary" class="button" @click="fetchByGrade" icon="Search"> 筛选 </el-button>
       </div>
     </div>
 

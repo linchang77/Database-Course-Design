@@ -354,7 +354,7 @@ onMounted(() => {
           @keyup.enter="fetchId"
         />
 
-        <el-button type="primary" class="button" @click="fetchId"> 搜索 </el-button>
+        <el-button type="primary" class="button" @click="fetchId" icon="Search"> 搜索 </el-button>
     </div>
 
     <div class="second-row" style="margin-top: 5px;">
@@ -393,7 +393,7 @@ onMounted(() => {
         size="default"
       />
   
-      <el-button type="primary" class="button" @click="fetchFilter"> 筛选 </el-button>
+      <el-button type="primary" class="button" @click="fetchFilter" icon="Search"> 筛选 </el-button>
     </div>
   </div>
 

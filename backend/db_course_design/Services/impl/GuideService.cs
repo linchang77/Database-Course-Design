@@ -278,6 +278,8 @@ namespace db_course_design.Services.impl
                     GuideId = o.Guide.GuideId,
                     GuideName = o.Guide.GuideName,
                     GuideGender = o.Guide.GuideGender,
+                    UserId = o.Order.UserId,
+                    UserName = o.Order.User.UserName,
                 }).ToListAsync();
             return Gorders;
         }
@@ -304,6 +306,8 @@ namespace db_course_design.Services.impl
                     GuideId = o.Group.GuideId,
                     GuideName = o.Group.Guide.GuideName,
                     GuideGender = o.Group.Guide.GuideGender,
+                    UserId = o.Order.UserId,
+                    UserName = o.Order.User.UserName,
                     StartDate = o.Group.StartDate,
                     EndDate = o.Group.EndDate,
                     OrderNumber = o.OrderNumber,
@@ -344,6 +348,19 @@ namespace db_course_design.Services.impl
             await _context.SaveChangesAsync();
 
             return _mapper.Map<GuideResponse>(guide);
+        }
+
+        /*--上传导游图片--*/
+        public async Task<bool> AddGuidePictureAsync(byte GuideId, string? Url)
+        {
+            var target = await _context.Guides.FindAsync(GuideId);
+            Console.WriteLine("盖得艾迪为" + GuideId + "！！！！！");
+            if(target == null)
+                return false;
+
+            target.ProfilePicture = Url;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         /*--修改导游信息--*/

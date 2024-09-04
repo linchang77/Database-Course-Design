@@ -22,6 +22,7 @@ namespace db_course_design.Services
 
         Task<GuideResponse> GetGuideByIdAsync(byte GuideId);
         Task<GuideResponse> AddGuideAsync(GuideRequest guideRequest);
+        Task<bool> AddGuidePictureAsync(byte GuideId, string? Url);
         Task<GuideResponse> UpdateGuideAsync(byte GuideId, GuideRequest guideRequest);
         Task<bool> DeleteGuideAsync(byte GuideId);
     }
