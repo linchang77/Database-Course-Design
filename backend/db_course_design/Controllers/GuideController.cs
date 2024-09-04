@@ -126,6 +126,15 @@ namespace db_course_design.Controllers
             return Ok(addedGuide);
         }
 
+        /*--上传导游图片--*/
+        [HttpPost("add/picture")]
+        public async Task<IActionResult> AddGuidePictureAsync([FromBody] GuidePictureRequest request)
+        {
+            if (await _guideService.AddGuidePictureAsync(request.GuideId, request.Url))
+                return Ok();
+            return BadRequest(new { Message = "Failed to add picture" });
+        }
+
         /*--修改导游信息--*/
         [HttpPut("update/{GuideId}")]
         public async Task<IActionResult> UpdateGuideAsync(byte GuideId, [FromBody] GuideRequest guideRequest)

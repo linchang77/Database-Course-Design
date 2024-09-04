@@ -19,6 +19,8 @@ namespace db_course_design.DTOs
         public byte GuideId { get; set; }
         public string GuideName { get; set; }
         public string GuideGender { get; set; }
+        public int? UserId { get; set; }
+        public string? UserName { get; set; }
     }
     public class HotelOrderDetail : OrderResponse
     {
@@ -45,6 +47,8 @@ namespace db_course_design.DTOs
         public byte? GuideId { get; set; }
         public string GuideName { get; set; }
         public string GuideGender { get; set; }
+        public int? UserId { get; set; }
+        public string? UserName { get; set; }
         public decimal? OrderNumber { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
