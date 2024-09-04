@@ -47,6 +47,7 @@ onMounted(() => {
   if (matchedCity) {
     city.value = matchedCity;
   }
+  fetchAttractions();
 });
 
 const starOptions = ["全部", "1", "2", "3", "4", "5"];
