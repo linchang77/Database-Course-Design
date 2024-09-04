@@ -192,69 +192,21 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: "shanghai",
-        component: () => import("@/views/user/scene/citys/shanghai.vue"),
-        name: "Shanghai",
+        path: "city",
+        component: () => import("@/views/user/scene/citys/city.vue"),
+        name: "City",
         meta: {
-          title: "上海"
+          title: "城市"
         }
       },
       {
-        path: "shanghai/tickets",
-        component: () => import("@/views/user/scene/citys/city_shanghai/上海景点购票.vue"),
+        path: "city/tickets",
+        component: () => import("@/views/user/scene/citys/city/景点购票.vue"),
         name: "SceneTickets",
         meta: {
-          title: "上海景点购票"
+          title: "景点购票"
         }
       },
-      {
-        path: "tokyo",
-        component: () => import("@/views/user/scene/citys/tokyo.vue"),
-        name: "Tokyo",
-        meta: {
-          title: "东京"
-        }
-      },
-      {
-        path: "cairo",
-        component: () => import("@/views/user/scene/citys/cairo.vue"),
-        name: "Cairo",
-        meta: {
-          title: "开罗"
-        }
-      },
-      {
-        path: "paris",
-        component: () => import("@/views/user/scene/citys/paris.vue"),
-        name: "Paris",
-        meta: {
-          title: "巴黎"
-        }
-      },
-      {
-        path: "newyork",
-        component: () => import("@/views/user/scene/citys/newyork.vue"),
-        name: "Newyork",
-        meta: {
-          title: "纽约"
-        }
-      },
-      {
-        path: "riodejaneiro",
-        component: () => import("@/views/user/scene/citys/riodejaneiro.vue"),
-        name: "Riodejaneiro",
-        meta: {
-          title: "里约热内卢"
-        }
-      },
-      {
-        path: "sydney",
-        component: () => import("@/views/user/scene/citys/sydney.vue"),
-        name: "Sydney",
-        meta: {
-          title: "悉尼"
-        }
-      }
     ]
   },
   {
