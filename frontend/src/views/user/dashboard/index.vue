@@ -50,7 +50,7 @@ const fetchTourGroups = () => {
   axios
     .get("https://123.60.14.84/api/TourGroup/recommendedtours")
     .then((response) => {
-      const data = response.data;
+      const data = response.data.slice(0, 3);
       if (Array.isArray(data)) {
         tourGroups.value = data.map((group) => ({
           ...group,
@@ -132,6 +132,7 @@ const imageMap = {
             <div class="group-info">
               <p class="title">{{ group.groupName }}</p>
               <p>{{ formatDate(group.startDate) }} -- {{ formatDate(group.endDate) }}</p>
+              <p>导游：{{ group.guideName }}</p>
             </div>
             <div class="group-price">
               <p>{{ group.groupPrice }} 元起</p>
