@@ -331,6 +331,7 @@ const filterByDate = () => {
 
 // 同时按类型、状态和日期筛选订单
 const filterOrders = () => {
+  order_id_input.value = ""
   const category = ref("")
   const status = ref("")
 

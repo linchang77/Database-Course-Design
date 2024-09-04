@@ -86,6 +86,8 @@ const fetchGuides = () => {
 
 // 根据编号、姓名筛选
 const fetchById = () => {
+  guideGrade_input.value = "1"
+  guidePrice_input.value = []
   axios
   .get(`https://123.60.14.84/api/Guide/person`, {
       params: {
@@ -121,6 +123,8 @@ const fetchById = () => {
 
 // 根据星级、价格筛选
 const fetchByGrade = () => {
+  guideId_input.value = ""
+  guideName_input.value = ""
   axios
   .get(`https://123.60.14.84/api/Guide/ability`, {
       params: {
