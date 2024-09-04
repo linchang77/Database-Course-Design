@@ -7,6 +7,7 @@ using AutoMapper;
 using db_course_design.Profiles;
 using db_course_design.Common;
 using static db_course_design.Controler.AuthController;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace db_course_design.Services.impl
 {
@@ -106,13 +107,233 @@ namespace db_course_design.Services.impl
 
             return _mapper.Map<GuideResponse>(guide);
         }
-
-        /*--预约导游--*
-        public async Task<bool> GuideReservationAsync(GuideReservationResponse response)
+        /*--获取某个导游近一年的工作时间*/
+        public async Task<List<GuideTimeRange>> GetGuideWorkTimeAsync(byte GuideId)
         {
-            var Id = response.GuideId
-        }*/
+            var guide = await _context.Guides
+                .Where(g => g.GuideId == GuideId)
+                .Include(g => g.GuideOrders)
+                .ThenInclude(go => go.Order)
+                .Include(g => g.TourGroups)
+                .ThenInclude(tg => tg.TourOrders)
+                .ThenInclude(to => to.Order)
+                .FirstOrDefaultAsync();
 
+            if (guide == null)
+            {
+                throw new Exception("导游不存在");
+            }
+
+            // 获取所有持续到明天之后导游和旅行团订单分别排序
+            var Gorders = guide.GuideOrders
+                .Where(o => o.ServiceEndDate >= DateTime.UtcNow.AddDays(1) && o.Order.Status.Equals("Completed"))
+                .OrderBy(o => o.ServiceBeginDate)
+                .ToList();
+            var Torders = guide.TourGroups
+                .Where(o => o.EndDate >= DateTime.UtcNow.AddDays(1) && o.TourOrders.All(t => t.Order.Status.Equals("Completed")))
+                .OrderBy(o => o.StartDate)
+                .ToList();
+
+            // 使用AutoMapper进行映射
+            var GWorkTime = Gorders.Select(o => _mapper.Map<GuideTimeRange>(o)).ToList();
+            var TWorkTime = Torders.Select(o => _mapper.Map<GuideTimeRange>(o)).ToList();
+            
+            // 合并并重新排序
+            var AllWorkTime = GWorkTime.Concat(TWorkTime).ToList();
+            AllWorkTime = AllWorkTime.OrderBy(o => o.StartDate).ToList();
+
+            /* 输出调试信息*/
+            Console.WriteLine("All Work Times:");
+            foreach (var workTime in AllWorkTime)
+            {
+                Console.WriteLine($"StartDate: {workTime.StartDate}, EndDate: {workTime.EndDate}");
+            }
+
+            return AllWorkTime;
+        }
+        /*--获取某个导游可预约时间--*/
+        public async Task<List<GuideTimeRange>> GetGuideFreeTimesAsync(byte GuideId)
+        {
+            var workTimes = await GetGuideWorkTimeAsync(GuideId);
+            
+            // 如果没有工作
+            List<GuideTimeRange> freeTimes = new List<GuideTimeRange>();
+            if (!workTimes.Any())
+            {
+                freeTimes.Add(new GuideTimeRange
+                {
+                    StartDate = DateTime.UtcNow.Date.AddDays(1),
+                    EndDate = DateTime.UtcNow.Date.AddYears(1)
+                });
+                return freeTimes;
+            }
+
+            // 根据工作时间计算空闲时间
+            DateTime? lastEndDate = DateTime.UtcNow;
+            foreach (var time in workTimes)
+            {
+                Console.WriteLine($"{lastEndDate}<{time.StartDate}");
+                if(lastEndDate.Value.Date < time.StartDate)
+                {
+                    freeTimes.Add(new GuideTimeRange
+                    {
+                        StartDate = lastEndDate.Value.AddDays(1),
+                        EndDate = time.StartDate.Value.AddDays(-1)
+                    });
+                }
+
+                lastEndDate = time.EndDate;
+            }
+
+            // 如果最后一个工作结束时间小于一年后，则剩下的都是freetime
+            if (lastEndDate < DateTime.UtcNow.AddYears(1))
+            {
+                freeTimes.Add(new GuideTimeRange
+                {
+                    StartDate = lastEndDate.Value.AddDays(1),
+                    EndDate = DateTime.UtcNow.AddYears(1)
+                });
+            }
+
+            return freeTimes;
+        }
+        /*--计算导游订单Price--*/
+        public async Task<decimal?> CountPriceAsync(int days, byte GuideId)
+        {
+            decimal? price = null;
+
+            var PricePerDay = (await _context.Guides.FindAsync(GuideId)).GuidePrice;
+            price = PricePerDay * days;
+
+            return price;
+        }
+        /*--创建一个导游订单--*/
+        public async Task<bool> CreateGuideOrderAsync(GuideReservationRequest request)
+        {
+            var freeTimes = await GetGuideFreeTimesAsync(request.GuideId);
+
+            // 判断预约时间合法性
+            if(!freeTimes.Any())
+                return false;
+
+            bool legal = false;
+            foreach(var time in freeTimes)
+            {
+                if(request.StartDate >= time.StartDate && request.EndDate <= time.EndDate)
+                {
+                    legal = true;
+                    break;
+                }
+            }
+            if (!legal)
+                return false;
+
+            // 添加数据到Order_Data表，保存后同步Guide_Order
+            var orderDatum = new OrderDatum
+            {
+                OrderType = "guide",
+                OrderDate = DateTime.Now,
+                UserId = request.userId,
+                Status = "Pending",
+                Price = await CountPriceAsync((request.EndDate-request.StartDate).Value.Days + 1, request.GuideId),
+            };
+            _context.OrderData.Add(orderDatum);
+            await _context.SaveChangesAsync();
+            var guideOrder = new GuideOrder
+            {
+                OrderId = orderDatum.OrderId,
+                GuideId = request.GuideId,
+                ServiceBeginDate = request.StartDate,
+                Service = request.Service,
+                ServiceEndDate = request.EndDate,
+            };
+            _context.GuideOrders.Add(guideOrder);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        /*--按条件筛选--*/
+        public async Task<List<GuideOrderDetail>> GuideOrderFilter(byte GuideId, int? UserId, DateTime? StartDate, DateTime? EndDate)
+        {
+            var query = _context.GuideOrders.AsQueryable();
+            query = query.Where(o => o.GuideId == GuideId && o.Order.Status.Equals("Completed"));
+            if (UserId != null)
+                query = query.Where(o => o.Order.UserId == UserId);
+            if (StartDate.HasValue)
+                query = query.Where(o => o.ServiceEndDate > StartDate);
+            if (EndDate.HasValue)
+                query = query.Where(o => o.ServiceBeginDate < EndDate);
+            var Gorders = await query
+                .Select(o => new GuideOrderDetail
+                {
+                    OrderId = o.OrderId,
+                    OrderType = "GuideOrder",
+                    Status = o.Order.Status,
+                    OrderDate = o.Order.OrderDate,
+                    Price = o.Order.Price,
+                    ServiceBeginDate = o.ServiceBeginDate,
+                    ServiceEndDate = o.ServiceEndDate,
+                    Service = o.Service,
+                    GuideId = o.Guide.GuideId,
+                    GuideName = o.Guide.GuideName,
+                    GuideGender = o.Guide.GuideGender,
+                }).ToListAsync();
+            return Gorders;
+        }
+        public async Task<List<TourOrderDetail>> TourOrderFilter(byte GuideId, int? UserId, DateTime? StartDate, DateTime? EndDate)
+        {
+            var query = _context.TourOrders.AsQueryable();
+            query = query.Where(o => o.Group.GuideId == GuideId && o.Order.Status.Equals("Completed"));
+            if (UserId != null)
+                query = query.Where(o => o.Order.UserId == UserId);
+            if (StartDate.HasValue)
+                query = query.Where(o => o.Group != null && o.Group.EndDate > StartDate);
+            if (EndDate.HasValue)
+                query = query.Where(o => o.Group != null && o.Group.StartDate < EndDate);
+            var Torders = await query
+                .Select(o => new TourOrderDetail
+                {
+                    OrderId = o.OrderId,
+                    OrderType = "TourOrder",
+                    Status = o.Order.Status,
+                    OrderDate = o.Order.OrderDate,
+                    Price = o.Order.Price,
+                    GroupId = o.GroupId,
+                    GroupName = o.Group.GroupName,
+                    GuideId = o.Group.GuideId,
+                    GuideName = o.Group.Guide.GuideName,
+                    GuideGender = o.Group.Guide.GuideGender,
+                    StartDate = o.Group.StartDate,
+                    EndDate = o.Group.EndDate,
+                    OrderNumber = o.OrderNumber,
+                }).ToListAsync();
+            return Torders;
+        }
+        public async Task<List<OrderResponse>> OrderFilterofGuide(byte GuideId, string? OrderType, int? UserId, DateTime? StartDate, DateTime? EndDate)
+        {
+            var allOrders = new List<OrderResponse>();
+
+            if (OrderType == null)
+            {
+                var guideOrder = await GuideOrderFilter(GuideId, UserId, StartDate, EndDate);
+                var tourOrder = await TourOrderFilter(GuideId, UserId, StartDate, EndDate);
+                allOrders.AddRange(guideOrder);
+                allOrders.AddRange(tourOrder);
+            }
+            else if (OrderType.Equals("GuideOrder"))
+            {
+                var guideOrder = await GuideOrderFilter(GuideId, UserId, StartDate, EndDate);
+                allOrders.AddRange(guideOrder);
+            }
+            else if (OrderType.Equals("TourOrder"))
+            {
+                var tourOrder = await TourOrderFilter(GuideId, UserId, StartDate, EndDate);
+                allOrders.AddRange(tourOrder);
+            }
+            
+            return allOrders;
+        }
         /*--添加导游信息--*/
         public async Task<GuideResponse> AddGuideAsync(GuideRequest guideRequest)
         {
@@ -124,7 +345,6 @@ namespace db_course_design.Services.impl
 
             return _mapper.Map<GuideResponse>(guide);
         }
-
 
         /*--修改导游信息--*/
         public async Task<GuideResponse> UpdateGuideAsync(byte GuideId, GuideRequest guideRequest)

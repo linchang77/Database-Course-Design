@@ -131,7 +131,7 @@ const handleUpdate = () => {
           ElMessage.success("修改导游成功");
           dialogVisible.value = false;
           getTableData();
-          resetForm(); // 重置表单数据
+          resetForm(); 
         })
         .catch(() => {
           ElMessage.error("修改导游失败");
@@ -183,7 +183,6 @@ const formRef = ref();
           <el-table-column prop="guidePrice" label="导游价格" align="center" />
           <el-table-column prop="guideSalary" label="导游薪水介绍" align="center" />
           <el-table-column prop="guideSeniority" label="导游资历介绍" align="center" />
-          <el-table-column prop="profilePicture" label="导游图片链接" align="center" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button type="primary" text bg size="small" @click="toUpdate(scope.row)">修改</el-button>

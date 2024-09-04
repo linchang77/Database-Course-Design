@@ -22,7 +22,7 @@
         <el-form-item label="景区位置">
           <el-input v-model="scenicToAdd.scenicSpotLocation" placeholder="请输入景区位置"></el-input>
         </el-form-item>
-        <el-form-item label="距离市中心远近评分">
+        <el-form-item label="距离市中心远近">
           <el-input v-model="scenicToAdd.scenicSpotRemoteness" placeholder="请输入距离市中心远近评分"></el-input>
         </el-form-item>
       </el-form>
@@ -38,7 +38,7 @@
     <el-dialog v-model="deleteScenicFormVisible" title="删除景区" :before-close="handleCloseDeleteScenicForm">
       <el-form :model="scenicToDelete" label-width="120px">
         <el-form-item label="景区ID">
-          <el-input v-model="scenicToDelete.scenicId" placeholder="请输入景区ID"></el-input>
+          <el-input v-model="scenicToDelete.scenicSpotId" placeholder="请输入景区ID"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -53,7 +53,7 @@
     <el-dialog v-model="modifyScenicFormVisible" title="修改景区" :before-close="handleCloseModifyScenicForm">
       <el-form :model="scenicToModify" label-width="120px">
         <el-form-item label="景区ID">
-          <el-input v-model="scenicToModify.scenicId" placeholder="请输入景区ID"></el-input>
+          <el-input v-model="scenicToModify.scenicSpotId" placeholder="请输入景区ID"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -73,25 +73,25 @@
         <el-col :span="12">
           <el-form :model="scenic" label-width="80px">
             <el-form-item label="景区ID">
-              <el-input v-model="scenic.ScenicId" :disabled="!isEditingScenic"></el-input>
+              <el-input v-model="scenic.scenicSpotId" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="景区名称">
-              <el-input v-model="scenic.ScenicName" :disabled="!isEditingScenic"></el-input>
+              <el-input v-model="scenic.scenicSpotName" :disabled="!isEditingScenic"></el-input>
             </el-form-item>
             <el-form-item label="所在城市">
-              <el-input v-model="scenic.City" :disabled="!isEditingScenic"></el-input>
+              <el-input v-model="scenic.cityName" :disabled="!isEditingScenic"></el-input>
             </el-form-item>
             <el-form-item label="景区等级">
-              <el-input v-model="scenic.Grade" :disabled="!isEditingScenic"></el-input>
+              <el-input v-model="scenic.scenicSpotGrade" :disabled="!isEditingScenic"></el-input>
             </el-form-item>
             <el-form-item label="景区简介">
-              <el-input v-model="scenic.Introduction" type="textarea" :disabled="!isEditingScenic"></el-input>
+              <el-input v-model="scenic.scenicSpotIntroduction" type="textarea" :disabled="!isEditingScenic"></el-input>
             </el-form-item>
             <el-form-item label="景区位置">
-              <el-input v-model="scenic.Location" :disabled="!isEditingScenic"></el-input>
+              <el-input v-model="scenic.scenicSpotLocation" :disabled="!isEditingScenic"></el-input>
             </el-form-item>
-            <el-form-item label="距离市中心远近评分">
-              <el-input v-model="scenic.Remoteness" :disabled="!isEditingScenic"></el-input>
+            <el-form-item label="距离市中心远近">
+              <el-input v-model="scenic.scenicSpotRemoteness" :disabled="!isEditingScenic"></el-input>
             </el-form-item>
           </el-form>
         </el-col>
@@ -178,7 +178,7 @@ async function addScenic() {
   }
 
   try {
-    await axios.post('https://123.60.14.84:11000/api/Scenic', scenicToadd);
+    await axios.post('https://123.60.14.84/api/ScenicSpot', scenicToadd);
     ElMessage.success('景区添加成功');
     addScenicFormVisible.value = false;
     scenic.value = null;
@@ -190,14 +190,14 @@ async function addScenic() {
 
 // 删除景区
 async function deleteScenic() {
-  const scenicId = scenicToDelete.ScenicId;
+  const scenicId = scenicToDelete.scenicSpotId;
   if (!scenicId) {
     ElMessage.error('请输入景区ID');
     return;
   }
 
   try {
-    await axios.delete(`https://123.60.14.84:11000/api/Scenic/${scenicId}`);
+    await axios.delete(`https://123.60.14.84/api/ScenicSpot/${scenicId}`);
     ElMessage.success('景区删除成功');
     deleteScenicFormVisible.value = false;
     scenic.value = null;
@@ -209,14 +209,14 @@ async function deleteScenic() {
 
 // 查询并显示景区信息
 async function fetchScenic() {
-  const scenicId = scenicToModify.value.ScenicId;
+  const scenicId = scenicToModify.scenicSpotId;
   if (!scenicId) {
     ElMessage.error('请输入景区ID');
     return;
   }
 
   try {
-    const response = await axios.get(`https://123.60.14.84:11000/api/Scenic/${scenicId}`);
+    const response = await axios.get(`https://123.60.14.84/api/ScenicSpot/id/${scenicId}`);
     scenic.value = response.data;
     isEditingScenic.value = false;
     modifyScenicFormVisible.value = false;
@@ -234,9 +234,19 @@ function editScenic() {
 // 更新景区信息
 async function updateScenic() {
   try {
-    await axios.put(`https://123.60.14.84:11000/api/Scenic/${scenic.value.ScenicId}`, scenic.value);
+    console.log(scenic.value)
+    const scenicToUpdate = {
+      scenicSpotName: scenic.value.scenicSpotName,
+      cityName: scenic.value.cityName,
+      scenicSpotGrade: scenic.value.scenicSpotGrade,
+      scenicSpotIntroduction: scenic.value.scenicSpotIntroduction,
+      scenicSpotLocation: scenic.value.scenicSpotLocation,
+      scenicSpotRemoteness: scenic.value.scenicSpotRemoteness
+    }
+    await axios.put(`https://123.60.14.84/api/ScenicSpot/${scenic.value.scenicSpotId}/update`, scenicToUpdate);
     ElMessage.success('景区信息更新成功');
     isEditingScenic.value = false;
+    scenic.value = null;
   } catch (error) {
     console.error(error);
     ElMessage.error('更新失败');
@@ -254,10 +264,10 @@ const scenicToAdd = reactive({
 });
 
 const scenicToDelete = reactive({
-  ScenicId: ''
+  scenicSpotId: ''
 });
 
 const scenicToModify = reactive({
-  ScenicId: ''
+  scenicSpotId: ''
 });
 </script>

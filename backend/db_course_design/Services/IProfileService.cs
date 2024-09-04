@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using db_course_design.DTOs;
+using db_course_design.Services.impl;
 
 namespace db_course_design.Services
 {
@@ -30,5 +31,10 @@ namespace db_course_design.Services
         Task<string?> AddGuideRegionAsync(byte id, string region);
 
         Task<bool> DeleteGuideRegionAsync(byte id, string region);
+
+        Task<ICollection<UserProfileResponse>> GetAllUsersAsync();
+        Task<bool> DeleteUserAsync(int UserId);
+        Task<UserProfileResponse> UpdateUserAsync(int UserId, UserRequest userRequest);
+        Task<UserProfileResponse> AddUserAsync(UserRequest userRequest);
     }
 }

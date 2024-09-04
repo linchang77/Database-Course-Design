@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Execution;
+using db_course_design.Common;
 using db_course_design.DTOs;
 using db_course_design.Profiles;
 using EntityFramework.Models;
@@ -9,6 +10,20 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace db_course_design.Services.impl
 {
+    public class UserRequest
+    {
+        public string? UserName { get; set; }
+
+        public DateTime? RegistrationTime { get; set; }
+
+        public string? Password { get; set; }
+
+        public string? ProfilePicture { get; set; }
+
+        public string? UserGender { get; set; }
+
+    }
+
     public class ProfileService : IProfileService
     {
         private readonly ModelContext _context;
@@ -235,6 +250,57 @@ namespace db_course_design.Services.impl
 
             _context.GuideRegions.Remove(record);
             await _context.SaveChangesAsync();
+            return true;
+        }
+        /*--获取所有用户信息--*/
+        public async Task<ICollection<UserProfileResponse>> GetAllUsersAsync()
+        {
+            return await _context.Users.Select(c => _mapper.Map<UserProfileResponse>(c)).ToListAsync();
+        }
+        /*--添加用户信息--*/
+        public async Task<UserProfileResponse> AddUserAsync(UserRequest userRequest)
+        {
+            userRequest.Password = SaltedPassword.HashPassword(userRequest.Password, SaltedPassword.salt);
+            var user = _mapper.Map<User>(userRequest);
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<UserProfileResponse>(userRequest);
+        }
+
+
+        /*--修改用户信息--*/
+        public async Task<UserProfileResponse> UpdateUserAsync(int UserId, UserRequest userRequest)
+        {
+            userRequest.Password = SaltedPassword.HashPassword(userRequest.Password, SaltedPassword.salt);
+            var user = await _context.Users.FindAsync(UserId);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            _mapper.Map(userRequest, user);
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<UserProfileResponse>(user);
+        }
+        /*--删除用户信息--*/
+        public async Task<bool> DeleteUserAsync(int UserId)
+        {
+            var user = await _context.Users.FindAsync(UserId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
             return true;
         }
     }

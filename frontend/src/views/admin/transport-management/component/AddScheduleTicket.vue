@@ -113,6 +113,7 @@
             v-model="vehicleTicketData.TicketDepartureTime"
             type="datetime"
             placeholder="选择日期时间"
+            :disabled="true"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="到达时间">
@@ -120,6 +121,7 @@
             v-model="vehicleTicketData.TicketArrivalTime"
             type="datetime"
             placeholder="选择日期时间"
+            :disabled="true"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="出发城市">
@@ -288,7 +290,7 @@ async function newSchedule() {
     departureStation: vehicleScheduleData.value.DepartureStation
   }
   console.log("data:", data);
-  const url = "https://123.60.14.84/api/Vehicle/schedule";
+  const url = "https://123.60.14.84:11000/api/Vehicle/schedule";
   console.log("url:", url);
 
   axios
@@ -312,8 +314,8 @@ async function addVehicleTicket() {
   const schedule = res.data;
   console.log("schedule:", schedule);
 
-  const deTimetobe = new Date(vehicleTicketData.value.TicketDepartureTime);
-  const arrTimetobe = new Date(vehicleTicketData.value.TicketArrivalTime);
+  const deTimetobe = new Date(schedule.departureTime);
+  const arrTimetobe = new Date(schedule.arrivalTime);
 
   const deTime = new Date(deTimetobe.getTime() + 8 * 60 * 60 * 1000);
   const arrTime = new Date(arrTimetobe.getTime() + 8 * 60 * 60 * 1000);
@@ -375,7 +377,7 @@ function handleCloseDeleteTicketForm() {
 
 // 删除行程的函数
 async function deleteVehicleSchedule() {
-  const url = `https://123.60.14.84/api/Vehicle/schedule/delete/${vehicleScheduleData.value.VehicleId}`;
+  const url = `https://123.60.14.84:11000/api/Vehicle/schedule/delete/${vehicleScheduleData.value.VehicleId}`;
   console.log("url:", url);
   axios
     .delete(url)

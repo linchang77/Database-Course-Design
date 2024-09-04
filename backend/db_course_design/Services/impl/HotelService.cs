@@ -52,13 +52,25 @@ namespace db_course_design.Services.impl
         {
             bool isAvailable = true;
 
+            var loadedRoom = await _context.HotelRooms
+                .Include(r => r.HotelOrders)
+                .ThenInclude(ho => ho.Order)
+                .FirstOrDefaultAsync(r => r.HotelId == room.HotelId && r.RoomNumber == room.RoomNumber);
+            if (loadedRoom == null || loadedRoom.HotelOrders == null)
+            {
+                Console.WriteLine("房间导航属性加载失败");
+                return false;
+            }
+
             // 遍历该房间的所有订单
-            foreach (var order in room.HotelOrders)
+            foreach (var order in loadedRoom.HotelOrders)
             {
                 var status = (await _context.OrderData.FindAsync(order.OrderId)).Status;
-                if (status.Equals("Completed"))
+                Console.WriteLine("订单状态为：" + status);
+                if (!status.Equals("Cancelled"))
                 {
                     // 检查订单日期是否与所需的日期范围重叠
+                    Console.WriteLine(order.CheckOutDate + "<=" + StartDate + "或者" + order.CheckInDate + ">=" + EndDate);
                     if (!(order.CheckOutDate <= StartDate || order.CheckInDate >= EndDate))
                     {
                         isAvailable = false;
@@ -66,6 +78,7 @@ namespace db_course_design.Services.impl
                     }
                 }
             }
+            Console.WriteLine("返回值为"+ isAvailable+"！！！！！");
             return isAvailable;
         }
         /*--查询剩余房间数--*/
@@ -140,8 +153,6 @@ namespace db_course_design.Services.impl
                 Console.WriteLine("No rooms available for this room type.");
                 return null;
             }
-
-
 
             // 找合适的房间
             foreach (var room in query.HotelRooms)
