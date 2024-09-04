@@ -262,7 +262,7 @@ onMounted(() => {
           @keyup.enter="fetchById"
         />
 
-        <el-button type="primary" class="button" style="margin-left: 10px;" @click="fetchById"> 搜索 </el-button>
+        <el-button type="primary" class="button" style="margin-left: 10px;" @click="fetchById" icon="Search"> 搜索 </el-button>
       </div>
 
       <div class="second_row">
@@ -273,7 +273,7 @@ onMounted(() => {
         - 
         <el-input-number v-model="guidePrice_input[1]" :min="1" :max="500000"/>
         
-        <el-button type="primary" class="button" @click="fetchByGrade"> 筛选 </el-button>
+        <el-button type="primary" class="button" @click="fetchByGrade" icon="Search"> 筛选 </el-button>
       </div>
     </div>
 

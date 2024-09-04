@@ -663,7 +663,7 @@ function formatDateToDay(dateString?: string): string {
           @keyup.enter="searchOrder"
         />
 
-        <el-button type="primary" class="button" @click="searchOrder"> 搜索 </el-button>
+        <el-button type="primary" class="button" @click="searchOrder" icon="Search"> 搜索 </el-button>
       </div>
       <div class="second=row" style="margin-top: 5px">
         <span class="word"> 订单状态 </span>
@@ -671,7 +671,6 @@ function formatDateToDay(dateString?: string): string {
           v-model="order_status_input"
           placeholder="请选择订单状态"
           style="width: 210px"
-          @change="filterOrders"
         >
           <el-option v-for="item in status_options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
@@ -681,7 +680,6 @@ function formatDateToDay(dateString?: string): string {
           v-model="order_type_input"
           placeholder="请选择订单类型"
           style="width: 210px"
-          @change="filterOrders"
         >
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
@@ -694,8 +692,9 @@ function formatDateToDay(dateString?: string): string {
           start-placeholder="开始时间"
           end-placeholder="结束时间"
           size="default"
-          @change="filterOrders"
         />
+
+        <el-button type="primary" class="button" @click="filterOrders" icon="Search"> 筛选 </el-button>
       </div>
     </div>
 
