@@ -282,7 +282,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-  {
+  /*{
     path: "/",
     component: Layouts,
     meta:{
@@ -300,7 +300,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         }
       }
     ]
-  },
+  },*/
   {
     path: "/",
     component: Layouts,
@@ -320,7 +320,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-  {
+  /*{
     path: "/",
     component: Layouts,
     meta:{
@@ -338,7 +338,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         }
       }
     ]
-  },
+  },*/
   {
     path: "/",
     component: Layouts,
