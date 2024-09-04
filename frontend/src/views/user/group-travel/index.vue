@@ -61,11 +61,11 @@ interface TourGroup {
   departure: string
   destination: string
   guideName: string
-  goTicket: GoTicket
-  returnTicket: ReturnTicket
-  tourItineraries: TourItinerary[]
-  hotels: Hotel[]
-  imageUrl: string
+  goTicket?: GoTicket
+  returnTicket?: ReturnTicket
+  tourItineraries?: TourItinerary[]
+  hotels?: Hotel[]
+  imageUrl?: string
 }
 
 // 数据
@@ -99,55 +99,10 @@ const fetchTourGroups = () => {
       const data = response.data
       console.log(data)
       if (Array.isArray(data)) {
-        tourGroups.value = data.map((group: any) => ({
-          groupId: group.groupId,
-          guideId: group.guideId,
-          startDate: group.startDate,
-          endDate: group.endDate,
-          groupName: group.groupName,
-          groupPrice: group.groupPrice,
-          goTicketId: group.goTicketId,
-          returnTicketId: group.returnTicketId,
-          departure: group.departure,
-          destination: group.destination,
-          guideName: group.guideName,
-          goTicket: {
-            vehicleId: group.goTicket.vehicleId,
-            ticketType: group.goTicket.ticketType,
-            ticketPrice: group.goTicket.ticketPrice,
-            ticketDepartureTime: group.goTicket.ticketDepartureTime,
-            ticketArrivalTime: group.goTicket.ticketArrivalTime,
-            ticketDepartureCity: group.goTicket.ticketDepartureCity,
-            ticketArrivalCity: group.goTicket.ticketArrivalCity,
-            ticketId: group.goTicket.ticketId
-          },
-          returnTicket: {
-            vehicleId: group.returnTicket.vehicleId,
-            ticketType: group.returnTicket.ticketType,
-            ticketPrice: group.returnTicket.ticketPrice,
-            ticketDepartureTime: group.returnTicket.ticketDepartureTime,
-            ticketArrivalTime: group.returnTicket.ticketArrivalTime,
-            ticketDepartureCity: group.returnTicket.ticketDepartureCity,
-            ticketArrivalCity: group.returnTicket.ticketArrivalCity,
-            ticketId: group.returnTicket.ticketId
-          },
-          tourItineraries: group.tourItineraries.map((itinerary: any) => ({
-            itineraryId: itinerary.itineraryId,
-            itineraryTime: itinerary.itineraryTime,
-            itineraryDuration: itinerary.itineraryDuration,
-            activities: itinerary.activities,
-            scenicSpotId: itinerary.scenicSpotId
-          })),
-          hotels: group.hotels.map((hotel: any) => ({
-            hotelId: hotel.hotelId,
-            hotelName: hotel.hotelName,
-            cityName: hotel.cityName,
-            hotelGrade: hotel.hotelGrade,
-            hotelLocation: hotel.hotelLocation,
-            hotelIntroduction: hotel.hotelIntroduction
-          })),
-          imageUrl: imageMap[group.groupId]
-        }))
+        tourGroups.value = response.data.map((group: any) => ({
+        ...group,
+        imageUrl: group.imageUrl || imageMap[group.groupId]
+        }));
         showEmptyMessage.value = false
       } else {
         console.error("Unexpected response format.")
@@ -173,54 +128,10 @@ const fetchId = () => {
       console.log(data)
       if (data) {
         tourGroups.value = [{
-          groupId: data.groupId,
-          guideId: data.guideId,
-          startDate: data.startDate,
-          endDate: data.endDate,
-          groupName: data.groupName,
-          groupPrice: data.groupPrice,
-          goTicketId: data.goTicketId,
-          returnTicketId: data.returnTicketId,
-          departure: data.departure,
-          destination: data.destination,
-          guideName: data.guideName,
-          goTicket: {
-            vehicleId: data.goTicket.vehicleId,
-            ticketType: data.goTicket.ticketType,
-            ticketPrice: data.goTicket.ticketPrice,
-            ticketDepartureTime: data.goTicket.ticketDepartureTime,
-            ticketArrivalTime: data.goTicket.ticketArrivalTime,
-            ticketDepartureCity: data.goTicket.ticketDepartureCity,
-            ticketArrivalCity: data.goTicket.ticketArrivalCity,
-            ticketId: data.goTicket.ticketId
-          },
-          returnTicket: {
-            vehicleId: data.returnTicket.vehicleId,
-            ticketType: data.returnTicket.ticketType,
-            ticketPrice: data.returnTicket.ticketPrice,
-            ticketDepartureTime: data.returnTicket.ticketDepartureTime,
-            ticketArrivalTime: data.returnTicket.ticketArrivalTime,
-            ticketDepartureCity: data.returnTicket.ticketDepartureCity,
-            ticketArrivalCity: data.returnTicket.ticketArrivalCity,
-            ticketId: data.returnTicket.ticketId
-          },
-          tourItineraries: data.tourItineraries.map((itinerary: any) => ({
-            itineraryId: itinerary.itineraryId,
-            itineraryTime: itinerary.itineraryTime,
-            itineraryDuration: itinerary.itineraryDuration,
-            activities: itinerary.activities,
-            scenicSpotId: itinerary.scenicSpotId
-          })),
-          hotels: data.hotels.map((hotel: any) => ({
-            hotelId: hotel.hotelId,
-            hotelName: hotel.hotelName,
-            cityName: hotel.cityName,
-            hotelGrade: hotel.hotelGrade,
-            hotelLocation: hotel.hotelLocation,
-            hotelIntroduction: hotel.hotelIntroduction
-          })),
-          imageUrl: imageMap[data.groupId]
-        }]
+          ...response.data,
+          imageUrl: response.data.imageUrl || imageMap[response.data.groupId]
+        }];
+        console.log(tourGroups.value)
         showEmptyMessage.value = false
       } else {
         console.error("Unexpected response format.")
@@ -250,55 +161,10 @@ const fetchFilter = () => {
     .then((response) => {
       const data = response.data
       if (Array.isArray(data)) {
-        tourGroups.value = data.map((group: any) => ({
-          groupId: group.groupId,
-          guideId: group.guideId,
-          startDate: group.startDate,
-          endDate: group.endDate,
-          groupName: group.groupName,
-          groupPrice: group.groupPrice,
-          goTicketId: group.goTicketId,
-          returnTicketId: group.returnTicketId,
-          departure: group.departure,
-          destination: group.destination,
-          guideName: group.guideName,
-          goTicket: {
-            vehicleId: group.goTicket.vehicleId,
-            ticketType: group.goTicket.ticketType,
-            ticketPrice: group.goTicket.ticketPrice,
-            ticketDepartureTime: group.goTicket.ticketDepartureTime,
-            ticketArrivalTime: group.goTicket.ticketArrivalTime,
-            ticketDepartureCity: group.goTicket.ticketDepartureCity,
-            ticketArrivalCity: group.goTicket.ticketArrivalCity,
-            ticketId: group.goTicket.ticketId
-          },
-          returnTicket: {
-            vehicleId: group.returnTicket.vehicleId,
-            ticketType: group.returnTicket.ticketType,
-            ticketPrice: group.returnTicket.ticketPrice,
-            ticketDepartureTime: group.returnTicket.ticketDepartureTime,
-            ticketArrivalTime: group.returnTicket.ticketArrivalTime,
-            ticketDepartureCity: group.returnTicket.ticketDepartureCity,
-            ticketArrivalCity: group.returnTicket.ticketArrivalCity,
-            ticketId: group.returnTicket.ticketId
-          },
-          tourItineraries: group.tourItineraries.map((itinerary: any) => ({
-            itineraryId: itinerary.itineraryId,
-            itineraryTime: itinerary.itineraryTime,
-            itineraryDuration: itinerary.itineraryDuration,
-            activities: itinerary.activities,
-            scenicSpotId: itinerary.scenicSpotId
-          })),
-          hotels: group.hotels.map((hotel: any) => ({
-            hotelId: hotel.hotelId,
-            hotelName: hotel.hotelName,
-            cityName: hotel.cityName,
-            hotelGrade: hotel.hotelGrade,
-            hotelLocation: hotel.hotelLocation,
-            hotelIntroduction: hotel.hotelIntroduction
-          })),
-          imageUrl: imageMap[group.groupId]
-        }))
+        tourGroups.value = response.data.map((group: any) => ({
+        ...group,
+        imageUrl: group.imageUrl || imageMap[group.groupId]
+        }));
         showEmptyMessage.value = false
       } else {
         console.error("Unexpected response format.")
@@ -435,7 +301,9 @@ onMounted(() => {
 .group-container {
   margin-left: 40px;
   margin-top: 20px;
-  display: flex;
+  margin-right: 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
   gap: 20px; 
   justify-content: center;
   align-items: center;  
@@ -446,10 +314,10 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  width: 30%; 
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%; 
   overflow: hidden;
 }
 
@@ -479,6 +347,14 @@ onMounted(() => {
   width: 100%;
   padding: 10px;
   background-color: #f8f8f8;
+}
+
+.holder-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  width: 100vw;
 }
 
 </style>
