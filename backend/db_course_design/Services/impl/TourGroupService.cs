@@ -130,6 +130,7 @@ namespace db_course_design.Services.impl
                 .Include(t => t.GoTicket) // 加载去程票信息
                 .Include(t => t.ReturnTicket) // 加载回程票信息
                 .OrderBy(tg => tg.GroupPrice) // 假设推荐规则是按最低价格排序
+                .Take(3)
                 .ToListAsync();
 
             return recommendedGroups.Select(t => _mapper.Map<TourGroupResponse>(t));
