@@ -37,4 +37,9 @@ namespace db_course_design.DTOs
         public DateTime? EndDate { get; set; }
         public string? Service { get; set; }
     }
+    public class GuidePictureRequest
+    {
+        public byte GuideId { get; set; }
+        public string? Url { get; set; }
+    }
 }

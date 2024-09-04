@@ -240,7 +240,7 @@ public partial class ModelContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("PASSWORD");
             entity.Property(e => e.ProfilePicture)
-                .HasMaxLength(40)
+                .HasMaxLength(500)
                 .IsUnicode(false)
                 .HasColumnName("PROFILE_PICTURE");
         });

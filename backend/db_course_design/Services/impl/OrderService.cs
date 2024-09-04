@@ -57,7 +57,7 @@ namespace db_course_design.Services.impl
             }
             if (guideId.HasValue)
             {
-                query = query.Where(o => o.Order.GuideOrder.GuideId == guideId.Value);
+                query = query.Where(o => o.Order.GuideOrder.GuideId == guideId.Value && o.Order.Status.Equals("Completed"));
             }
 
             var guideOrders = await query
@@ -74,6 +74,8 @@ namespace db_course_design.Services.impl
                     GuideId = o.Guide.GuideId,
                     GuideName = o.Guide.GuideName,
                     GuideGender = o.Guide.GuideGender,
+                    UserId = o.Order.UserId,
+                    UserName = o.Order.User.UserName,
                 }).ToListAsync();
             return guideOrders;
         }
@@ -131,7 +133,7 @@ namespace db_course_design.Services.impl
             }
             if (guideId.HasValue)
             {
-                query = query.Where(o => o.Order.TourOrder.Group.GuideId == guideId);
+                query = query.Where(o => o.Order.TourOrder.Group.GuideId == guideId && o.Order.Status.Equals("Completed"));
             }
 
             var tourOrders = await query
@@ -147,6 +149,8 @@ namespace db_course_design.Services.impl
                     GuideId = o.Group.GuideId,
                     GuideName = o.Group.Guide.GuideName,
                     GuideGender = o.Group.Guide.GuideGender,
+                    UserId = o.Order.UserId,
+                    UserName = o.Order.User.UserName,
                     StartDate = o.Group.StartDate,
                     EndDate = o.Group.EndDate,
                     OrderNumber=o.OrderNumber,

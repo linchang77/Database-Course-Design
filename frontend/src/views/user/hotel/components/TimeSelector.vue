@@ -33,8 +33,9 @@
 
   const handleChange = (value: any) => {
     if (value !== '' && value !== null && value !== undefined) {
-        emit('updateValue', value)
-        console.log('Selected Date:', value)
+      //const localISOTime = new Date(value.getTime() - (value.getTimezoneOffset() * 60000)).toISOString();
+      emit('updateValue', value.toLocaleString())
+      console.log('Selected Date:', value.toLocaleString())
     } else {
         console.log('Date Cleared')
     }
