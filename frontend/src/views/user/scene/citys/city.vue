@@ -14,6 +14,25 @@ interface Attraction {
   scenicSpotGrade: string;
   scenicSpotIntroduction: string;
   scenicSpotLocation: string;
+  scenicSpotRemoteness: string;
+}
+
+interface CityIntro{
+  cityName: string,
+  province: string,
+  cityIntroduction: string,
+}
+const cityIntros = ref<CityIntro[]>([]);
+
+const getCityIntro = () =>{
+  axios
+   .get<CityIntro[]>(`https://123.60.14.84/api/City`)
+   .then(response => {
+     cityIntros.value = response.data;
+   })
+   .catch(error => {
+     console.error(error);
+   });
 }
 
 // 定义支持的城市名（大写和小写）
@@ -23,7 +42,6 @@ const supportedCities = [
   { chinese:"成都", upper: "CHENGDU", lower: "chengdu" }, 
   { chinese:"北京", upper: "BEIJING", lower: "beijing" },
   { chinese:"武汉", upper: "WUHAN", lower: "wuhan" },
-  { chinese:"广州", upper: "GUANGZHOU", lower: "guangzhou" },
 ];
 
 const route = useRoute();
@@ -37,6 +55,12 @@ const distanceFilter = ref("全部");
 
 const navigateTo = (page: string) => {
   currentPage.value = page;
+  fetchAttractions();
+  getCityIntro();
+  if(page === 'accommodation')
+  {
+    router.push({ path: '/hotel'});
+  }
 };
 
 // 根据传入参数获取城市名
@@ -48,6 +72,7 @@ onMounted(() => {
     city.value = matchedCity;
   }
   fetchAttractions();
+  getCityIntro();
 });
 
 const starOptions = ["全部", "1", "2", "3", "4", "5"];
@@ -69,7 +94,7 @@ const fetchAttractions = () => {
       // 距离筛选
       if (distanceFilter.value !== "全部") {
         filteredAttractions = filteredAttractions.filter(attraction => {
-          const distance = parseFloat(attraction.scenicSpotLocation);
+          const distance = parseFloat(attraction.scenicSpotRemoteness);
           switch (distanceFilter.value) {
             case "2km内":
               return distance <= 2;
@@ -95,8 +120,6 @@ const fetchAttractions = () => {
       }
     });
 };
-
-fetchAttractions();
 
 const searchAttraction = () => {
   if (searchQuery.value) {
@@ -198,13 +221,12 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
 
     <main class="main-content">
       <div v-if="currentPage === 'home'">
-        <img :src="`/images/${city.lower}.jpg`" :alt="city.lower" class="home-image" />
-        <div class="home-description">
-          <h2>{{ city.chinese }} - 中国的东方明珠</h2>
-          <p>
-            上海，位于中国东部沿海，是中国最大的城市和重要的经济、金融、贸易、航运中心之一。作为中国最具现代化和国际化的大都市，上海不仅有着繁华的商业区和高楼大厦，还保留着丰富的历史文化遗产。
-          </p>
+        <div class="home-description" v-for="Intro in cityIntros" >
+          <div v-if="Intro.cityName === city.chinese">
+            <p> {{ Intro.cityIntroduction }}</p>
+          </div>
         </div>
+        <img :src="`/images/${city.lower}.jpg`" :alt="city.lower" class="home-image" />
       </div>
       <div v-if="currentPage === 'attractions'" class="attractions-grid">
         <div v-if="attractions.length === 0" class="no-results">无结果</div>
@@ -224,7 +246,8 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
             <h3>{{ attraction.scenicSpotName }}</h3>
             <p>{{ attraction.scenicSpotGrade }}A</p>
             <p>{{ attraction.scenicSpotIntroduction }}</p>
-            <p>距离：{{ attraction.scenicSpotLocation }}公里</p>
+            <p>位置：{{ attraction.scenicSpotLocation }}</p>
+            <p>距离：{{ attraction.scenicSpotRemoteness }}公里</p>
           </div>
         </div>
       </div>
@@ -350,7 +373,6 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
 .home-image {
   width: 100%;
   height: auto;
-  margin-right: 20px;
 }
 
 .home-description {
