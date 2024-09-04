@@ -15,8 +15,8 @@ const userId = ref(5)
 // 定义订单的响应类型
 interface BaseOrder {
   orderId: number
-  orderType: string
-  status: string
+  orderType?: string
+  status?: string
   orderDate?: string
   price?: number
 }
@@ -70,8 +70,9 @@ const apiUrl = "https://123.60.14.84/api/Order"
 // 获取订单列表
 const fetchOrders = () => {
   axios
-    .get(`${apiUrl}/${userRole}/${userId.value}`, {
+    .get(`https://123.60.14.84:11100/api/Guide/5/filter/`, {
     params: {
+        guideId: userId.value,
         orderType: categoryFilter.value || undefined,
         statusType: statusFilter.value || undefined,
         start: startDate.value || undefined,
@@ -96,7 +97,11 @@ const fetchOrders = () => {
                 serviceEndDate: order.serviceEndDate
               } as GuideOrder
             case "TourOrder":
-              return { ...order, ...order.TourOrderDetail }
+              return {
+                ...order,
+                groupId: order.groupId,
+                groupName: order.groupName,
+              }
             default:
               return order
           }
@@ -218,10 +223,6 @@ const filterOrders = () => {
       console.error("Error fetching orders:", error)
       showEmptyMessage.value = true
     })
-
-
-
-
 }
 
 // 取消订单
@@ -401,12 +402,10 @@ function formatDateToDay(dateString?: string): string {
           <!-- 订单列表 -->
           <div class="order-item" v-for="order in orders" :key="order.orderId">
             <div class="head">
-              <span v-if="order.orderDate">订单日期：{{ formatDateToDay(order.orderDate) }}</span>
-              <span v-else>订单日期：无</span>
-
-              <span>订单编号：{{ order.orderId }}</span>
-              <span>订单类型：{{ formatCategory(order.orderType) }}</span>
-              <span>订单状态：{{ formatPayState(order.status) }}</span>
+              <span v-if="order.orderType === 'GuideOrder'">订单编号：{{ order.orderId }}</span>
+              <span v-else>旅行团编号：{{ (order as TourOrder).groupId }}</span>
+              <span v-if="order.orderType === 'GuideOrder'">订单类型：{{ formatCategory(order.orderType) }}</span>
+              <span v-else>订单类型：旅行团</span>
             </div>
             <div class="body">
               <div class="column orders">
@@ -421,12 +420,8 @@ function formatDateToDay(dateString?: string): string {
                     {{ formatDateToDay((order as GuideOrder).serviceEndDate) }}
                   </li>
                 </ul>
-                <ul v-if="order.orderType === 'TourOrder'">
-                  <li>旅行团编号：{{ (order as TourOrder).groupId }}</li>
+                <ul v-else>
                   <li>旅行团：{{ (order as TourOrder).groupName }}</li>
-                  <li>人数：{{ (order as TourOrder).orderNumber }}</li>
-                  <li>用户编号：{{ (order as TourOrder).userId }}</li>
-                  <li>用户姓名：{{ (order as TourOrder).userName }}</li>
                   <li>服务时间：{{ formatDateToDay((order as TourOrder).startDate) }} 至 
                   {{ formatDateToDay((order as TourOrder).endDate) }}</li>
                 </ul>
@@ -438,7 +433,7 @@ function formatDateToDay(dateString?: string): string {
                 </p>
               </div>
               <div class="column amount">
-                <p class="red">¥{{ order.price?.toFixed(2) }}</p>
+                <p class="red" v-if="order.orderType === 'GuideOrder'">¥{{ order.price?.toFixed(2) }}</p>
               </div>
             </div>
           </div>
