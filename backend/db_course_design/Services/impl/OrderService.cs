@@ -74,6 +74,8 @@ namespace db_course_design.Services.impl
                     GuideId = o.Guide.GuideId,
                     GuideName = o.Guide.GuideName,
                     GuideGender = o.Guide.GuideGender,
+                    UserId = o.Order.UserId,
+                    UserName = o.Order.User.UserName,
                 }).ToListAsync();
             return guideOrders;
         }
@@ -147,6 +149,8 @@ namespace db_course_design.Services.impl
                     GuideId = o.Group.GuideId,
                     GuideName = o.Group.Guide.GuideName,
                     GuideGender = o.Group.Guide.GuideGender,
+                    UserId = o.Order.UserId,
+                    UserName = o.Order.User.UserName,
                     StartDate = o.Group.StartDate,
                     EndDate = o.Group.EndDate,
                     OrderNumber=o.OrderNumber,
