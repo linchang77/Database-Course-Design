@@ -18,13 +18,12 @@ interface Attraction {
 
 // 定义支持的城市名（大写和小写）
 const supportedCities = [
+  { chinese:"南京", upper: "NANJING", lower: "nanjing" },
   { chinese:"上海", upper: "SHANGHAI", lower: "shanghai" },
-  { chinese:"开罗", upper: "CAIRO", lower: "cairo" },
-  { chinese:"纽约",  upper: "NEWYORK", lower: "newyork" },
-  { chinese:"巴黎",  upper: "PARIS", lower: "paris" },
-  { chinese:"悉尼",  upper: "SYDNEY", lower: "sydney" },
-  { chinese:"东京",  upper: "TOKYO", lower: "tokyo" },
-  { chinese:"里约热内卢",  upper: "RIODEJANEIRO", lower: "riodejaneiro" }
+  { chinese:"成都", upper: "CHENGDU", lower: "chengdu" }, 
+  { chinese:"北京", upper: "BEIJING", lower: "beijing" },
+  { chinese:"武汉", upper: "WUHAN", lower: "wuhan" },
+  { chinese:"广州", upper: "GUANGZHOU", lower: "guangzhou" },
 ];
 
 const route = useRoute();
@@ -204,7 +203,6 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
           <p>
             上海，位于中国东部沿海，是中国最大的城市和重要的经济、金融、贸易、航运中心之一。作为中国最具现代化和国际化的大都市，上海不仅有着繁华的商业区和高楼大厦，还保留着丰富的历史文化遗产。
           </p>
-          <!-- 其他描述内容省略 -->
         </div>
       </div>
       <div v-if="currentPage === 'attractions'" class="attractions-grid">

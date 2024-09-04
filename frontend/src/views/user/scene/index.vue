@@ -2,14 +2,10 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElCarousel, ElCarouselItem } from 'element-plus';
-import cairo from "@/assets/scene/cairo.jpg";
-import newyork from "@/assets/scene/newyork.jpg";
-import paris from "@/assets/scene/paris.jpg";
-import shanghai from "@/assets/scene/shanghai.jpg";
-import sydney from "@/assets/scene/sydney.jpg";
-import tokyo from "@/assets/scene/tokyo.jpg";
-import riodejaneiro from "@/assets/scene/riodejaneiro.jpg";
-
+import nanjing from "/images/nanjing.jpg";
+import shanghai from "/images/shanghai.jpg";
+import chengdu from "/images/chengdu.jpg";
+import beijing from "/images/beijing.jpg";
 const selectedItem = ref("");
 const isAsideVisible = ref(false);
 const showImages = ref(true);
@@ -18,15 +14,14 @@ const editedCities = ref<string[]>([]);
 
 const supportedCities = [
   { lower: 'shanghai', upper: '上海' },
-  { lower: 'cairo', upper: '开罗' },
-  { lower: 'newyork', upper: '纽约' },
-  { lower: 'paris', upper: '巴黎' },
-  { lower: 'sydney', upper: '悉尼' },
-  { lower: 'tokyo', upper: '东京' },
-  { lower: 'riodejaneiro', upper: '里约热内卢' }
+  { lower: 'nanjing', upper: '南京' },
+  { lower: 'chengdu', upper: '成都' },
+  { lower: 'beijing', upper: '北京' },
+  { lower: 'guangzhou', upper: '广州' },
+  { lower: 'wuhan', upper: '武汉' },
 ];
 
-const images = [shanghai, cairo, newyork, paris, sydney, tokyo, riodejaneiro];
+const images = [shanghai, nanjing, chengdu, beijing];
 
 const router = useRouter();
 
@@ -87,42 +82,44 @@ onMounted(() => {
         </div>
         <div v-else-if="selectedItem === '1'" class="city-links">
           <a v-for="city in supportedCities.filter(city => city.lower === 'shanghai')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
+          <a v-for="city in supportedCities.filter(city => city.lower === 'nanjing')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
+          <a v-for="city in supportedCities.filter(city => city.lower === 'chengdu')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
           <a>北京</a>
           <a>天津</a>
           <a>广州</a>
         </div>
         <div v-else-if="selectedItem === '2'" class="city-links">
-          <a v-for="city in supportedCities.filter(city => city.lower === 'tokyo')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
+          <a>东京</a>
           <a>曼谷</a>
           <a>新加坡</a>
           <a>迪拜</a>
         </div>
         <div v-else-if="selectedItem === '3'" class="city-links">
-          <a v-for="city in supportedCities.filter(city => city.lower === 'cairo')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
+          <a>开罗</a>
           <a>开普敦</a>
           <a>约翰内斯堡</a>
           <a>马拉喀什</a>
         </div>
         <div v-else-if="selectedItem === '4'" class="city-links">
-          <a v-for="city in supportedCities.filter(city => city.lower === 'paris')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
+          <a>巴黎</a>
           <a>伦敦</a>
           <a>威尼斯</a>
           <a>罗马</a>
         </div>
         <div v-else-if="selectedItem === '5'" class="city-links">
-          <a v-for="city in supportedCities.filter(city => city.lower === 'newyork')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
+          <a>纽约</a>
           <a>多伦多</a>
           <a>洛杉矶</a>
           <a>温哥华</a>
         </div>
         <div v-else-if="selectedItem === '6'" class="city-links">
-          <a v-for="city in supportedCities.filter(city => city.lower === 'riodejaneiro')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
+          <a>里约热内卢</a>
           <a>圣保罗</a>
           <a>基多</a>
           <a>圣地亚哥</a>
         </div>
         <div v-else-if="selectedItem === '7'" class="city-links">
-          <a v-for="city in supportedCities.filter(city => city.lower === 'sydney')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
+          <a>悉尼</a>
           <a>墨尔本</a>
           <a>奥克兰</a>
           <a>皇后镇</a>
