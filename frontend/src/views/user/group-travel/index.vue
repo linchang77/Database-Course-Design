@@ -75,7 +75,7 @@ const groupId_input=ref("")
 const departure_input=ref("")
 const destination_input=ref("")
 const date_input=ref("")
-const showEmptyMessage = ref(false) // 用于控制是否显示“暂无订单数据”
+const showEmptyMessage = ref(false)
 
 // 旅游团与图片url的对应关系
 const imageMap: Record<number, string> = {
@@ -187,8 +187,8 @@ const goToGroup = (group: TourGroup) => {
       endDate: group.endDate,
       groupName: group.groupName,
       groupPrice: group.groupPrice.toString(),
-      goTicketId: group.goTicketId.toString(),
-      returnTicketId: group.returnTicketId.toString(),
+      //goTicketId: group.goTicketId.toString(),
+      //returnTicketId: group.returnTicketId.toString(),
       departure: group.departure,
       destination: group.destination,
       guideName: group.guideName,
