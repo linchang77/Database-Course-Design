@@ -27,7 +27,7 @@ const childTicketRemaining = ref<number>(0)
 const fetchTicketInfo = async (spotName: string) => {
   try {
     const response = await axios.get(
-      `https://123.60.14.84/api/ScenicSpot/ticket/${encodeURIComponent(spotName)}/date/2024-8-19`
+      `https://123.60.14.84/api/ScenicSpot/ticket/${encodeURIComponent(spotName)}/date/2024-9-8`
     )
 
     // 提取成人票信息
@@ -52,7 +52,7 @@ const buyTicket = async () => {
     const response = await axios.post(url, {
       orderDate: selectedDate.value,
       userId: localStorage.getItem("id"), // 这里的userId需要根据具体用户登录信息动态设置
-      status: "pending", // 初始状态，可能是待付款或待确认
+      status: "Pending", // 初始状态，可能是待付款或待确认
       price: scene.value.ticketPrice * ticketQuantity.value
     })
     alert("购票成功!")
@@ -90,8 +90,16 @@ onMounted(async () => {
       <h2>购票信息</h2>
 
       <div class="ticket-prices">
-        <p class="ticket-price">成人票价：￥{{ adultTicketPrice }} / 每张</p>
-        <p class="ticket-price">儿童票价：￥{{ childTicketPrice }} / 每张</p>
+        <p class="ticket-price">
+          成人票价：
+          <span v-if="adultTicketPrice > 0">￥{{ adultTicketPrice }}</span>
+          <span v-else>免费</span>
+        </p>
+        <p class="ticket-price">
+          儿童票价：
+          <span v-if="childTicketPrice > 0">￥{{ childTicketPrice }}</span>
+          <span v-else>免费</span>
+        </p>
       </div>
 
       <label for="type">选择票类型:</label>
@@ -110,6 +118,7 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .scene-container {
