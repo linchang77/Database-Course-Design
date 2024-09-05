@@ -4,13 +4,11 @@ import { ElMessage, ElMessageBox } from "element-plus"
 import type { Action } from "element-plus"
 import { Search } from "@element-plus/icons-vue"
 import axios from "axios"
-import { useUserStoreHook } from '@/store/modules/user';
+import { useUserStoreHook } from '@/store/modules/user'
 
-const userStore = useUserStoreHook();
+const userStore = useUserStoreHook()
 const userRole = userStore.roles
-//const userId = ref<string | null>(localStorage.getItem('id'))
-//const userRole = "guide"
-const userId = ref(5)
+const userId = ref<string | null>(localStorage.getItem('id'))
 
 // 定义订单的响应类型
 interface BaseOrder {
@@ -70,7 +68,7 @@ const apiUrl = "https://123.60.14.84/api/Order"
 // 获取订单列表
 const fetchOrders = () => {
   axios
-    .get(`https://123.60.14.84:11100/api/Guide/5/filter/`, {
+    .get(`https://123.60.14.84:11100/api/Guide/${userId.value}/filter/`, {
     params: {
         guideId: userId.value,
         orderType: categoryFilter.value || undefined,
@@ -432,9 +430,6 @@ function formatDateToDay(dateString?: string): string {
                   <a href="javascript:;" class="del" @click="openCancel(order.orderId)">申请取消</a>
                 </p>
               </div>
-              <div class="column amount">
-                <p class="red" v-if="order.orderType === 'GuideOrder'">¥{{ order.price?.toFixed(2) }}</p>
-              </div>
             </div>
           </div>
         </div>
@@ -599,13 +594,6 @@ function formatDateToDay(dateString?: string): string {
                   }
                 }
               }
-            }
-
-            .price {
-              width: 100px;
-              font-weight: bold; 
-              font-size: larger;
-              color: #cf4444; 
             }
 
             .count {
