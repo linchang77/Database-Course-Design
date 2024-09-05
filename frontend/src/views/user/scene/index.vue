@@ -128,29 +128,33 @@ onMounted(() => {
   </div>
 </template>
 
-
 <style scoped>
 .el-container {
   height: 100%;
 }
+
 .el-aside {
   display: block;
-  height: 840px;
+  height: 966px;
   background: #2d3a4b;
   color: white;
   margin-left: 10%;
   cursor: pointer;
+  border-radius: 8px;
 }
+
 .el-menu-item {
   cursor: pointer;
-  height: 100px;
+  height: 138px;
 }
+
 .city-links a {
   display: inline-block;
   margin-right: 20px;
   text-decoration: none;
   color: black;
 }
+
 .city-links a:hover {
   color: rgb(0, 157, 255);
 }
@@ -165,6 +169,7 @@ input {
   border: 2px rgb(0, 157, 255) solid;
   box-sizing: border-box;
 }
+
 input:focus {
   padding: 12px;
   margin: 20px 0;
@@ -248,15 +253,6 @@ li {
 }
 .el-container {
   height: 100%;
-}
-
-.el-aside {
-  display: block;
-  height: 700px;
-  background: #2d3a4b;
-  color: white;
-  margin-left: 10%;
-  cursor: pointer;
 }
 
 .carousel-image {

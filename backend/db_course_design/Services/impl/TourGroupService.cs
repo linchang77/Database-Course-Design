@@ -5,6 +5,7 @@ using db_course_design.Common;
 using AutoMapper;
 using db_course_design.Profiles;
 using NuGet.Packaging;
+using System.Linq;
 
 namespace db_course_design.Services.impl
 {
@@ -123,14 +124,15 @@ namespace db_course_design.Services.impl
 
         public async Task<IEnumerable<TourGroupResponse>> GetRecommendedTourGroupsAsync()
         {
+            var recommendedGroupIDs = new List<byte>
+            {
+                1,
+                126,
+                125
+            };
+
             var recommendedGroups = await _context.TourGroups
-                .Include(tg => tg.TourItineraries)
-                .Include(tg => tg.Hotels)
-                .Include(t => t.Guide)
-                .Include(t => t.GoTicket) // 加载去程票信息
-                .Include(t => t.ReturnTicket) // 加载回程票信息
-                .OrderBy(tg => tg.GroupPrice) // 假设推荐规则是按最低价格排序
-                .Take(3)
+                .Where(ss => recommendedGroupIDs.Contains(ss.GroupId))
                 .ToListAsync();
 
             return recommendedGroups.Select(t => _mapper.Map<TourGroupResponse>(t));

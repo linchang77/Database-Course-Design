@@ -201,7 +201,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
       {
         path: "city/tickets",
-        component: () => import("@/views/user/scene/citys/city/景点购票.vue"),
+        component: () => import("@/views/user/scene/citys/city/scenicSpot.vue"),
         name: "SceneTickets",
         meta: {
           title: "景点购票"
@@ -237,7 +237,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     children: [
     {
       path: "groups/detail",
-      component: () => import(`@/views/user/group-travel/groups/detail.vue`), 
+      component: () => import(`@/views/user/group-travel/groups/detail.vue`),
       name: "group-detail",
       meta: {
         title: "旅行团",

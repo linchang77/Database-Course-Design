@@ -75,6 +75,7 @@ async function fetchUserData() {
         ProfilePicture: response.data.profilePicture || "",
         Introduction: response.data.introduction || "未设置",
         Price: response.data.price || "未设置",
+        Salary: response.data.salary || "未设置",
         Regions: response.data.regions.length ? response.data.regions : [],
         PhoneNumbers: response.data.phoneNumbers.length ? response.data.phoneNumbers : []
       }
@@ -334,7 +335,7 @@ onMounted(() => {
 
 <template>
   <div class="profile-container">
-    <h1 class="title">用户信息</h1>
+    <h1 class="title">个人信息</h1>
 
     <div v-if="userType === 'user'">
       <div class="info-section">
@@ -354,11 +355,17 @@ onMounted(() => {
         <div class="label">游客性别</div>
         <div class="content">
           <span v-if="!isEditing.userGender">{{ user.Gender }}</span>
-          <input v-else v-model="user.Gender" />
+          <div v-else>
+            <input type="radio" id="male" value="男" v-model="user.Gender" />
+            <label for="male">男</label>
+            <input type="radio" id="female" value="女" v-model="user.Gender" />
+            <label for="female">女</label>
+          </div>
           <button @click="toggleEdit('userGender')" v-if="!isEditing.userGender">修改</button>
           <button @click="saveChanges('gender', user.Gender)" v-else>保存</button>
         </div>
       </div>
+
       <div class="info-section">
         <div class="label">电话号码</div>
         <div class="content phone-list">
@@ -403,7 +410,12 @@ onMounted(() => {
         <div class="label">导游性别</div>
         <div class="content">
           <span v-if="!isEditing.guideGender">{{ guide.Gender }}</span>
-          <input v-else v-model="guide.Gender" />
+          <div v-else>
+            <input type="radio" id="male" value="男" v-model="guide.Gender" />
+            <label for="male">男</label>
+            <input type="radio" id="female" value="女" v-model="guide.Gender" />
+            <label for="female">女</label>
+          </div>
           <button @click="toggleEdit('guideGender')" v-if="!isEditing.guideGender">修改</button>
           <button @click="saveChanges('gender', guide.Gender)" v-else>保存</button>
         </div>
@@ -412,6 +424,12 @@ onMounted(() => {
         <div class="label">导游价格</div>
         <div class="content">
           <span>{{ guide.Price }}</span>
+        </div>
+      </div>
+      <div class="info-section">
+        <div class="label">导游工资</div>
+        <div class="content">
+          <span>{{ guide.Salary }}</span>
         </div>
       </div>
       <div class="info-section">
