@@ -67,7 +67,7 @@ async function fetchUserData() {
         PhoneNumbers: response.data.phoneNumbers.length ? response.data.phoneNumbers : []
       }
     } else if (userType.value === "guide") {
-      const response = await axios.get(`${baseUrl}/api/Profile/guide/${guide.value.Id}`)
+      const response = await axios.get(`${baseUrl}/api/Profile/guide/${user.value.Id}`)
       guide.value = {
         Id: response.data.id || "未设置",
         Name: response.data.name || "未设置",
@@ -393,6 +393,13 @@ onMounted(() => {
       </div>
     </div>
     <div v-else-if="userType === 'guide'">
+      <div class="info-section">
+        <div class="label">导游头像</div>
+        <div class="content">
+          <img v-if="guide.ProfilePicture" :src="guide.ProfilePicture" alt="导游头像" class="profile-picture"/>
+          <span v-else>暂无头像</span>
+        </div>
+      </div>
       <div class="info-section">
         <div class="label">ID</div>
         <div class="content">{{ guide.Id }}</div>
