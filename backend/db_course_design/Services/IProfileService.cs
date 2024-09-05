@@ -20,6 +20,10 @@ namespace db_course_design.Services
 
         Task<AdminProfileResponse?> UpdateAdminProfileAsync(decimal id, string item, string value);
 
+        Task<bool?> UpdateUserAvatarAsync(int id, IFormFile avatar);
+
+        Task<bool?> UpdateGuideAvatarAsync(byte id, IFormFile avatar);
+
         Task<string?> AddUserPhoneNumberAsync(int id, string number);
 
         Task<bool> DeleteUserPhoneNumberAsync(int id, string number);
@@ -33,8 +37,11 @@ namespace db_course_design.Services
         Task<bool> DeleteGuideRegionAsync(byte id, string region);
 
         Task<ICollection<UserProfileResponse>> GetAllUsersAsync();
+
         Task<bool> DeleteUserAsync(int UserId);
+
         Task<UserProfileResponse> UpdateUserAsync(int UserId, UserRequest userRequest);
+
         Task<UserProfileResponse> AddUserAsync(UserRequest userRequest);
     }
 }

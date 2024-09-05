@@ -150,6 +150,18 @@ namespace db_course_design.Controllers
             return Ok(target);
         }
 
+        [HttpPut("user/{id}/picture")]
+        public async Task<IActionResult> UpdateUserAvatar(int id, [FromForm] IFormFile avatar)
+        {
+            var updated = await _profileService.UpdateUserAvatarAsync(id, avatar);
+
+            if (updated == null)
+                return BadRequest("User " + id + " doesn't exist.");
+            if (!updated.Value)
+                return BadRequest("Invalid file type.");
+            return Ok();
+        }
+
         [HttpPost("user/{id}/phone/add/{number}")]
         public async Task<IActionResult> AddUserPhoneNumber(int id, string number)
         {
@@ -206,6 +218,18 @@ namespace db_course_design.Controllers
             if (target == null)
                 return BadRequest("Cannot update item '" + item + "' of guide " + id);
             return Ok(target);
+        }
+
+        [HttpPut("guide/{id}/picture")]
+        public async Task<IActionResult> UpdateGuideAvatar(byte id, [FromForm] IFormFile avatar)
+        {
+            var updated = await _profileService.UpdateGuideAvatarAsync(id, avatar);
+
+            if (updated == null)
+                return BadRequest("Guide " + id + " doesn't exist.");
+            if (!updated.Value)
+                return BadRequest("Invalid file type.");
+            return Ok();
         }
 
         [HttpPost("guide/{id}/phone/add/{number}")]

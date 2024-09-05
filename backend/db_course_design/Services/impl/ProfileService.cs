@@ -4,8 +4,11 @@ using db_course_design.Common;
 using db_course_design.DTOs;
 using db_course_design.Profiles;
 using EntityFramework.Models;
+using MessagePack.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using System.ComponentModel;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
 namespace db_course_design.Services.impl
@@ -82,9 +85,6 @@ namespace db_course_design.Services.impl
                     case "name":
                         target.UserName = value; 
                         break;
-                    case "picture":
-                        target.ProfilePicture = value; 
-                        break;
                     case "gender":
                         target.UserGender = value;
                         break;
@@ -111,9 +111,6 @@ namespace db_course_design.Services.impl
                 {
                     case "name":
                         target.GuideName = value;
-                        break;
-                    case "picture":
-                        target.ProfilePicture = value;
                         break;
                     case "gender":
                         target.GuideGender = value;
@@ -158,6 +155,30 @@ namespace db_course_design.Services.impl
             {
                 return null;
             }
+        }
+
+        public async Task<bool?> UpdateUserAvatarAsync(int id, IFormFile avatar)
+        {
+            var target = await _context.Users.FindAsync(id);
+
+            if (target == null)
+                return null;
+
+            if (!await SetPictureAsync(target.ProfilePicture, avatar))
+                return false;
+            return true;
+        }
+
+        public async Task<bool?> UpdateGuideAvatarAsync(byte id, IFormFile avatar)
+        {
+            var target = await _context.Guides.FindAsync(id);
+
+            if (target == null)
+                return null;
+
+            if (!await SetPictureAsync(target.ProfilePicture, avatar))
+                return false;
+            return true;
         }
 
         public async Task<string?> AddUserPhoneNumberAsync(int id, string number)
@@ -300,6 +321,21 @@ namespace db_course_design.Services.impl
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        /*--图片存储--*/
+        private async Task<bool> SetPictureAsync(string route, IFormFile picture)
+        {
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+            var extension = Path.GetExtension(picture.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))
+                return false;
+
+            using (var stream = new FileStream(route, FileMode.Open))
+                await picture.CopyToAsync(stream);
 
             return true;
         }
