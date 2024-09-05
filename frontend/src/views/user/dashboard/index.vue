@@ -255,16 +255,17 @@ const imageMap = {
 }
 
 .group-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  width: 30%;
   background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  max-width: 30%;
   cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s;
 }
 
 .group-card:hover {
