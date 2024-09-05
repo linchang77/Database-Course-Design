@@ -18,7 +18,7 @@ namespace db_course_design.Services
         Task<bool> CreateGuideOrderAsync(GuideReservationRequest request);
         
         // 按条件筛选
-        Task<List<OrderResponse>> OrderFilterofGuide(byte GuideId, string? OrderType, int? UserId, DateTime? StartDate, DateTime? EndDate);
+        Task<List<OrderResponseOfGuide>> OrderFilterofGuide(byte GuideId, string? OrderType, int? UserId, DateTime? StartDate, DateTime? EndDate);
 
         Task<GuideResponse> GetGuideByIdAsync(byte GuideId);
         Task<GuideResponse> AddGuideAsync(GuideRequest guideRequest);

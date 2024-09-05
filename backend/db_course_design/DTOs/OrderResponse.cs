@@ -43,12 +43,10 @@ namespace db_course_design.DTOs
     public class TourOrderDetail : OrderResponse
     {
         public byte? GroupId { get; set; }
-        public string? GroupName { get; set; }  // 建议名字起旅行目的地
+        public string? GroupName { get; set; }
         public byte? GuideId { get; set; }
         public string GuideName { get; set; }
         public string GuideGender { get; set; }
-        public int? UserId { get; set; }
-        public string? UserName { get; set; }
         public decimal? OrderNumber { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -66,5 +64,31 @@ namespace db_course_design.DTOs
         public string? TicketArrivalCity { get; set; }
         public string? TicketDepartureStation { get; set; }
         public string? TicketArrivalStation { get; set; }
+    }
+    public class OrderResponseOfGuide
+    {
+        public byte GuideId { get; set; }
+        public string GuideName { get; set; }
+        public string GuideGender { get; set; }
+        public decimal? Price { get; set; }
+    }
+    public class GuideOrderDetailOfGuide : OrderResponseOfGuide
+    {
+        public int OrderId { get; set; }
+        public string OrderType { get; set; }
+        public string Status { get; set; }
+        public int? UserId { get; set; }
+        public string? UserName { get; set; }
+        public DateTime? ServiceBeginDate { get; set; }
+        public DateTime? ServiceEndDate { get; set; }
+        public string Service { get; set; }
+    }
+    public class TourGroupDetail : OrderResponseOfGuide
+    {
+        public byte? GroupId { get; set; }
+        public string? GroupName { get; set; }
+        public decimal? OrderNumber { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

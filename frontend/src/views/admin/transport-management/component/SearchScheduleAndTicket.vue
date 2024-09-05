@@ -86,7 +86,13 @@
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="交通工具类型">
-          <el-input v-model="recordToModify.vehicleType" ></el-input>
+          <div>
+            <el-select v-model="recordToModify.vehicleType" style="width: 200%;"   :filterable="true"  placeholder="请选择交通工具类型" >
+              <el-option
+                v-for="item in vehicleTypes" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
         </el-form-item>
         <el-form-item label="交通工具型号">
           <el-input v-model="recordToModify.vehicleModel" ></el-input>
@@ -149,6 +155,11 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
 
+const vehicleTypes = [
+  { value: 'plane', label: '飞机' },
+  { value: 'train', label: '火车' },
+  { value: 'car', label: '大巴' },
+];
 // 定义行程数据模型
 interface Schedule {
   vehicleId: string;
