@@ -16,7 +16,7 @@ namespace db_course_design.Controllers
                     GET             - 获取指定ID的普通用户信息
                     name/{name}/
                         PUT         - 修改指定ID的普通用户的用户名
-                    picture/{picture}/
+                    picture/
                         PUT         - 修改指定ID的普通用户的头像
                     gender/{gender}/
                         PUT         - 修改指定ID的普通用户的性别
@@ -36,7 +36,7 @@ namespace db_course_design.Controllers
                     GET             - 获取指定ID的导游信息
                     name/{name}/
                         PUT         - 修改指定ID的导游的用户名
-                    picture/{picture}/
+                    picture/
                         PUT         - 修改指定ID的导游的头像
                     gender/{gender}/
                         PUT         - 修改指定ID的导游的性别
@@ -155,11 +155,9 @@ namespace db_course_design.Controllers
         {
             var updated = await _profileService.UpdateUserAvatarAsync(id, avatar);
 
-            if (updated == null)
-                return BadRequest("User " + id + " doesn't exist.");
-            if (!updated.Value)
-                return BadRequest("Invalid file type.");
-            return Ok();
+            if (updated.code != 0)
+                return BadRequest(updated);
+            return Ok(updated);
         }
 
         [HttpPost("user/{id}/phone/add/{number}")]
@@ -225,11 +223,9 @@ namespace db_course_design.Controllers
         {
             var updated = await _profileService.UpdateGuideAvatarAsync(id, avatar);
 
-            if (updated == null)
-                return BadRequest("Guide " + id + " doesn't exist.");
-            if (!updated.Value)
-                return BadRequest("Invalid file type.");
-            return Ok();
+            if (updated.code != 0)
+                return BadRequest(updated);
+            return Ok(updated);
         }
 
         [HttpPost("guide/{id}/phone/add/{number}")]

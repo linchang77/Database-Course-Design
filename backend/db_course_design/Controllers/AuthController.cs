@@ -11,7 +11,10 @@ namespace db_course_design.Controler
     public class AuthController : ControllerBase
     {
         //加盐的值
-        private string salt = "jleyrCCO8Z+JT5mez87yuw==";
+        private readonly string salt = "jleyrCCO8Z+JT5mez87yuw==";
+
+        //头像设置工具
+        private readonly PictureUtils pictureUtils = new PictureUtils("C:\\Avatars\\default.jpg");
 
         //建立一个请求登录的表
         public class LoginRequest
@@ -134,11 +137,21 @@ namespace db_course_design.Controler
             {
                 UserName = registerRequest.UserName,
                 Password = SaltedPassword.HashPassword(registerRequest.Password, salt),
-                RegistrationTime = DateTime.Now
+                RegistrationTime = DateTime.Now,
+                ProfilePicture = "C:\\Avatars\\users"
             };
 
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
+
+            // 设置头像路径和默认头像
+            newUser.ProfilePicture += "\\" + newUser.UserId + ".jpg";
+            await _context.SaveChangesAsync();
+
+            var avatarSet = await pictureUtils.SetDefaultPictureAsync(newUser.ProfilePicture);
+
+            if (avatarSet.code != 0)
+                return StatusCode(StatusCodes.Status500InternalServerError, avatarSet);
 
             return Ok(Result<string>.Success("User registered successfully"));
         }
@@ -160,11 +173,21 @@ namespace db_course_design.Controler
             var newguide = new Guide
             {
                 GuideName = registerRequest.UserName,
-                Password = SaltedPassword.HashPassword(registerRequest.Password, salt)
+                Password = SaltedPassword.HashPassword(registerRequest.Password, salt),
+                ProfilePicture = "C:\\Avatars\\guides"
             };
 
             _context.Guides.Add(newguide);
             await _context.SaveChangesAsync();
+
+            // 设置头像路径和默认头像
+            newguide.ProfilePicture += "\\" + newguide.GuideId + ".jpg";
+            await _context.SaveChangesAsync();
+
+            var avatarSet = await pictureUtils.SetDefaultPictureAsync(newguide.ProfilePicture);
+
+            if (avatarSet.code != 0)
+                return StatusCode(StatusCodes.Status500InternalServerError, avatarSet);
 
             return Ok(Result<string>.Success("Guide registered successfully"));
         }

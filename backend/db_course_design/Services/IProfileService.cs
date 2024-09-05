@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using db_course_design.Common;
 using db_course_design.DTOs;
 using db_course_design.Services.impl;
 
@@ -20,9 +21,9 @@ namespace db_course_design.Services
 
         Task<AdminProfileResponse?> UpdateAdminProfileAsync(decimal id, string item, string value);
 
-        Task<bool?> UpdateUserAvatarAsync(int id, IFormFile avatar);
+        Task<Result<string>> UpdateUserAvatarAsync(int id, IFormFile avatar);
 
-        Task<bool?> UpdateGuideAvatarAsync(byte id, IFormFile avatar);
+        Task<Result<string>> UpdateGuideAvatarAsync(byte id, IFormFile avatar);
 
         Task<string?> AddUserPhoneNumberAsync(int id, string number);
 

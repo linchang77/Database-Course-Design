@@ -30,12 +30,14 @@ namespace db_course_design.Services.impl
     public class ProfileService : IProfileService
     {
         private readonly ModelContext _context;
+        private readonly PictureUtils _pictureUtils;
 
         public IMapper _mapper { get; }
 
         public ProfileService(ModelContext context)
         {
             _context = context;
+            _pictureUtils = new PictureUtils();
             _mapper = new MapperConfiguration(cfg => cfg.AddProfile<ProfileProfile>()).CreateMapper();
         }
 
@@ -157,28 +159,38 @@ namespace db_course_design.Services.impl
             }
         }
 
-        public async Task<bool?> UpdateUserAvatarAsync(int id, IFormFile avatar)
+        public async Task<Result<string>> UpdateUserAvatarAsync(int id, IFormFile avatar)
         {
             var target = await _context.Users.FindAsync(id);
 
             if (target == null)
-                return null;
+                return Result<string>.Error("User " + id + " doesn't exist.");
 
-            if (!await SetPictureAsync(target.ProfilePicture, avatar))
-                return false;
-            return true;
+            var newPath = await _pictureUtils.SetPictureAsync(target.ProfilePicture, avatar);
+
+            if (newPath.code != 0)
+                return newPath;
+
+            target.ProfilePicture = newPath.data;
+            await _context.SaveChangesAsync();
+            return newPath;
         }
 
-        public async Task<bool?> UpdateGuideAvatarAsync(byte id, IFormFile avatar)
+        public async Task<Result<string>> UpdateGuideAvatarAsync(byte id, IFormFile avatar)
         {
             var target = await _context.Guides.FindAsync(id);
 
             if (target == null)
-                return null;
+                return Result<string>.Error("Guide " + id + " doesn't exist.");
 
-            if (!await SetPictureAsync(target.ProfilePicture, avatar))
-                return false;
-            return true;
+            var newPath = await _pictureUtils.SetPictureAsync(target.ProfilePicture, avatar);
+
+            if (newPath.code != 0)
+                return newPath;
+
+            target.ProfilePicture = newPath.data;
+            await _context.SaveChangesAsync();
+            return newPath;
         }
 
         public async Task<string?> AddUserPhoneNumberAsync(int id, string number)
@@ -321,21 +333,7 @@ namespace db_course_design.Services.impl
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        /*--图片存储--*/
-        private async Task<bool> SetPictureAsync(string route, IFormFile picture)
-        {
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-            var extension = Path.GetExtension(picture.FileName).ToLowerInvariant();
-
-            if (!allowedExtensions.Contains(extension))
-                return false;
-
-            using (var stream = new FileStream(route, FileMode.Open))
-                await picture.CopyToAsync(stream);
+            File.Delete(user.ProfilePicture);
 
             return true;
         }
