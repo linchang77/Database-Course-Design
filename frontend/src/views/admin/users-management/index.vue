@@ -2,7 +2,7 @@
 import { reactive, ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { CirclePlus } from "@element-plus/icons-vue";
+import { CirclePlus, Refresh, Search } from "@element-plus/icons-vue";
 
 // 用户接口
 interface User {
@@ -21,6 +21,9 @@ defineOptions({
 
 const loading = ref<boolean>(false);
 const tableData = ref<User[]>([]);
+const searchName = ref<string>(""); 
+const searchId = ref<number | undefined>(undefined); 
+const searchResults = ref<User[]>([]); 
 
 // 加载数据
 const getTableData = async () => {
@@ -61,6 +64,42 @@ const rules = reactive({
   profilePicture: [{ required: false, trigger: "blur" }],
   registrationTime: [{ required: false, trigger: "blur" }],
 });
+
+// 根据姓名查找
+const searchByName = () => {
+  if (searchName.value) {
+    searchResults.value = tableData.value.filter((user) =>
+      user.name.includes(searchName.value)
+    );
+    if (searchResults.value.length === 0) {
+      ElMessage.warning("没有找到该姓名的用户数据");
+    }
+  } else {
+    ElMessage.warning("请输入姓名");
+  }
+};
+
+// 根据ID查找
+const searchById = () => {
+  if (searchId.value !== undefined && searchId.value !== null) {
+    searchResults.value = tableData.value.filter((user) =>
+      user.id === Number(searchId.value)
+    );
+    if (searchResults.value.length === 0) {
+      ElMessage.warning("没有找到该ID的用户数据");
+    }
+  } else {
+    ElMessage.warning("请输入ID");
+  }
+};
+
+
+// 重置搜索
+const resetSearch = () => {
+  searchName.value = "";
+  searchId.value = undefined;
+  searchResults.value = [];
+};
 
 // 提交增加需求
 const handleAdd = () => {
@@ -172,11 +211,16 @@ const formRef = ref();
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" :icon="CirclePlus" @click="toAdd()">新增用户</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="toAdd()" style="width: 200px; margin: 0 10px;">新增用户</el-button>
+           <el-input v-model="searchName" placeholder="请输入用户姓名" style="width: 200px; margin: 0 10px;" />
+          <el-button type="primary" @click="searchByName" :icon="Search">搜索</el-button>
+          <el-input v-model="searchId" placeholder="请输入用户ID" style="width: 200px; margin:0 10px;" />
+          <el-button type="primary" @click="searchById" :icon="Search">搜索</el-button>
+          <el-button @click="resetSearch" :icon="Refresh">重置</el-button>
         </div>
       </div>
       <div class="table-wrapper">
-        <el-table :data="tableData">
+        <el-table :data="searchResults.length ? searchResults : tableData">
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column prop="id" label="用户id" align="center" />
           <el-table-column prop="name" label="用户姓名" align="center"/>
