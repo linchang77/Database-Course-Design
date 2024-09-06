@@ -421,7 +421,6 @@ function formatDate(dateString?: string): string {
   // 格式化为需要的字符串
   return `${year}年${month}月${day}日 ${hours}:${minutes}:${seconds}`
 }
-formatDate("2022-01-01T00:00:00.000Z")
 
 // 格式化时间到日
 function formatDateToDay(dateString?: string): string {
