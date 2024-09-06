@@ -194,8 +194,28 @@ const fetchScenicSpots = () => {
 
 // 新增旅行团
 const addTour = () => {
+  const newTourForm = {
+    value: {
+      guideId: tourForm.value.guideId,
+      startDate: tourForm.value.startDate,
+      endDate: tourForm.value.endDate,
+      groupName: tourForm.value.groupName,
+      groupPrice: tourForm.value.groupPrice,
+      goTicketId: tourForm.value.goTicket.ticketId,
+      returnTicketId: tourForm.value.returnTicket.ticketId,
+      departure: tourForm.value.departure,
+      destination: tourForm.value.destination,
+      tourItineraries: tourForm.value.tourItineraries.map((itinerary) => ({
+        itineraryTime: itinerary.itineraryTime,
+        itineraryDuration: itinerary.itineraryDuration,
+        activities: itinerary.activities,
+        scenicSpotId: itinerary.scenicSpotId
+      })),
+      hotels: tourForm.value.hotels.map((hotel) => hotel.hotelId)
+    }
+  }
   axios
-    .post(`${apiUrl}/add`, tourForm.value)
+    .post(`${apiUrl}/add`, newTourForm.value)
     .then(() => {
       ElMessage.success("旅行团新增成功")
       fetchTourGroups()
@@ -229,8 +249,29 @@ const openEditTourDialog = (tourGroup: TourGroup) => {
 
 // 更新旅行团
 const updateTour = () => {
+  const newTourForm = {
+    value: {
+      guideId: tourForm.value.guideId,
+      startDate: tourForm.value.startDate,
+      endDate: tourForm.value.endDate,
+      groupName: tourForm.value.groupName,
+      groupPrice: tourForm.value.groupPrice,
+      goTicketId: tourForm.value.goTicket.ticketId,
+      returnTicketId: tourForm.value.returnTicket.ticketId,
+      departure: tourForm.value.departure,
+      destination: tourForm.value.destination,
+      tourItineraries: tourForm.value.tourItineraries.map((itinerary) => ({
+        itineraryTime: itinerary.itineraryTime,
+        itineraryDuration: itinerary.itineraryDuration,
+        activities: itinerary.activities,
+        scenicSpotId: itinerary.scenicSpotId
+      })),
+      hotels: tourForm.value.hotels.map((hotel) => hotel.hotelId)
+    }
+  }
+
   axios
-    .put(`${apiUrl}/mod/${tourForm.value.groupId}`, tourForm.value)
+    .put(`${apiUrl}/mod/${tourForm.value.groupId}`, newTourForm.value)
     .then(() => {
       ElMessage.success("旅行团更新成功")
       fetchTourGroups()
@@ -239,6 +280,8 @@ const updateTour = () => {
     .catch((error) => {
       ElMessage.error("更新失败: " + error.message)
     })
+
+  fetchTourGroups()
 }
 
 const showDeleteConfirm = ref<boolean>(true)
