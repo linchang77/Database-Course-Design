@@ -8,14 +8,14 @@
       @keyup.enter="onSearch"
     >
       <template #append>
-        <el-button @click="onSearch">更新</el-button>
+        <el-button type="primary" @click="onSearch" style="background-color: #409eff; color: #fff; border: none; padding: 5px 10px; border-radius: 4px;">更新</el-button>
       </template>
     </el-input>
 
     <!-- 展示搜索结果 -->
     <div v-if="searchResults.length > 0">
-      <el-table :data="searchResults" border style="width: 100%;">
-        <el-table-column prop="cityName" label="城市名称" width="200"></el-table-column>
+      <el-table :data="searchResults" border style="width: 100%; margin-top: 10px">
+        <el-table-column prop="cityName" label="城市名称" width="150"></el-table-column>
         <el-table-column prop="province" label="省份" width="150"></el-table-column>
         <el-table-column prop="cityIntroduction" label="简介" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column label="操作" fixed="right" width="150">

@@ -107,6 +107,18 @@ export const dynamicRoutes: RouteRecordRaw[] = [
           keepAlive: true,
           affix: true
         }
+      },
+      {
+        path: "airplane/order",
+        component: () => import("@/views/user/transport/airplane/OrderPage.vue"),
+      },
+      {
+        path: "bus/order",
+        component: () => import("@/views/user/transport/bus/OrderPage.vue"),
+      },
+      {
+        path: "train/order",
+        component: () => import("@/views/user/transport/train/OrderPage.vue"),
       }
     ]
   },

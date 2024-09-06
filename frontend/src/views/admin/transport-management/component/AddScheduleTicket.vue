@@ -1,16 +1,16 @@
 <template>
   <div>
-    <el-button @click="showAddScheduleForm">添加行程</el-button>
-    <el-button @click="showAddTicketForm">添加票务信息</el-button>
+    <el-button type="primary" @click="showAddScheduleForm">添加行程</el-button>
+    <el-button type="primary" @click="showAddTicketForm">添加票务信息</el-button>
     <!-- 删除行程按钮 -->
-    <el-button @click="showDeleteScheduleForm">删除行程</el-button>
+    <el-button type="danger" @click="showDeleteScheduleForm">删除行程</el-button>
     <!-- 删除车票按钮 -->
-    <el-button @click="showDeleteTicketForm">删除票务</el-button>
+    <el-button type="danger" @click="showDeleteTicketForm">删除票务</el-button>
 
 <!-- 删除车票的对话框 -->
     <el-dialog v-model="deleteTicketFormVisible" title="删除车票" :before-close="handleCloseDeleteTicketForm">
       <el-form :model="vehicleTicketData" label-width="120px">
-        <el-form-item label="车票ID">
+        <el-form-item label="票据ID">
           <el-input v-model="vehicleTicketData.TicketId"></el-input>
         </el-form-item>
       </el-form>
@@ -24,7 +24,7 @@
     <!-- 删除行程的对话框 -->
     <el-dialog v-model="deleteScheduleFormVisible" title="删除行程" :before-close="handleCloseDeleteScheduleForm">
   <el-form :model="vehicleScheduleData" label-width="120px">
-    <el-form-item label="航班ID">
+    <el-form-item label="交通工具ID">
       <el-input v-model="vehicleScheduleData.VehicleId"></el-input>
     </el-form-item>
   </el-form>
@@ -40,7 +40,7 @@
     <!-- 添加行程的表单 -->
     <el-dialog v-model="scheduleFormVisible" title="添加行程" :before-close="handleCloseScheduleForm">
       <el-form :model="vehicleScheduleData" label-width="120px">
-        <el-form-item label="航班ID">
+        <el-form-item label="交通工具ID">
           <el-input v-model="vehicleScheduleData.VehicleId"></el-input>
         </el-form-item>
         <el-form-item label="出发时间">
@@ -78,13 +78,13 @@
         <el-form-item label="到达城市">
           <el-input v-model="vehicleScheduleData.ArrivalCity"></el-input>
         </el-form-item>
-        <el-form-item label="飞机型号">
+        <el-form-item label="交通工具型号">
           <el-input v-model="vehicleScheduleData.VehicleModel"></el-input>
         </el-form-item>
-        <el-form-item label="到达机场">
+        <el-form-item label="到达机场/站点">
           <el-input v-model="vehicleScheduleData.ArrivalStation"></el-input>
         </el-form-item>
-        <el-form-item label="出发机场">
+        <el-form-item label="出发机场/站点">
           <el-input v-model="vehicleScheduleData.DepartureStation"></el-input>
         </el-form-item>
       </el-form>
@@ -99,7 +99,7 @@
     <!-- 添加票务信息的表单 -->
     <el-dialog v-model="ticketFormVisible" title="添加票务信息" :before-close="handleCloseTicketForm">
       <el-form :model="vehicleTicketData" label-width="120px">
-        <el-form-item label="行程ID">
+        <el-form-item label="交通工具ID">
           <el-input v-model="vehicleTicketData.VehicleId"></el-input>
         </el-form-item>
         <el-form-item label="座位类型">
