@@ -20,7 +20,8 @@ namespace db_course_design.Profiles
                 .ForMember(dest => dest.Hotels, opt => opt.Ignore());
             CreateMap<TourItineraryRequest, TourItinerary>();
             CreateMap<Guide, GuideResponse>();
-            CreateMap<VehicleTicket, TourTicket>();
+            CreateMap<VehicleTicket, TourTicket>()
+                .ForMember(dest => dest.VehicleType, opt => opt.MapFrom(src => src.Vehicle.VehicleType));
         }
     }
 }

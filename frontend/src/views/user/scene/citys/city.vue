@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { useRouter, useRoute } from "vue-router";
 
@@ -171,6 +171,10 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
     query: { name: scenicSpotName, introduction: scenicSpotIntroduction, id: scenicSpotId }
   });
 };
+
+const currentCityIntro = computed(() => {
+  return cityIntros.value.find(Intro => Intro.cityName === city.value.chinese);
+});
 </script>
 
 <template>
@@ -221,12 +225,12 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
 
     <main class="main-content">
       <div v-if="currentPage === 'home'">
-        <div class="home-description" v-for="Intro in cityIntros" >
-          <div v-if="Intro.cityName === city.chinese">
-            <p> {{ Intro.cityIntroduction }}</p>
+        <div class="home-container">
+          <img :src="`/images/${city.lower}.jpg`" :alt="city.lower" class="home-image" />
+          <div class="home-description" v-if="currentCityIntro">
+            <p>{{ currentCityIntro.cityIntroduction }}</p>
           </div>
         </div>
-        <img :src="`/images/${city.lower}.jpg`" :alt="city.lower" class="home-image" />
       </div>
       <div v-if="currentPage === 'attractions'" class="attractions-grid">
         <div v-if="attractions.length === 0" class="no-results">无结果</div>
@@ -368,24 +372,24 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
 .home-container {
   display: flex;
   align-items: center;
+  margin-left: 40px;
+  margin-right: 40px;
+  padding: 30px;
 }
 
 .home-image {
-  width: 100%;
+  width: 60%;
   height: auto;
+  margin-right: 60px;
+  border-radius: 10px;
 }
 
 .home-description {
-  flex: 1;
+  width: 30%;
+  line-height: 1.8;
 }
-
-.home-description h2 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
-
 .home-description p {
-  font-size: 18px;
+  font-size: 20px;
   color: #555;
 }
 
