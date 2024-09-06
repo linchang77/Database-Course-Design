@@ -20,6 +20,9 @@ defineOptions({
 
 const loading = ref<boolean>(false);
 const tableData = ref<Hotel[]>([]);
+const searchName = ref<string>(""); 
+const searchId = ref<number | undefined>(undefined); 
+const searchResults = ref<Hotel[]>([]); 
 
 //加载数据
 const getTableData = async () => {
@@ -58,6 +61,42 @@ const rules = reactive({
   hotelLocation: [{ required: true, message: "酒店地址不能为空", trigger: "blur" }],
   hotelIntroduction: [{ required: true, message: "酒店介绍不能为空", trigger: "blur" }],
 });
+
+// 根据酒店名查找
+const searchByName = () => {
+  if (searchName.value) {
+    searchResults.value = tableData.value.filter((hotel) =>
+      hotel.hotelName.includes(searchName.value)
+    );
+    if (searchResults.value.length === 0) {
+      ElMessage.warning("没有找到该酒店数据");
+    }
+  } else {
+    ElMessage.warning("请输入姓名");
+  }
+};
+
+// 根据ID查找
+const searchById = () => {
+  if (searchId.value !== undefined && searchId.value !== null) {
+    searchResults.value = tableData.value.filter((hotel) =>
+      hotel.hotelId === Number(searchId.value)
+    );
+    if (searchResults.value.length === 0) {
+      ElMessage.warning("没有找到该ID的酒店数据");
+    }
+  } else {
+    ElMessage.warning("请输入ID");
+  }
+};
+
+
+// 重置搜索
+const resetSearch = () => {
+  searchName.value = "";
+  searchId.value = undefined;
+  searchResults.value = [];
+};
 
 //提交增加需求
 const handleAdd = () => {
@@ -155,11 +194,16 @@ const formRef = ref();
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" :icon="CirclePlus" @click="toAdd()">新增酒店</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="toAdd()" style="width: 200px; margin: 0 10px;">新增酒店</el-button>
+           <el-input v-model="searchName" placeholder="请输入酒店名称" style="width: 200px; margin: 0 10px;" />
+          <el-button type="primary" @click="searchByName" :icon="Search">搜索</el-button>
+          <el-input v-model="searchId" placeholder="请输入酒店ID" style="width: 200px; margin:0 10px;" />
+          <el-button type="primary" @click="searchById" :icon="Search">搜索</el-button>
+          <el-button @click="resetSearch" :icon="Refresh">重置</el-button>
         </div>
       </div>
       <div class="table-wrapper">
-        <el-table :data="tableData">
+        <el-table :data="searchResults.length ? searchResults : tableData">
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column prop="hotelId" label="酒店Id" align="center" />
           <el-table-column prop="hotelName" label="酒店名" align="center"/>
