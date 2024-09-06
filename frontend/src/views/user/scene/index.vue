@@ -1,17 +1,20 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { ElCarousel, ElCarouselItem } from 'element-plus';
 import nanjing from "/images/nanjing.jpg";
 import shanghai from "/images/shanghai.jpg";
 import chengdu from "/images/chengdu.jpg";
 import beijing from "/images/beijing.jpg";
 import wuhan from "/images/wuhan.jpg";
+
 const selectedItem = ref("");
-const isAsideVisible = ref(false);
+const selectedNumber = ref(0);
 const showImages = ref(true);
 const currentIndex = ref(0);
-const editedCities = ref<string[]>([]);
+
+const menuItemPlace = [
+  "0","138px","276px","414px","552px","691px","829px"
+]
 
 const supportedCities = [
   { lower: 'shanghai', upper: '上海' },
@@ -25,28 +28,24 @@ const images = [shanghai, nanjing, chengdu, beijing, wuhan];
 
 const router = useRouter();
 
+// 切换侧边栏时展示a标签内容
 const handleSelect = (key: string) => {
   selectedItem.value = selectedItem.value === key ? "" : key;
-  isAsideVisible.value = selectedItem.value !== "";
-  showImages.value = selectedItem.value === "";
+  selectedNumber.value = Number(key);
 };
 
+// 处理图片切换逻辑
 const handleChange = (index: number) => {
   currentIndex.value = index;
 };
 
-// 添加点击城市跳转逻辑
+// 城市点击后跳转
 const handleCityClick = (cityLower: string) => {
   const city = supportedCities.find(c => c.lower === cityLower);
   if (city) {
     router.push({ path: '/scene/city', query: { city: city.lower } });
   }
 };
-
-// 确保所有支持的城市都是已编辑的城市
-onMounted(() => {
-  editedCities.value = supportedCities.map(city => city.upper);
-});
 </script>
 
 <template>
@@ -67,61 +66,33 @@ onMounted(() => {
           <el-menu-item index="7">大洋洲</el-menu-item>
         </el-menu>
       </el-aside>
+
       <el-main>
-        <div v-if="showImages">
-          <el-carousel :interval="4000" type="card" height="300px" @change="handleChange">
+        <div>
+          <!-- 图片轮播 -->
+          <el-carousel v-if="showImages" :interval="4000" type="card" height="300px" @change="handleChange">
             <el-carousel-item v-for="(image, index) in images" :key="index">
               <img @click="handleCityClick(supportedCities[index].lower)" :src="image" alt="Scenic Spot" class="carousel-image" />
             </el-carousel-item>
           </el-carousel>
+          <!-- 全尺寸图片 -->
           <div v-if="showImages" class="full-image">
             <a @click.prevent="handleCityClick(supportedCities[currentIndex].lower)">
               <img :src="images[currentIndex]" alt="Full Scenic Spot" class="scene-image1" />
             </a>
+            <!-- 在图片上方显示标签 -->
+            <div v-if="selectedItem" class="overlay-label" :style="{top: 12% + menuItemPlace[selectedNumber]}">
+              <div v-if="selectedItem === '1'" class="city-links">
+                <a v-for="city in supportedCities" :key="city.lower" @click.prevent="handleCityClick(city.lower)">
+                 {{ city.upper }}
+                </a>
+              </div>
+
+              <div v-else-if="selectedItem === '2' || selectedItem === '3' || selectedItem === '4' || selectedItem === '5' || selectedItem === '6' || selectedItem === '7'" class="city-links">
+                <a>敬请期待</a>
+              </div>
+            </div>
           </div>
-        </div>
-        <div v-else-if="selectedItem === '1'" class="city-links">
-          <a v-for="city in supportedCities.filter(city => city.lower === 'shanghai')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
-          <a v-for="city in supportedCities.filter(city => city.lower === 'nanjing')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
-          <a v-for="city in supportedCities.filter(city => city.lower === 'chengdu')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
-          <a v-for="city in supportedCities.filter(city => city.lower === 'beijing')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
-          <a v-for="city in supportedCities.filter(city => city.lower === 'wuhan')" @click.prevent="handleCityClick(city.lower)">{{ city.upper }}</a>
-        </div>
-        <div v-else-if="selectedItem === '2'" class="city-links">
-          <a>东京</a>
-          <a>曼谷</a>
-          <a>新加坡</a>
-          <a>迪拜</a>
-        </div>
-        <div v-else-if="selectedItem === '3'" class="city-links">
-          <a>开罗</a>
-          <a>开普敦</a>
-          <a>约翰内斯堡</a>
-          <a>马拉喀什</a>
-        </div>
-        <div v-else-if="selectedItem === '4'" class="city-links">
-          <a>巴黎</a>
-          <a>伦敦</a>
-          <a>威尼斯</a>
-          <a>罗马</a>
-        </div>
-        <div v-else-if="selectedItem === '5'" class="city-links">
-          <a>纽约</a>
-          <a>多伦多</a>
-          <a>洛杉矶</a>
-          <a>温哥华</a>
-        </div>
-        <div v-else-if="selectedItem === '6'" class="city-links">
-          <a>里约热内卢</a>
-          <a>圣保罗</a>
-          <a>基多</a>
-          <a>圣地亚哥</a>
-        </div>
-        <div v-else-if="selectedItem === '7'" class="city-links">
-          <a>悉尼</a>
-          <a>墨尔本</a>
-          <a>奥克兰</a>
-          <a>皇后镇</a>
         </div>
       </el-main>
     </el-container>
@@ -138,7 +109,7 @@ onMounted(() => {
   height: 966px;
   background: #2d3a4b;
   color: white;
-  margin-left: 10%;
+  margin-left: 2%;
   cursor: pointer;
   border-radius: 8px;
 }
@@ -148,16 +119,6 @@ onMounted(() => {
   height: 138px;
 }
 
-.city-links a {
-  display: inline-block;
-  margin-right: 20px;
-  text-decoration: none;
-  color: black;
-}
-
-.city-links a:hover {
-  color: rgb(0, 157, 255);
-}
 input {
   padding: 12px;
   margin: 20px 0;
@@ -170,17 +131,6 @@ input {
   box-sizing: border-box;
 }
 
-input:focus {
-  padding: 12px;
-  margin: 20px 0;
-  margin-left: 10%;
-  margin-top: 5%;
-  width: 70%;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-  outline: 0px rgb(0, 157, 255) solid;
-  box-sizing: border-box;
-}
 button.Search-Scene {
   padding: 12px;
   margin: 20px 0;
@@ -188,71 +138,9 @@ button.Search-Scene {
   width: 10%;
   box-sizing: border-box;
   color: #fef9f9;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
   background-color: rgb(0, 157, 255);
   border: 2px rgb(0, 157, 255) solid;
   cursor: pointer;
-}
-.sidebar {
-  height: 70%;
-  margin: 20px 0;
-  margin-left: 10%;
-  width: 25%;
-  box-sizing: border-box;
-  color: #fef9f9;
-  border-radius: 8px;
-  background-color: rgb(248, 250, 251);
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-}
-button.Inside-sidebar {
-  height: 15%;
-  margin: 20px 0;
-  margin-top: 0;
-  margin-left: 0;
-  width: 100%;
-  box-sizing: border-box;
-  color: black;
-  border-radius: 8px;
-  border: none;
-  background-color: rgb(248, 250, 251);
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-}
-button.Inside-sidebar:focus {
-  cursor: pointer;
-}
-.sidebar-word {
-  font-size: 20px;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
-}
-.image-gallery {
-  width: 100%;
-  height: 292px;
-  gap: 20px;
-}
-.scene-image-container {
-  display: grid;
-  grid-template-rows: auto;
-  border-radius: 15px;
-  gap: 30px;
-}
-.scene-image1 {
-  margin-top: 30px;
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 15px;
-  object-fit: contain;
-}
-.el-container {
-  height: 100%;
 }
 
 .carousel-image {
@@ -262,27 +150,37 @@ li {
   border-radius: 10px;
 }
 
-.Search-Scene {
-  padding: 12px;
-  margin: 20px 0;
-  margin-right: 10%;
-  width: 10%;
-  box-sizing: border-box;
-  color: #fef9f9;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-  background-color: rgb(0, 157, 255);
-  border: 2px rgb(0, 157, 255) solid;
+.scene-image1 {
+  margin-top: 30px;
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 15px;
+  object-fit: contain;
+}
+
+/* 覆盖图片上方的标签样式 */
+.overlay-label {
+  position: absolute;
+  top: 12%;
+  left: 28%;
+  width: 30%;
+  height: 20%;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 10;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.overlay-label a {
+  color: black;
+  padding: 10px;
+  text-decoration: none;
   cursor: pointer;
 }
 
-.city-links a {
-  display: inline-block;
-  margin-right: 20px;
-  text-decoration: none;
-  color: black;
-}
-.city-links a:hover {
+.overlay-label a:hover {
   color: rgb(0, 157, 255);
 }
 </style>
