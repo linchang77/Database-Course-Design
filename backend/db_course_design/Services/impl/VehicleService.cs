@@ -121,20 +121,24 @@ namespace db_course_design.Services.impl
             return schedule.VehicleTickets.ToList();
         }
 
-        public async Task<List<VehicleResponse>> GetVehicleInfoAsync(string type, string arrivalCity, string departureCity, DateTime departureTime)
+        public async Task<List<VehicleResponse>> GetVehicleInfoAsync(string type, string? arrivalCity = null, string? departureCity = null, DateTime? departureTime = null)
         {
-            var unmapped = await _context.VehicleSchedules
+            var unmapped = _context.VehicleSchedules
                 .Where(v => v.VehicleType == type)
                 .Join(_context.VehicleTickets, s => s.VehicleId, t => t.VehicleId, (s, t) => new
                 {
                     Schedule = s,
                     Ticket = t
-                })
-                .Where(i => i.Ticket.TicketArrivalCity == arrivalCity
-                       && i.Ticket.TicketDepartureCity == departureCity
-                       && i.Ticket.TicketDepartureTime.Value.Date.Equals(departureTime.Date))
-                .ToListAsync();
-            var schedules = unmapped
+                });
+
+            if (arrivalCity != null)
+                unmapped = unmapped.Where(i => i.Ticket.TicketArrivalCity == arrivalCity);
+            if (departureCity != null)
+                unmapped = unmapped.Where(i => i.Ticket.TicketDepartureCity == departureCity);
+            if (departureTime != null)
+                unmapped = unmapped.Where(i => i.Ticket.TicketDepartureTime.Value.Date.Equals(departureTime.Value.Date));
+
+            var schedules = (await unmapped.ToListAsync())
                 .Select(i => mapInfo(i.Schedule, i.Ticket))
                 .ToList();
 
