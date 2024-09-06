@@ -19,6 +19,7 @@ interface Guide {
   guidePerformanceLevel: number
   guideSeniority: string
   guidePrice: number
+  imageUrl: string
 }
 
 // 数据部分
@@ -71,6 +72,7 @@ const fetchGuides = () => {
           guidePerformanceLevel: Number(guide.guidePerformanceLevel),
           guideSeniority: guide.guideSeniority,
           guidePrice: guide.guidePrice,
+          imageUrl: guide.profilePicture
         }))
         showEmptyMessage.value = false
       } else {
@@ -108,6 +110,7 @@ const fetchById = () => {
           guidePerformanceLevel: Number(guide.guidePerformanceLevel),
           guideSeniority: guide.guideSeniority,
           guidePrice: guide.guidePrice,
+          imageUrl: guide.profilePicture
         }))
         showEmptyMessage.value = false
       } else {
@@ -146,6 +149,7 @@ const fetchByGrade = () => {
           guidePerformanceLevel: Number(guide.guidePerformanceLevel),
           guideSeniority: guide.guideSeniority,
           guidePrice: guide.guidePrice,
+          imageUrl: guide.profilePicture
         }))
         showEmptyMessage.value = false
       } else {
@@ -287,7 +291,8 @@ onMounted(() => {
         </div>
         <div v-else v-for="guide in guides" :key="guide.guideId" class="guide-card">
             <div class="first">
-                <img :src="imageMap[guide.guideId]" alt="导游照片" class="photo"/>
+                <!--<img :src="imageMap[guide.guideId]" alt="导游照片" class="photo"/>-->
+                <img :src="guide.imageUrl" alt="导游照片" class="photo"/>
                 <div class="guide-name-gender">
                     <p class="name">{{ guide.guideName }}</p>
                     <img v-if="guide.guideGender === '男 '" src="@/views/user/guide/icon/male.svg" alt="男" class="gender-icon" />

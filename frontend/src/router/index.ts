@@ -107,6 +107,18 @@ export const dynamicRoutes: RouteRecordRaw[] = [
           keepAlive: true,
           affix: true
         }
+      },
+      {
+        path: "airplane/order",
+        component: () => import("@/views/user/transport/airplane/OrderPage.vue"),
+      },
+      {
+        path: "bus/order",
+        component: () => import("@/views/user/transport/bus/OrderPage.vue"),
+      },
+      {
+        path: "train/order",
+        component: () => import("@/views/user/transport/train/OrderPage.vue"),
       }
     ]
   },
@@ -406,16 +418,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         meta: {
           title: "用户管理",
           svgIcon: "user",
-          affix: true
-        }
-      },
-      {
-        path: "funds-management",
-        component: () => import("@/views/admin/funds-management/index.vue"),
-        name: "Funds-management",
-        meta: {
-          title: "资金管理",
-          svgIcon: "fund",
           affix: true
         }
       },

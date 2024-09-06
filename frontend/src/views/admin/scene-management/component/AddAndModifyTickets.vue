@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-button @click="showAddTicketForm">新增票务信息</el-button>
-    <el-button @click="showDeleteTicketForm">删除票务信息</el-button>
-    <el-button @click="showModifyTicketForm">修改票务信息</el-button>
+    <el-button type="primary" @click="showAddTicketForm">新增票务信息</el-button>
+    <el-button type="danger" @click="showDeleteTicketForm">删除票务信息</el-button>
+    <el-button type="primary" @click="showModifyTicketForm">修改票务信息</el-button>
 
     <!-- 新增票务信息的对话框 -->
     <el-dialog v-model="addTicketFormVisible" title="新增票务信息" :before-close="handleCloseAddTicketForm">
@@ -89,7 +89,7 @@
     </el-dialog>
 
     <!-- 显示查询结果的卡片 -->
-    <el-card v-if="ticket" shadow="hover">
+    <el-card v-if="ticket" shadow="hover" class="modify-ticket-card">
       <template #header>
         <div>票务信息</div>
       </template>
@@ -113,7 +113,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="4" class="edit-button-col">
           <el-button type="primary" @click="editTicket" v-if="!isEditingTicket">编辑</el-button>
           <el-button type="success" @click="updateTicket" v-else>完成</el-button>
         </el-col>
@@ -304,8 +304,15 @@ const ticketToModify = reactive({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .el-table {
   margin-top: 10px;
+}
+.modify-ticket-card {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.edit-button-col {
+  margin-left: 20px;
 }
 </style>
