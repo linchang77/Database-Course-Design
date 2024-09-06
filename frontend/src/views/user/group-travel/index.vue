@@ -75,33 +75,41 @@ const groupId_input=ref("")
 const departure_input=ref("")
 const destination_input=ref("")
 const date_input=ref("")
-const showEmptyMessage = ref(false) // 用于控制是否显示“暂无订单数据”
+const showEmptyMessage = ref(false)
 
 // 旅游团与图片url的对应关系
-const imageMap: Record<number, string> = {
-  1: 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
-  22: 'https://th.bing.com/th/id/R.6f45552a07ce3691540b97b4be845785?rik=XOX7sQNnRUYI1A&riu=http%3a%2f%2fimgbdb3.bendibao.com%2fcsbdb%2fjieri%2f20214%2f29%2f2021429101819_16270.jpg&ehk=n2DNPUTw2bA4t4i9mvG9nFskomvtIPyYiFKgwBpp9ic%3d&risl=&pid=ImgRaw&r=0',
-  23: 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
-}
+const return2 = (str: string) => {
+  return str.slice(0, 2);
+};
+
+const imageMap: Record<string, string> = {
+  '上海': 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
+  '北京': 'https://img.zcool.cn/community/010e2d5de0f549a80120686b802e63.jpg@1280w_1l_2o_100sh.jpg',
+  '南京': 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
+  '成都': 'https://img.zcool.cn/community/01d9495b6dbc33a801215c8fe1df09.jpg@3000w_1l_0o_100sh.jpg',
+  '武汉': 'https://th.bing.com/th/id/R.43107bcfc6d493fd0e41b86a47f8a125?rik=Gy0Juky%2b9G1B4g&riu=http%3a%2f%2fimg.pconline.com.cn%2fimages%2fupload%2fupc%2ftx%2fphotoblog%2f1410%2f26%2fc2%2f40147263_1414299382894_mthumb.jpg&ehk=Vqm38FQdH7T8bH%2fAlDVATSrxmDaeqAosJOIE31tqabQ%3d&risl=&pid=ImgRaw&r=0',
+};
 
 const cities = [
   { value: "上海", label: "上海" },
   { value: "北京", label: "北京" },
   { value: "南京", label: "南京" },
-  { value: "长沙", label: "长沙" },
+  { value: "武汉", label: "武汉" },
+  { value: "成都", label: "成都" },
 ]
 
 // 获取旅游团
 const fetchTourGroups = () => {
   axios
-    .get("https://123.60.14.84/api/TourGroup/search/all")
+    //.get("https://123.60.14.84/api/TourGroup/search/all")
+    .get("https://123.60.14.84/api/TourGroup/recommendedtours")
     .then((response) => {
       const data = response.data
       console.log(data)
       if (Array.isArray(data)) {
         tourGroups.value = response.data.map((group: any) => ({
         ...group,
-        imageUrl: group.imageUrl || imageMap[group.groupId]
+        imageUrl: group.imageUrl || imageMap[return2(group.groupName)]
         }));
         showEmptyMessage.value = false
       } else {
@@ -129,7 +137,7 @@ const fetchId = () => {
       if (data) {
         tourGroups.value = [{
           ...response.data,
-          imageUrl: response.data.imageUrl || imageMap[response.data.groupId]
+          imageUrl: response.data.imageUrl || imageMap[return2(response.data.groupName)]
         }];
         console.log(tourGroups.value)
         showEmptyMessage.value = false
@@ -163,7 +171,7 @@ const fetchFilter = () => {
       if (Array.isArray(data)) {
         tourGroups.value = response.data.map((group: any) => ({
         ...group,
-        imageUrl: group.imageUrl || imageMap[group.groupId]
+        imageUrl: group.imageUrl || imageMap[return2(group.groupName)]
         }));
         showEmptyMessage.value = false
       } else {
@@ -177,6 +185,7 @@ const fetchFilter = () => {
     })
 }
 
+// 旅行团跳转
 const goToGroup = (group: TourGroup) => {
   router.push({
     path: `/group-travel/groups/detail`,
@@ -187,8 +196,6 @@ const goToGroup = (group: TourGroup) => {
       endDate: group.endDate,
       groupName: group.groupName,
       groupPrice: group.groupPrice.toString(),
-      goTicketId: group.goTicketId.toString(),
-      returnTicketId: group.returnTicketId.toString(),
       departure: group.departure,
       destination: group.destination,
       guideName: group.guideName,
@@ -270,7 +277,6 @@ onMounted(() => {
   <div v-else class="group-card" v-for="group in tourGroups" :key="group.groupId" @click="goToGroup(group)" >
     <div class="group-image">
       <img :src="group.imageUrl" alt="旅游团图片" />
-
     </div>
     <div class="group-info" >
       <p class="title" >{{ group.groupName }}</p>
@@ -303,7 +309,7 @@ onMounted(() => {
   margin-top: 20px;
   margin-right: 40px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr); 
+  grid-template-columns: repeat(3, 1fr); 
   gap: 20px; 
   justify-content: center;
   align-items: center;  
