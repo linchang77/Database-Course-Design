@@ -38,6 +38,7 @@ interface Hotel {
 // 定义门票接口
 interface TourTicket {
   vehicleId?: string
+  vehicleType?: string
   ticketType?: string
   ticketPrice?: number
   ticketDepartureTime?: string
@@ -55,13 +56,11 @@ interface TourGroup {
   endDate?: string
   groupName?: string
   groupPrice?: number | null
-  goTicketId?: string
-  returnTicketId?: string
   departure?: string
   destination?: string
   guideName?: string
-  goTicket?: TourTicket | null
-  returnTicket?: TourTicket | null
+  goTicket: TourTicket
+  returnTicket: TourTicket
   tourItineraries: TourItinerary[]
   hotels: Hotel[]
 }
@@ -107,37 +106,13 @@ const fetchTourGroups = () => {
           guideId: group.guideId,
           groupName: group.groupName,
           groupPrice: group.groupPrice,
-          goTicketId: group.goTicketId,
-          returnTicketId: group.returnTicketId,
           startDate: group.startDate,
           endDate: group.endDate,
           departure: group.departure,
           destination: group.destination,
           guideName: group.guideName,
-          goTicket: group.goTicket
-            ? {
-                vehicleId: group.goTicket.vehicleId,
-                ticketType: group.goTicket.ticketType,
-                ticketPrice: group.goTicket.ticketPrice,
-                ticketDepartureTime: group.goTicket.ticketDepartureTime,
-                ticketArrivalTime: group.goTicket.ticketArrivalTime,
-                ticketDepartureCity: group.goTicket.ticketDepartureCity,
-                ticketArrivalCity: group.goTicket.ticketArrivalCity,
-                ticketId: group.goTicket.ticketId
-              }
-            : null,
-          returnTicket: group.returnTicket
-            ? {
-                vehicleId: group.returnTicket.vehicleId,
-                ticketType: group.returnTicket.ticketType,
-                ticketPrice: group.returnTicket.ticketPrice,
-                ticketDepartureTime: group.returnTicket.ticketDepartureTime,
-                ticketArrivalTime: group.returnTicket.ticketArrivalTime,
-                ticketDepartureCity: group.returnTicket.ticketDepartureCity,
-                ticketArrivalCity: group.returnTicket.ticketArrivalCity,
-                ticketId: group.returnTicket.ticketId
-              }
-            : null,
+          goTicket: group.goTicket,
+          returnTicket: group.returnTicket,
           tourItineraries: Array.isArray(group.tourItineraries)
             ? group.tourItineraries.map((itinerary: any) => ({
                 itineraryId: itinerary.itineraryId,
@@ -219,8 +194,28 @@ const fetchScenicSpots = () => {
 
 // 新增旅行团
 const addTour = () => {
+  const newTourForm = {
+    value: {
+      guideId: tourForm.value.guideId,
+      startDate: tourForm.value.startDate,
+      endDate: tourForm.value.endDate,
+      groupName: tourForm.value.groupName,
+      groupPrice: tourForm.value.groupPrice,
+      goTicketId: tourForm.value.goTicket.ticketId,
+      returnTicketId: tourForm.value.returnTicket.ticketId,
+      departure: tourForm.value.departure,
+      destination: tourForm.value.destination,
+      tourItineraries: tourForm.value.tourItineraries.map((itinerary) => ({
+        itineraryTime: itinerary.itineraryTime,
+        itineraryDuration: itinerary.itineraryDuration,
+        activities: itinerary.activities,
+        scenicSpotId: itinerary.scenicSpotId
+      })),
+      hotels: tourForm.value.hotels.map((hotel) => hotel.hotelId)
+    }
+  }
   axios
-    .post(`${apiUrl}/add`, tourForm.value)
+    .post(`${apiUrl}/add`, newTourForm.value)
     .then(() => {
       ElMessage.success("旅行团新增成功")
       fetchTourGroups()
@@ -229,6 +224,20 @@ const addTour = () => {
     .catch((error) => {
       ElMessage.error("新增失败: " + error.message)
     })
+}
+
+// 转换出行类别为中文
+const formatVehicleType = (type?: string) => {
+  switch (type) {
+    case "plane":
+      return "飞机"
+    case "train":
+      return "火车"
+    case "car":
+      return "汽车"
+    default:
+      return "其他"
+  }
 }
 
 // 编辑旅行团
@@ -240,8 +249,29 @@ const openEditTourDialog = (tourGroup: TourGroup) => {
 
 // 更新旅行团
 const updateTour = () => {
+  const newTourForm = {
+    value: {
+      guideId: tourForm.value.guideId,
+      startDate: tourForm.value.startDate,
+      endDate: tourForm.value.endDate,
+      groupName: tourForm.value.groupName,
+      groupPrice: tourForm.value.groupPrice,
+      goTicketId: tourForm.value.goTicket.ticketId,
+      returnTicketId: tourForm.value.returnTicket.ticketId,
+      departure: tourForm.value.departure,
+      destination: tourForm.value.destination,
+      tourItineraries: tourForm.value.tourItineraries.map((itinerary) => ({
+        itineraryTime: itinerary.itineraryTime,
+        itineraryDuration: itinerary.itineraryDuration,
+        activities: itinerary.activities,
+        scenicSpotId: itinerary.scenicSpotId
+      })),
+      hotels: tourForm.value.hotels.map((hotel) => hotel.hotelId)
+    }
+  }
+
   axios
-    .put(`${apiUrl}/mod/${tourForm.value.groupId}`, tourForm.value)
+    .put(`${apiUrl}/mod/${tourForm.value.groupId}`, newTourForm.value)
     .then(() => {
       ElMessage.success("旅行团更新成功")
       fetchTourGroups()
@@ -250,6 +280,8 @@ const updateTour = () => {
     .catch((error) => {
       ElMessage.error("更新失败: " + error.message)
     })
+
+  fetchTourGroups()
 }
 
 const showDeleteConfirm = ref<boolean>(true)
@@ -421,7 +453,6 @@ function formatDate(dateString?: string): string {
   // 格式化为需要的字符串
   return `${year}年${month}月${day}日 ${hours}:${minutes}:${seconds}`
 }
-formatDate("2022-01-01T00:00:00.000Z")
 
 // 格式化时间到日
 function formatDateToDay(dateString?: string): string {
@@ -450,8 +481,6 @@ const openAddTourDialog = () => {
     endDate: "",
     groupName: "",
     groupPrice: null,
-    goTicketId: "",
-    returnTicketId: "",
     departure: "",
     destination: "",
     guideName: "",
@@ -602,11 +631,13 @@ onMounted(() => {
             <el-input v-model="tourForm.destination" />
           </el-form-item>
           <el-form-item label="出发车票">
-            <el-select v-model="tourForm.goTicketId" placeholder="请选择出发车票">
+            <el-select v-model="tourForm.goTicket.ticketId" placeholder="请选择出发车票">
               <el-option
                 v-for="ticket in tourTickets"
                 :key="ticket.ticketId"
                 :label="
+                  formatVehicleType(ticket.vehicleType) +
+                  ' ' +
                   ticket.vehicleId +
                   ': ' +
                   ticket.ticketDepartureCity +
@@ -628,11 +659,13 @@ onMounted(() => {
             </el-select>
           </el-form-item>
           <el-form-item label="返回车票">
-            <el-select v-model="tourForm.returnTicketId" placeholder="请选择返回车票">
+            <el-select v-model="tourForm.returnTicket.ticketId" placeholder="请选择返回车票">
               <el-option
                 v-for="ticket in tourTickets"
                 :key="ticket.ticketId"
                 :label="
+                  formatVehicleType(ticket.vehicleType) +
+                  ' ' +
                   ticket.vehicleId +
                   ': ' +
                   ticket.ticketDepartureCity +
