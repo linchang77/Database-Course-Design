@@ -3,16 +3,84 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
+interface GoTicket {
+  vehicleId: string
+  ticketType: string
+  ticketPrice: number
+  ticketDepartureTime: string
+  ticketArrivalTime: string
+  ticketDepartureCity: string
+  ticketArrivalCity: string
+  ticketId: number
+}
+
+interface ReturnTicket {
+  vehicleId: string
+  ticketType: string
+  ticketPrice: number
+  ticketDepartureTime: string
+  ticketArrivalTime: string
+  ticketDepartureCity: string
+  ticketArrivalCity: string
+  ticketId: number
+}
+
+// 定义行程的接口
+interface TourItinerary {
+  itineraryId: number
+  itineraryTime: string
+  itineraryDuration: string
+  activities: string
+  scenicSpotId: number | null
+}
+
+// 定义酒店接口
+interface Hotel {
+  hotelId: number
+  hotelName: string
+  cityName: string
+  hotelGrade: string
+  hotelLocation: string
+  hotelIntroduction: string
+}
+
+// 定义旅游团的接口
+interface TourGroup {
+  groupId: number
+  guideId: number
+  startDate: string
+  endDate: string
+  groupName: string
+  groupPrice: number
+  goTicketId: number
+  returnTicketId: number
+  departure: string
+  destination: string
+  guideName: string
+  goTicket?: GoTicket
+  returnTicket?: ReturnTicket
+  tourItineraries?: TourItinerary[]
+  hotels?: Hotel[]
+  imageUrl?: string
+}
+
+//景点数据接口
+interface Attraction {
+  scenicSpotId: string;
+  scenicSpotName: string;
+  scenicSpotGrade: string;
+  scenicSpotIntroduction: string;
+  scenicSpotLocation: string;
+  scenicSpotRemoteness: string;
+}
 // 景点数据
-const scenicSpots = ref([])
-const childTicketPrices = ref({})
+const scenicSpots = ref<Attraction[]>([])
+const childTicketPrices = ref<{ [key: string]: number }>({});
 const router = useRouter()
 const return2 = (str: string) => {
   return str.slice(0, 2);
 };
-// 旅游团数据
-const tourGroups = ref([])
-
+const tourGroups = ref<TourGroup[]>([])
 // 获取景点信息
 const fetchScenicSpots = async () => {
   try {
@@ -68,7 +136,7 @@ const fetchTourGroups = () => {
 }
 
 // 旅游团跳转
-const goToGroup = (group) => {
+const goToGroup = (group: TourGroup) => {
   router.push({
     path: `group-travel/groups/detail`,
     query: {
@@ -91,7 +159,7 @@ const goToGroup = (group) => {
 }
 
 // 日期格式化
-const formatDate = (date) => {
+const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
 }
 
@@ -101,7 +169,7 @@ onMounted(() => {
 });
 
 // 旅游团图片映射
-const imageMap = {
+const imageMap: Record<string, string> = {
   '上海': 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
   '北京': 'https://img.zcool.cn/community/010e2d5de0f549a80120686b802e63.jpg@1280w_1l_2o_100sh.jpg',
   '南京': 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
