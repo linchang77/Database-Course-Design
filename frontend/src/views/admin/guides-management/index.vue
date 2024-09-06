@@ -2,7 +2,7 @@
 import { reactive, ref, onMounted } from "vue";
 import axios from "axios";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { CirclePlus } from "@element-plus/icons-vue";
+import { CirclePlus, Refresh, Search } from "@element-plus/icons-vue";
 
 // 导游接口
 interface Guide {
@@ -25,6 +25,9 @@ defineOptions({
 
 const loading = ref<boolean>(false);
 const tableData = ref<Guide[]>([]);
+const searchName = ref<string>(""); 
+const searchId = ref<number | undefined>(undefined); 
+const searchResults = ref<Guide[]>([]); 
 
 //加载数据
 const getTableData = async () => {
@@ -73,6 +76,42 @@ const rules = reactive({
   guideFree: [{ required: false,  trigger: "blur" }],
   password:[{ required: false,  trigger: "blur" }],
 });
+
+// 根据姓名查找
+const searchByName = () => {
+  if (searchName.value) {
+    searchResults.value = tableData.value.filter((guide) =>
+      guide.guideName.includes(searchName.value)
+    );
+    if (searchResults.value.length === 0) {
+      ElMessage.warning("没有找到该姓名的导游数据");
+    }
+  } else {
+    ElMessage.warning("请输入姓名");
+  }
+};
+
+// 根据ID查找
+const searchById = () => {
+  if (searchId.value !== undefined && searchId.value !== null) {
+    searchResults.value = tableData.value.filter((guide) =>
+      guide.guideId === Number(searchId.value)
+    );
+    if (searchResults.value.length === 0) {
+      ElMessage.warning("没有找到该ID的导游数据");
+    }
+  } else {
+    ElMessage.warning("请输入ID");
+  }
+};
+
+
+// 重置搜索
+const resetSearch = () => {
+  searchName.value = "";
+  searchId.value = undefined;
+  searchResults.value = [];
+};
 
 //提交增加需求
 const handleAdd = () => {
@@ -131,7 +170,7 @@ const handleUpdate = () => {
           ElMessage.success("修改导游成功");
           dialogVisible.value = false;
           getTableData();
-          resetForm(); // 重置表单数据
+          resetForm(); 
         })
         .catch(() => {
           ElMessage.error("修改导游失败");
@@ -169,21 +208,25 @@ const formRef = ref();
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" :icon="CirclePlus" @click="toAdd()">新增导游</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="toAdd()" style="width: 200px; margin: 0 10px;">新增导游</el-button>
+           <el-input v-model="searchName" placeholder="请输入导游姓名" style="width: 200px; margin: 0 10px;" />
+          <el-button type="primary" @click="searchByName" :icon="Search">搜索</el-button>
+          <el-input v-model="searchId" placeholder="请输入导游ID" style="width: 200px; margin:0 10px;" />
+          <el-button type="primary" @click="searchById" :icon="Search">搜索</el-button>
+          <el-button @click="resetSearch" :icon="Refresh">重置</el-button>
         </div>
       </div>
       <div class="table-wrapper">
-        <el-table :data="tableData">
+        <el-table :data="searchResults.length ? searchResults : tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="guideGender" label="导游性别" align="center" />
-          <el-table-column prop="guideId" label="导游Id" align="center"/>
-          <el-table-column prop="guideIntroduction" label="导游介绍" align="center" />
           <el-table-column prop="guideName" label="导游姓名" align="center" />
+          <el-table-column prop="guideId" label="导游Id" align="center"/>
+          <el-table-column prop="guideGender" label="导游性别" align="center" />
+          <el-table-column prop="guideIntroduction" label="导游介绍" align="center" />
           <el-table-column prop="guidePerformanceLevel" label="导游表现" align="center"/>
           <el-table-column prop="guidePrice" label="导游价格" align="center" />
           <el-table-column prop="guideSalary" label="导游薪水介绍" align="center" />
           <el-table-column prop="guideSeniority" label="导游资历介绍" align="center" />
-          <el-table-column prop="profilePicture" label="导游图片链接" align="center" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button type="primary" text bg size="small" @click="toUpdate(scope.row)">修改</el-button>
@@ -202,6 +245,9 @@ const formRef = ref();
       width="30%"
     >
       <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px" label-position="left">
+        <el-form-item prop="guideName" label="导游姓名">
+          <el-input v-model="formData.guideName" placeholder="请输入导游姓名" />
+        </el-form-item>
         <el-form-item prop="guideId" label="导游Id">
           <el-input v-model="formData.guideId" placeholder="" :disabled=true />
         </el-form-item>
@@ -210,9 +256,6 @@ const formRef = ref();
         </el-form-item>
         <el-form-item prop="guideIntroduction" label="导游介绍">
           <el-input v-model="formData.guideIntroduction" placeholder="请输入导游介绍" />
-        </el-form-item>
-        <el-form-item prop="guideName" label="导游姓名">
-          <el-input v-model="formData.guideName" placeholder="请输入导游姓名" />
         </el-form-item>
         <el-form-item prop="guidePerformanceLevel" label="导游表现">
           <el-input v-model="formData.guidePerformanceLevel" placeholder="请输入导游表现" />

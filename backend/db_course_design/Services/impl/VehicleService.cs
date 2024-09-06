@@ -89,7 +89,10 @@ namespace db_course_design.Services.impl
 
         public async Task<VehicleTicket?> GetVehicleTicketAsync(decimal ticketId)
         {
-            var ticket = await _context.VehicleTickets.FindAsync(ticketId);
+            var ticket = await _context.VehicleTickets
+                .Where(v => v.TicketId == ticketId)
+                .Include(v => v.Vehicle)
+                .SingleOrDefaultAsync();
 
             if (ticket == null) 
                 return null;
@@ -101,9 +104,9 @@ namespace db_course_design.Services.impl
             return await _context.VehicleSchedules.ToListAsync();
         }
 
-        public async Task<List<VehicleTicket>> GetAllVehicleTicketAsync()
+        public async Task<List<VehicleTicket>> GetAllVehicleTicketsAsync()
         {
-            return await _context.VehicleTickets.ToListAsync();
+            return await _context.VehicleTickets.Include(v => v.Vehicle).ToListAsync();
         }
 
         public async Task<List<VehicleTicket>> GetVehicleTicketsAsync(string vehicleId)
@@ -118,20 +121,24 @@ namespace db_course_design.Services.impl
             return schedule.VehicleTickets.ToList();
         }
 
-        public async Task<List<VehicleResponse>> GetVehicleInfoAsync(string type, string arrivalCity, string departureCity, DateTime departureTime)
+        public async Task<List<VehicleResponse>> GetVehicleInfoAsync(string type, string? arrivalCity = null, string? departureCity = null, DateTime? departureTime = null)
         {
-            var unmapped = await _context.VehicleSchedules
+            var unmapped = _context.VehicleSchedules
                 .Where(v => v.VehicleType == type)
                 .Join(_context.VehicleTickets, s => s.VehicleId, t => t.VehicleId, (s, t) => new
                 {
                     Schedule = s,
                     Ticket = t
-                })
-                .Where(i => i.Ticket.TicketArrivalCity == arrivalCity
-                       && i.Ticket.TicketDepartureCity == departureCity
-                       && i.Ticket.TicketDepartureTime.Value.Date.Equals(departureTime.Date))
-                .ToListAsync();
-            var schedules = unmapped
+                });
+
+            if (arrivalCity != null)
+                unmapped = unmapped.Where(i => i.Ticket.TicketArrivalCity == arrivalCity);
+            if (departureCity != null)
+                unmapped = unmapped.Where(i => i.Ticket.TicketDepartureCity == departureCity);
+            if (departureTime != null)
+                unmapped = unmapped.Where(i => i.Ticket.TicketDepartureTime.Value.Date.Equals(departureTime.Value.Date));
+
+            var schedules = (await unmapped.ToListAsync())
                 .Select(i => mapInfo(i.Schedule, i.Ticket))
                 .ToList();
 
@@ -160,6 +167,7 @@ namespace db_course_design.Services.impl
                 var ticket = _mapper.Map<VehicleTicket>(request);
                 _context.VehicleTickets.Add(ticket);
                 await _context.SaveChangesAsync();
+                _context.Entry(ticket).Reference(t => t.Vehicle).Load();
                 return ticket;
             }
             catch

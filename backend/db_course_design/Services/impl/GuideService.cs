@@ -113,7 +113,10 @@ namespace db_course_design.Services.impl
             var guide = await _context.Guides
                 .Where(g => g.GuideId == GuideId)
                 .Include(g => g.GuideOrders)
+                .ThenInclude(go => go.Order)
                 .Include(g => g.TourGroups)
+                .ThenInclude(tg => tg.TourOrders)
+                .ThenInclude(to => to.Order)
                 .FirstOrDefaultAsync();
 
             if (guide == null)
@@ -123,11 +126,11 @@ namespace db_course_design.Services.impl
 
             // 获取所有持续到明天之后导游和旅行团订单分别排序
             var Gorders = guide.GuideOrders
-                .Where(o => o.ServiceEndDate >= DateTime.UtcNow.AddDays(1))
+                .Where(o => o.ServiceEndDate >= DateTime.UtcNow.AddDays(1) && o.Order.Status.Equals("Completed"))
                 .OrderBy(o => o.ServiceBeginDate)
                 .ToList();
             var Torders = guide.TourGroups
-                .Where(o => o.EndDate >= DateTime.UtcNow.AddDays(1))
+                .Where(o => o.EndDate >= DateTime.UtcNow.AddDays(1) && o.TourOrders.All(t => t.Order.Status.Equals("Completed")))
                 .OrderBy(o => o.StartDate)
                 .ToList();
 
@@ -232,7 +235,7 @@ namespace db_course_design.Services.impl
                 OrderDate = DateTime.Now,
                 UserId = request.userId,
                 Status = "Pending",
-                Price = await CountPriceAsync((request.EndDate-request.StartDate).Value.Days, request.GuideId),
+                Price = await CountPriceAsync((request.EndDate-request.StartDate).Value.Days + 1, request.GuideId),
             };
             _context.OrderData.Add(orderDatum);
             await _context.SaveChangesAsync();
@@ -251,10 +254,10 @@ namespace db_course_design.Services.impl
         }
 
         /*--按条件筛选--*/
-        public async Task<List<GuideOrderDetail>> GuideOrderFilter(byte GuideId, int? UserId, DateTime? StartDate, DateTime? EndDate)
+        public async Task<List<GuideOrderDetailOfGuide>> GuideOrderFilter(byte GuideId, int? UserId, DateTime? StartDate, DateTime? EndDate)
         {
             var query = _context.GuideOrders.AsQueryable();
-            query = query.Where(o => o.GuideId == GuideId);
+            query = query.Where(o => o.GuideId == GuideId && o.Order.Status.Equals("Completed"));
             if (UserId != null)
                 query = query.Where(o => o.Order.UserId == UserId);
             if (StartDate.HasValue)
@@ -262,12 +265,11 @@ namespace db_course_design.Services.impl
             if (EndDate.HasValue)
                 query = query.Where(o => o.ServiceBeginDate < EndDate);
             var Gorders = await query
-                .Select(o => new GuideOrderDetail
+                .Select(o => new GuideOrderDetailOfGuide
                 {
                     OrderId = o.OrderId,
                     OrderType = "GuideOrder",
                     Status = o.Order.Status,
-                    OrderDate = o.Order.OrderDate,
                     Price = o.Order.Price,
                     ServiceBeginDate = o.ServiceBeginDate,
                     ServiceEndDate = o.ServiceEndDate,
@@ -275,46 +277,38 @@ namespace db_course_design.Services.impl
                     GuideId = o.Guide.GuideId,
                     GuideName = o.Guide.GuideName,
                     GuideGender = o.Guide.GuideGender,
+                    UserId = o.Order.UserId,
+                    UserName = o.Order.User.UserName,
                 }).ToListAsync();
             return Gorders;
         }
-        public async Task<List<TourOrderDetail>> TourOrderFilter(byte GuideId, int? UserId, DateTime? StartDate, DateTime? EndDate)
+        public async Task<List<TourGroupDetail>> TourOrderFilter(byte GuideId, DateTime? StartDate, DateTime? EndDate)
         {
-            var query = _context.TourOrders.AsQueryable();
-            query = query.Where(o => o.Group.GuideId == GuideId);
-            if (UserId != null)
-                query = query.Where(o => o.Order.UserId == UserId);
+            var query = _context.TourGroups.AsQueryable();
+            query = query.Where(o => o.GuideId == GuideId && o.TourOrders.All(to => to.Order.Status.Equals("Completed")));
             if (StartDate.HasValue)
-                query = query.Where(o => o.Group != null && o.Group.EndDate > StartDate);
+                query = query.Where(o => o.EndDate > StartDate);
             if (EndDate.HasValue)
-                query = query.Where(o => o.Group != null && o.Group.StartDate < EndDate);
+                query = query.Where(o => o.StartDate < EndDate);
             var Torders = await query
-                .Select(o => new TourOrderDetail
+                .Select(o => new TourGroupDetail
                 {
-                    OrderId = o.OrderId,
-                    OrderType = "TourOrder",
-                    Status = o.Order.Status,
-                    OrderDate = o.Order.OrderDate,
-                    Price = o.Order.Price,
                     GroupId = o.GroupId,
-                    GroupName = o.Group.GroupName,
-                    GuideId = o.Group.GuideId,
-                    GuideName = o.Group.Guide.GuideName,
-                    GuideGender = o.Group.Guide.GuideGender,
-                    StartDate = o.Group.StartDate,
-                    EndDate = o.Group.EndDate,
-                    OrderNumber = o.OrderNumber,
+                    GroupName = o.GroupName,
+                    StartDate = o.StartDate,
+                    EndDate = o.EndDate,
+                    OrderNumber = o.TourOrders.Count,
                 }).ToListAsync();
             return Torders;
         }
-        public async Task<List<OrderResponse>> OrderFilterofGuide(byte GuideId, string? OrderType, int? UserId, DateTime? StartDate, DateTime? EndDate)
+        public async Task<List<OrderResponseOfGuide>> OrderFilterofGuide(byte GuideId, string? OrderType, int? UserId, DateTime? StartDate, DateTime? EndDate)
         {
-            var allOrders = new List<OrderResponse>();
+            var allOrders = new List<OrderResponseOfGuide>();
 
             if (OrderType == null)
             {
                 var guideOrder = await GuideOrderFilter(GuideId, UserId, StartDate, EndDate);
-                var tourOrder = await TourOrderFilter(GuideId, UserId, StartDate, EndDate);
+                var tourOrder = await TourOrderFilter(GuideId, StartDate, EndDate);
                 allOrders.AddRange(guideOrder);
                 allOrders.AddRange(tourOrder);
             }
@@ -325,7 +319,7 @@ namespace db_course_design.Services.impl
             }
             else if (OrderType.Equals("TourOrder"))
             {
-                var tourOrder = await TourOrderFilter(GuideId, UserId, StartDate, EndDate);
+                var tourOrder = await TourOrderFilter(GuideId, StartDate, EndDate);
                 allOrders.AddRange(tourOrder);
             }
             
@@ -341,6 +335,18 @@ namespace db_course_design.Services.impl
             await _context.SaveChangesAsync();
 
             return _mapper.Map<GuideResponse>(guide);
+        }
+
+        /*--上传导游图片--*/
+        public async Task<bool> AddGuidePictureAsync(byte GuideId, string? Url)
+        {
+            var target = await _context.Guides.FindAsync(GuideId);
+            if(target == null)
+                return false;
+
+            target.ProfilePicture = Url;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         /*--修改导游信息--*/

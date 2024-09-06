@@ -42,6 +42,8 @@
     {
         public string? VehicleId { get; set; }
 
+        public string? VehicleType { get; set; }
+
         public string? TicketType { get; set; }
 
         public decimal? TicketPrice { get; set; }

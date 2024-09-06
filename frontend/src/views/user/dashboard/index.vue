@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
@@ -7,7 +7,9 @@ import { useRouter } from 'vue-router'
 const scenicSpots = ref([])
 const childTicketPrices = ref({})
 const router = useRouter()
-
+const return2 = (str: string) => {
+  return str.slice(0, 2);
+};
 // 旅游团数据
 const tourGroups = ref([])
 
@@ -15,7 +17,7 @@ const tourGroups = ref([])
 const fetchScenicSpots = async () => {
   try {
     const response = await axios.get('https://123.60.14.84/scenicspots')
-    scenicSpots.value = response.data.slice(0, 3) // 获取前3个景点信息
+    scenicSpots.value = response.data // 获取前3个景点信息
     for (const spot of scenicSpots.value) {
       fetchTicketInfo(spot.scenicSpotName)
     }
@@ -25,7 +27,7 @@ const fetchScenicSpots = async () => {
 }
 
 // 获取票价信息
-const fetchTicketInfo = async (spotName) => {
+const fetchTicketInfo = async (spotName: string) => {
   try {
     const response = await axios.get(
       `https://123.60.14.84/api/ScenicSpot/ticket/${encodeURIComponent(spotName)}/date/2024-8-19`
@@ -38,12 +40,12 @@ const fetchTicketInfo = async (spotName) => {
 }
 
 // 景点跳转
-const goToAttraction = (scenicSpotName, scenicSpotIntroduction, scenicSpotId) => {
+const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, scenicSpotId: string) => {
   router.push({
-    path: "scene/shanghai/tickets",
+    path: `scene/city/tickets`,
     query: { name: scenicSpotName, introduction: scenicSpotIntroduction, id: scenicSpotId }
-  })
-}
+  });
+};
 
 // 获取推荐旅游团
 const fetchTourGroups = () => {
@@ -54,7 +56,7 @@ const fetchTourGroups = () => {
       if (Array.isArray(data)) {
         tourGroups.value = data.map((group) => ({
           ...group,
-          imageUrl: imageMap[group.groupId] || 'https://example.com/default.jpg', // 使用映射或者默认图片
+          imageUrl: group.imageUrl || imageMap[return2(group.groupName)] // 使用映射或者默认图片
         }));
       } else {
         console.error("Unexpected response format.");
@@ -68,7 +70,7 @@ const fetchTourGroups = () => {
 // 旅游团跳转
 const goToGroup = (group) => {
   router.push({
-    path: `/group-travel/groups/detail`,
+    path: `group-travel/groups/detail`,
     query: {
       groupId: group.groupId.toString(),
       guideId: group.guideId.toString(),
@@ -76,11 +78,9 @@ const goToGroup = (group) => {
       endDate: group.endDate,
       groupName: group.groupName,
       groupPrice: group.groupPrice.toString(),
-      goTicketId: group.goTicketId.toString(),
-      returnTicketId: group.returnTicketId.toString(),
       departure: group.departure,
       destination: group.destination,
-      guidename: group.guidename,
+      guideName: group.guideName,
       goTicket:JSON.stringify(group.goTicket), 
       returnTicket:JSON.stringify(group.returnTicket), 
       tourItineraries: JSON.stringify(group.tourItineraries), 
@@ -102,10 +102,12 @@ onMounted(() => {
 
 // 旅游团图片映射
 const imageMap = {
-  1: 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
-  22: 'https://th.bing.com/th/id/R.6f45552a07ce3691540b97b4be845785?rik=XOX7sQNnRUYI1A&riu=http%3a%2f%2fimgbdb3.bendibao.com%2fcsbdb%2fjieri%2f20214%2f29%2f2021429101819_16270.jpg&ehk=n2DNPUTw2bA4t4i9mvG9nFskomvtIPyYiFKgwBpp9ic%3d&risl=&pid=ImgRaw&r=0',
-  23: 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
-}
+  '上海': 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
+  '北京': 'https://img.zcool.cn/community/010e2d5de0f549a80120686b802e63.jpg@1280w_1l_2o_100sh.jpg',
+  '南京': 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
+  '成都': 'https://img.zcool.cn/community/01d9495b6dbc33a801215c8fe1df09.jpg@3000w_1l_0o_100sh.jpg',
+  '武汉': 'https://th.bing.com/th/id/R.43107bcfc6d493fd0e41b86a47f8a125?rik=Gy0Juky%2b9G1B4g&riu=http%3a%2f%2fimg.pconline.com.cn%2fimages%2fupload%2fupc%2ftx%2fphotoblog%2f1410%2f26%2fc2%2f40147263_1414299382894_mthumb.jpg&ehk=Vqm38FQdH7T8bH%2fAlDVATSrxmDaeqAosJOIE31tqabQ%3d&risl=&pid=ImgRaw&r=0',
+};
 </script>
 
 <template>
@@ -132,6 +134,7 @@ const imageMap = {
             <div class="group-info">
               <p class="title">{{ group.groupName }}</p>
               <p>{{ formatDate(group.startDate) }} -- {{ formatDate(group.endDate) }}</p>
+              <p>导游：{{ group.guideName }}</p>
             </div>
             <div class="group-price">
               <p>{{ group.groupPrice }} 元起</p>
@@ -254,16 +257,17 @@ const imageMap = {
 }
 
 .group-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  width: 30%;
   background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  max-width: 30%;
   cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s;
 }
 
 .group-card:hover {

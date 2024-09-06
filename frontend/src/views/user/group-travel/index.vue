@@ -9,6 +9,7 @@ import { ElButton, ElMessage } from 'element-plus'
 // 定义车票的接口
 interface GoTicket {
   vehicleId: string
+  vehicleType: string
   ticketType: string
   ticketPrice: number
   ticketDepartureTime: string
@@ -20,6 +21,7 @@ interface GoTicket {
 
 interface ReturnTicket {
   vehicleId: string
+  vehicleType: string
   ticketType: string
   ticketPrice: number
   ticketDepartureTime: string
@@ -61,11 +63,11 @@ interface TourGroup {
   departure: string
   destination: string
   guideName: string
-  goTicket: GoTicket
-  returnTicket: ReturnTicket
-  tourItineraries: TourItinerary[]
-  hotels: Hotel[]
-  imageUrl: string
+  goTicket?: GoTicket
+  returnTicket?: ReturnTicket
+  tourItineraries?: TourItinerary[]
+  hotels?: Hotel[]
+  imageUrl?: string
 }
 
 // 数据
@@ -75,78 +77,41 @@ const groupId_input=ref("")
 const departure_input=ref("")
 const destination_input=ref("")
 const date_input=ref("")
-const showEmptyMessage = ref(false) // 用于控制是否显示“暂无订单数据”
+const showEmptyMessage = ref(false)
 
 // 旅游团与图片url的对应关系
-const imageMap: Record<number, string> = {
-  1: 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
-  22: 'https://th.bing.com/th/id/R.6f45552a07ce3691540b97b4be845785?rik=XOX7sQNnRUYI1A&riu=http%3a%2f%2fimgbdb3.bendibao.com%2fcsbdb%2fjieri%2f20214%2f29%2f2021429101819_16270.jpg&ehk=n2DNPUTw2bA4t4i9mvG9nFskomvtIPyYiFKgwBpp9ic%3d&risl=&pid=ImgRaw&r=0',
-  23: 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
+const return2 = (str: string) => {
+  return str.slice(0, 2)
+}
+
+const imageMap: Record<string, string> = {
+  '上海': 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
+  '北京': 'https://img.zcool.cn/community/010e2d5de0f549a80120686b802e63.jpg@1280w_1l_2o_100sh.jpg',
+  '南京': 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
+  '成都': 'https://img.zcool.cn/community/01d9495b6dbc33a801215c8fe1df09.jpg@3000w_1l_0o_100sh.jpg',
+  '武汉': 'https://th.bing.com/th/id/R.43107bcfc6d493fd0e41b86a47f8a125?rik=Gy0Juky%2b9G1B4g&riu=http%3a%2f%2fimg.pconline.com.cn%2fimages%2fupload%2fupc%2ftx%2fphotoblog%2f1410%2f26%2fc2%2f40147263_1414299382894_mthumb.jpg&ehk=Vqm38FQdH7T8bH%2fAlDVATSrxmDaeqAosJOIE31tqabQ%3d&risl=&pid=ImgRaw&r=0',
 }
 
 const cities = [
   { value: "上海", label: "上海" },
   { value: "北京", label: "北京" },
   { value: "南京", label: "南京" },
-  { value: "长沙", label: "长沙" },
+  { value: "武汉", label: "武汉" },
+  { value: "成都", label: "成都" },
 ]
 
 // 获取旅游团
 const fetchTourGroups = () => {
   axios
-    .get("https://123.60.14.84/api/TourGroup/search/all")
+    //.get("https://123.60.14.84/api/TourGroup/search/all")
+    .get("https://123.60.14.84/api/TourGroup/recommendedtours")
     .then((response) => {
       const data = response.data
       console.log(data)
       if (Array.isArray(data)) {
-        tourGroups.value = data.map((group: any) => ({
-          groupId: group.groupId,
-          guideId: group.guideId,
-          startDate: group.startDate,
-          endDate: group.endDate,
-          groupName: group.groupName,
-          groupPrice: group.groupPrice,
-          goTicketId: group.goTicketId,
-          returnTicketId: group.returnTicketId,
-          departure: group.departure,
-          destination: group.destination,
-          guideName: group.guideName,
-          goTicket: {
-            vehicleId: group.goTicket.vehicleId,
-            ticketType: group.goTicket.ticketType,
-            ticketPrice: group.goTicket.ticketPrice,
-            ticketDepartureTime: group.goTicket.ticketDepartureTime,
-            ticketArrivalTime: group.goTicket.ticketArrivalTime,
-            ticketDepartureCity: group.goTicket.ticketDepartureCity,
-            ticketArrivalCity: group.goTicket.ticketArrivalCity,
-            ticketId: group.goTicket.ticketId
-          },
-          returnTicket: {
-            vehicleId: group.returnTicket.vehicleId,
-            ticketType: group.returnTicket.ticketType,
-            ticketPrice: group.returnTicket.ticketPrice,
-            ticketDepartureTime: group.returnTicket.ticketDepartureTime,
-            ticketArrivalTime: group.returnTicket.ticketArrivalTime,
-            ticketDepartureCity: group.returnTicket.ticketDepartureCity,
-            ticketArrivalCity: group.returnTicket.ticketArrivalCity,
-            ticketId: group.returnTicket.ticketId
-          },
-          tourItineraries: group.tourItineraries.map((itinerary: any) => ({
-            itineraryId: itinerary.itineraryId,
-            itineraryTime: itinerary.itineraryTime,
-            itineraryDuration: itinerary.itineraryDuration,
-            activities: itinerary.activities,
-            scenicSpotId: itinerary.scenicSpotId
-          })),
-          hotels: group.hotels.map((hotel: any) => ({
-            hotelId: hotel.hotelId,
-            hotelName: hotel.hotelName,
-            cityName: hotel.cityName,
-            hotelGrade: hotel.hotelGrade,
-            hotelLocation: hotel.hotelLocation,
-            hotelIntroduction: hotel.hotelIntroduction
-          })),
-          imageUrl: imageMap[group.groupId]
+        tourGroups.value = response.data.map((group: any) => ({
+        ...group,
+        imageUrl: group.imageUrl || imageMap[return2(group.groupName)]
         }))
         showEmptyMessage.value = false
       } else {
@@ -173,54 +138,10 @@ const fetchId = () => {
       console.log(data)
       if (data) {
         tourGroups.value = [{
-          groupId: data.groupId,
-          guideId: data.guideId,
-          startDate: data.startDate,
-          endDate: data.endDate,
-          groupName: data.groupName,
-          groupPrice: data.groupPrice,
-          goTicketId: data.goTicketId,
-          returnTicketId: data.returnTicketId,
-          departure: data.departure,
-          destination: data.destination,
-          guideName: data.guideName,
-          goTicket: {
-            vehicleId: data.goTicket.vehicleId,
-            ticketType: data.goTicket.ticketType,
-            ticketPrice: data.goTicket.ticketPrice,
-            ticketDepartureTime: data.goTicket.ticketDepartureTime,
-            ticketArrivalTime: data.goTicket.ticketArrivalTime,
-            ticketDepartureCity: data.goTicket.ticketDepartureCity,
-            ticketArrivalCity: data.goTicket.ticketArrivalCity,
-            ticketId: data.goTicket.ticketId
-          },
-          returnTicket: {
-            vehicleId: data.returnTicket.vehicleId,
-            ticketType: data.returnTicket.ticketType,
-            ticketPrice: data.returnTicket.ticketPrice,
-            ticketDepartureTime: data.returnTicket.ticketDepartureTime,
-            ticketArrivalTime: data.returnTicket.ticketArrivalTime,
-            ticketDepartureCity: data.returnTicket.ticketDepartureCity,
-            ticketArrivalCity: data.returnTicket.ticketArrivalCity,
-            ticketId: data.returnTicket.ticketId
-          },
-          tourItineraries: data.tourItineraries.map((itinerary: any) => ({
-            itineraryId: itinerary.itineraryId,
-            itineraryTime: itinerary.itineraryTime,
-            itineraryDuration: itinerary.itineraryDuration,
-            activities: itinerary.activities,
-            scenicSpotId: itinerary.scenicSpotId
-          })),
-          hotels: data.hotels.map((hotel: any) => ({
-            hotelId: hotel.hotelId,
-            hotelName: hotel.hotelName,
-            cityName: hotel.cityName,
-            hotelGrade: hotel.hotelGrade,
-            hotelLocation: hotel.hotelLocation,
-            hotelIntroduction: hotel.hotelIntroduction
-          })),
-          imageUrl: imageMap[data.groupId]
+          ...response.data,
+          imageUrl: response.data.imageUrl || imageMap[return2(response.data.groupName)]
         }]
+        console.log(tourGroups.value)
         showEmptyMessage.value = false
       } else {
         console.error("Unexpected response format.")
@@ -250,54 +171,9 @@ const fetchFilter = () => {
     .then((response) => {
       const data = response.data
       if (Array.isArray(data)) {
-        tourGroups.value = data.map((group: any) => ({
-          groupId: group.groupId,
-          guideId: group.guideId,
-          startDate: group.startDate,
-          endDate: group.endDate,
-          groupName: group.groupName,
-          groupPrice: group.groupPrice,
-          goTicketId: group.goTicketId,
-          returnTicketId: group.returnTicketId,
-          departure: group.departure,
-          destination: group.destination,
-          guideName: group.guideName,
-          goTicket: {
-            vehicleId: group.goTicket.vehicleId,
-            ticketType: group.goTicket.ticketType,
-            ticketPrice: group.goTicket.ticketPrice,
-            ticketDepartureTime: group.goTicket.ticketDepartureTime,
-            ticketArrivalTime: group.goTicket.ticketArrivalTime,
-            ticketDepartureCity: group.goTicket.ticketDepartureCity,
-            ticketArrivalCity: group.goTicket.ticketArrivalCity,
-            ticketId: group.goTicket.ticketId
-          },
-          returnTicket: {
-            vehicleId: group.returnTicket.vehicleId,
-            ticketType: group.returnTicket.ticketType,
-            ticketPrice: group.returnTicket.ticketPrice,
-            ticketDepartureTime: group.returnTicket.ticketDepartureTime,
-            ticketArrivalTime: group.returnTicket.ticketArrivalTime,
-            ticketDepartureCity: group.returnTicket.ticketDepartureCity,
-            ticketArrivalCity: group.returnTicket.ticketArrivalCity,
-            ticketId: group.returnTicket.ticketId
-          },
-          tourItineraries: group.tourItineraries.map((itinerary: any) => ({
-            itineraryId: itinerary.itineraryId,
-            itineraryTime: itinerary.itineraryTime,
-            itineraryDuration: itinerary.itineraryDuration,
-            activities: itinerary.activities,
-            scenicSpotId: itinerary.scenicSpotId
-          })),
-          hotels: group.hotels.map((hotel: any) => ({
-            hotelId: hotel.hotelId,
-            hotelName: hotel.hotelName,
-            cityName: hotel.cityName,
-            hotelGrade: hotel.hotelGrade,
-            hotelLocation: hotel.hotelLocation,
-            hotelIntroduction: hotel.hotelIntroduction
-          })),
-          imageUrl: imageMap[group.groupId]
+        tourGroups.value = response.data.map((group: any) => ({
+        ...group,
+        imageUrl: group.imageUrl || imageMap[return2(group.groupName)]
         }))
         showEmptyMessage.value = false
       } else {
@@ -311,6 +187,7 @@ const fetchFilter = () => {
     })
 }
 
+// 旅行团跳转
 const goToGroup = (group: TourGroup) => {
   router.push({
     path: `/group-travel/groups/detail`,
@@ -321,8 +198,6 @@ const goToGroup = (group: TourGroup) => {
       endDate: group.endDate,
       groupName: group.groupName,
       groupPrice: group.groupPrice.toString(),
-      goTicketId: group.goTicketId.toString(),
-      returnTicketId: group.returnTicketId.toString(),
       departure: group.departure,
       destination: group.destination,
       guideName: group.guideName,
@@ -354,7 +229,7 @@ onMounted(() => {
           @keyup.enter="fetchId"
         />
 
-        <el-button type="primary" class="button" @click="fetchId"> 搜索 </el-button>
+        <el-button type="primary" class="button" @click="fetchId" icon="Search"> 搜索 </el-button>
     </div>
 
     <div class="second-row" style="margin-top: 5px;">
@@ -393,7 +268,7 @@ onMounted(() => {
         size="default"
       />
   
-      <el-button type="primary" class="button" @click="fetchFilter"> 筛选 </el-button>
+      <el-button type="primary" class="button" @click="fetchFilter" icon="Search"> 筛选 </el-button>
     </div>
   </div>
 
@@ -404,7 +279,6 @@ onMounted(() => {
   <div v-else class="group-card" v-for="group in tourGroups" :key="group.groupId" @click="goToGroup(group)" >
     <div class="group-image">
       <img :src="group.imageUrl" alt="旅游团图片" />
-
     </div>
     <div class="group-info" >
       <p class="title" >{{ group.groupName }}</p>
@@ -435,7 +309,9 @@ onMounted(() => {
 .group-container {
   margin-left: 40px;
   margin-top: 20px;
-  display: flex;
+  margin-right: 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
   gap: 20px; 
   justify-content: center;
   align-items: center;  
@@ -446,10 +322,10 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  width: 30%; 
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%; 
   overflow: hidden;
 }
 
@@ -479,6 +355,14 @@ onMounted(() => {
   width: 100%;
   padding: 10px;
   background-color: #f8f8f8;
+}
+
+.holder-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  width: 100vw;
 }
 
 </style>

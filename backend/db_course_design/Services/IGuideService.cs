@@ -18,10 +18,11 @@ namespace db_course_design.Services
         Task<bool> CreateGuideOrderAsync(GuideReservationRequest request);
         
         // 按条件筛选
-        Task<List<OrderResponse>> OrderFilterofGuide(byte GuideId, string? OrderType, int? UserId, DateTime? StartDate, DateTime? EndDate);
+        Task<List<OrderResponseOfGuide>> OrderFilterofGuide(byte GuideId, string? OrderType, int? UserId, DateTime? StartDate, DateTime? EndDate);
 
         Task<GuideResponse> GetGuideByIdAsync(byte GuideId);
         Task<GuideResponse> AddGuideAsync(GuideRequest guideRequest);
+        Task<bool> AddGuidePictureAsync(byte GuideId, string? Url);
         Task<GuideResponse> UpdateGuideAsync(byte GuideId, GuideRequest guideRequest);
         Task<bool> DeleteGuideAsync(byte GuideId);
     }

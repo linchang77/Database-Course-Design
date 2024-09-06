@@ -11,7 +11,7 @@ const userId = ref<string | null>(localStorage.getItem('id'))
 
 // 接口部分
 interface Guide {
-  guideId: number               
+  guideId: number
   guideName: string
   guideGender: string
   guideIntroduction: string
@@ -36,19 +36,19 @@ const busyDates = ref<{ startDate: Date; endDate: Date }[]>([])
 
 
 const imageMap: Record<number, string> = {
-  2: 'https://th.bing.com/th/id/R.d68dcaee479f08cce46b46d2f268691f?rik=1gR2azuO%2fp1%2b3g&riu=http%3a%2f%2fgss0.baidu.com%2f9fo3dSag_xI4khGko9WTAnF6hhy%2fzhidao%2fpic%2fitem%2f37d12f2eb9389b50053be23b8635e5dde6116e96.jpg&ehk=bvj7ZF98h7hwoPr%2b12EMgI%2fmXfSvZfSfzyvvz6vgjqw%3d&risl=&pid=ImgRaw&r=0',
-  5: 'https://th.bing.com/th/id/OIP.IXH5Twk0zpHOuxDpyhRfdwHaKl?rs=1&pid=ImgDetMain',
+  2: "https://th.bing.com/th/id/R.d68dcaee479f08cce46b46d2f268691f?rik=1gR2azuO%2fp1%2b3g&riu=http%3a%2f%2fgss0.baidu.com%2f9fo3dSag_xI4khGko9WTAnF6hhy%2fzhidao%2fpic%2fitem%2f37d12f2eb9389b50053be23b8635e5dde6116e96.jpg&ehk=bvj7ZF98h7hwoPr%2b12EMgI%2fmXfSvZfSfzyvvz6vgjqw%3d&risl=&pid=ImgRaw&r=0",
+  5: "https://th.bing.com/th/id/OIP.IXH5Twk0zpHOuxDpyhRfdwHaKl?rs=1&pid=ImgDetMain",
   //13: 'https://th.bing.com/th/id/OIP.qVCyjt_e3_xM60_2q0frjQHaKY?rs=1&pid=ImgDetMain',
-  13: 'https://th.bing.com/th/id/OIP.Ugi7catGMRr-tq36HUf2RQHaJ4?rs=1&pid=ImgDetMain',
+  13: "https://th.bing.com/th/id/OIP.Ugi7catGMRr-tq36HUf2RQHaJ4?rs=1&pid=ImgDetMain",
   //33: 'https://th.bing.com/th/id/OIP.JoJ-AVHAUxutTyGUa3uHuAHaKk?rs=1&pid=ImgDetMain',
-  33: 'https://th.bing.com/th/id/OIP.TKN6MUV8TpXRSTGsXymxMwHaKX?rs=1&pid=ImgDetMain',
+  33: "https://th.bing.com/th/id/OIP.TKN6MUV8TpXRSTGsXymxMwHaKX?rs=1&pid=ImgDetMain",
   //9: 'https://th.bing.com/th/id/R.36ca40fef9c4da005b251a3820d6fb4a?rik=Q6IQFoVA3Gs9Ew&riu=http%3a%2f%2ffiles.photops.com%3a81%2fattachment%2fMon_1203%2f61_207514_57205c36941dcd2.jpg%3f207&ehk=wpZxbNylcejNwiUkNkUEbVucC0%2fMWuICMBVH%2f%2bn7dNg%3d&risl=&pid=ImgRaw&r=0',
-  9: 'https://th.bing.com/th/id/OIP.x1wS-uaZTmUA-q3Zyz-KeAHaKi?rs=1&pid=ImgDetMain',
-  10: 'https://img1.baidu.com/it/u=3838128346,2925275137&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=742',
-  1: 'https://img0.baidu.com/it/u=3193702081,1747174116&fm=253&fmt=auto&app=120&f=JPEG?w=417&h=581',
+  9: "https://th.bing.com/th/id/OIP.x1wS-uaZTmUA-q3Zyz-KeAHaKi?rs=1&pid=ImgDetMain",
+  10: "https://img1.baidu.com/it/u=3838128346,2925275137&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=742",
+  1: "https://img0.baidu.com/it/u=3193702081,1747174116&fm=253&fmt=auto&app=120&f=JPEG?w=417&h=581",
   //3: 'https://th.bing.com/th/id/OIP.TKN6MUV8TpXRSTGsXymxMwHaKX?rs=1&pid=ImgDetMain',
-  3: 'https://th.bing.com/th/id/R.814f0706c70345be7cc174eeef22cf97?rik=kk3NKkFwCuuGSA&riu=http%3a%2f%2fwww.86ps.com%2fUploadFiles%2fArticle%2f2018-7%2f0722%2f6.jpg&ehk=LyPuGBequu%2bBPj2lgiknapEXiLuR2RQfjKwtTPcUKFk%3d&risl=&pid=ImgRaw&r=0',
-  4: 'https://gss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/zhidao/wh%3D450%2C600/sign=5cf347cf97dda144da5c64b68787fc94/7af40ad162d9f2d30708c733a9ec8a136227ccd5.jpg',
+  3: "https://th.bing.com/th/id/R.814f0706c70345be7cc174eeef22cf97?rik=kk3NKkFwCuuGSA&riu=http%3a%2f%2fwww.86ps.com%2fUploadFiles%2fArticle%2f2018-7%2f0722%2f6.jpg&ehk=LyPuGBequu%2bBPj2lgiknapEXiLuR2RQfjKwtTPcUKFk%3d&risl=&pid=ImgRaw&r=0",
+  4: "https://gss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/zhidao/wh%3D450%2C600/sign=5cf347cf97dda144da5c64b68787fc94/7af40ad162d9f2d30708c733a9ec8a136227ccd5.jpg",
   26: 'https://img2.baidu.com/it/u=2793308119,144286892&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=700',
   34: 'https://gss0.baidu.com/-4o3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/caef76094b36acaff26b35af78d98d1000e99cde.jpg'
 }
@@ -63,7 +63,7 @@ const fetchGuides = () => {
       const data = response.data
       if (Array.isArray(data)) {
         guides.value = data.map((guide: any) => ({
-          guideId: guide.guideId,            
+          guideId: guide.guideId,
           guideName: guide.guideName,
           guideGender: guide.guideGender,
           guideIntroduction: guide.guideIntroduction,
@@ -86,6 +86,8 @@ const fetchGuides = () => {
 
 // 根据编号、姓名筛选
 const fetchById = () => {
+  guideGrade_input.value = "1"
+  guidePrice_input.value = []
   axios
   .get(`https://123.60.14.84/api/Guide/person`, {
       params: {
@@ -98,7 +100,7 @@ const fetchById = () => {
       console.log("da:", response.data)
       if (Array.isArray(data)) {
         guides.value = data.map((guide: any) => ({
-          guideId: guide.guideId,            
+          guideId: guide.guideId,
           guideName: guide.guideName,
           guideGender: guide.guideGender,
           guideIntroduction: guide.guideIntroduction,
@@ -121,6 +123,8 @@ const fetchById = () => {
 
 // 根据星级、价格筛选
 const fetchByGrade = () => {
+  guideId_input.value = ""
+  guideName_input.value = ""
   axios
   .get(`https://123.60.14.84/api/Guide/ability`, {
       params: {
@@ -134,7 +138,7 @@ const fetchByGrade = () => {
       const data = response.data
       if (Array.isArray(data)) {
         guides.value = data.map((guide: any) => ({
-          guideId: guide.guideId,            
+          guideId: guide.guideId,
           guideName: guide.guideName,
           guideGender: guide.guideGender,
           guideIntroduction: guide.guideIntroduction,
@@ -168,7 +172,7 @@ const formatDate = (dateString: string, time: string): string => {
   return `${year}-${month}-${day}T${time}`
 }
 // 获取不可用时间
-const disabledDateFun = (time: Record<string, any>): boolean => {  
+const disabledDateFun = (time: Record<string, any>): boolean => {
   return !busyDates.value.some((busyDate) => {
     const isDisabled = time.getTime() >= busyDate.startDate && time.getTime() <= busyDate.endDate
     console.log(isDisabled)
@@ -184,8 +188,8 @@ const openDialog = async (guide: Guide) => {
   try {
     const response = await axios.get(`https://123.60.14.84/api/Guide/reservation/${guide.guideId}`)
     busyDates.value = response.data.map((reservation: any) => ({
-      startDate: new Date(reservation.startDate).getTime(), 
-      endDate: new Date(reservation.endDate).getTime() 
+      startDate: new Date(reservation.startDate).getTime(),
+      endDate: new Date(reservation.endDate).getTime()
     }))
   } catch (error) {
     console.error('获取导游非空闲时间失败', error)
@@ -225,7 +229,7 @@ const confirm = async () => {
   }else{
     ElMessage.info(`请选择时间`)
   }
-}   
+}
 // 取消预定
 const cancel = () => {
   dialogVisible.value = false
@@ -262,7 +266,7 @@ onMounted(() => {
           @keyup.enter="fetchById"
         />
 
-        <el-button type="primary" class="button" style="margin-left: 10px;" @click="fetchById"> 搜索 </el-button>
+        <el-button type="primary" class="button" style="margin-left: 10px;" @click="fetchById" icon="Search"> 搜索 </el-button>
       </div>
 
       <div class="second_row">
@@ -270,10 +274,10 @@ onMounted(() => {
         <el-input-number v-model="guideGrade_input" :min="1" :max="500000" />
         <span class="word"> 导游价格 </span>
         <el-input-number v-model="guidePrice_input[0]" :min="1" :max="500000"/>
-        - 
+        -
         <el-input-number v-model="guidePrice_input[1]" :min="1" :max="500000"/>
-        
-        <el-button type="primary" class="button" @click="fetchByGrade"> 筛选 </el-button>
+
+        <el-button type="primary" class="button" @click="fetchByGrade" icon="Search"> 筛选 </el-button>
       </div>
     </div>
 
@@ -288,9 +292,9 @@ onMounted(() => {
                     <p class="name">{{ guide.guideName }}</p>
                     <img v-if="guide.guideGender === '男 '" src="@/views/user/guide/icon/male.svg" alt="男" class="gender-icon" />
                     <img v-else src="@/views/user/guide/icon/female.svg" alt="女" class="gender-icon" />
-                </div>    
+                </div>
             </div>
-            
+
             <div class="second" >
                 <p>导游编号： {{ guide.guideId }}</p>
                 <p>基本介绍: {{ guide.guideIntroduction }}</p>
@@ -309,7 +313,7 @@ onMounted(() => {
             </div>
         </div>
     </div>
-    
+
     <el-dialog v-model="dialogVisible" title="导游预定" width="500px">
       <div>
         <span> 服务内容 </span>
@@ -340,7 +344,7 @@ onMounted(() => {
   margin-top: 20px;
   margin-right: 40px;
   display: flex;
-  gap: 5px; 
+  gap: 5px;
   display: flex;
   flex-direction: column;
 }
@@ -354,10 +358,10 @@ onMounted(() => {
   margin-top: 20px;
   margin-right: 40px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr); 
-  gap: 20px; 
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
   justify-content: center;
-  align-items: center;  
+  align-items: center;
 }
 
 .guide-card {
@@ -368,7 +372,7 @@ onMounted(() => {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 100%; 
+  max-width: 100%;
   overflow: hidden;
 }
 
@@ -381,16 +385,16 @@ onMounted(() => {
 .guide-name-gender {
   display: flex;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
   gap: 5px;
   width: 100%;
-  margin-top: 10px; 
+  margin-top: 10px;
 }
 
 .name {
   margin: 0;
   font-size: 1.2em;
-  font-weight: bold; 
+  font-weight: bold;
   line-height: 1;
 }
 .gender-icon {
@@ -399,7 +403,7 @@ onMounted(() => {
 }
 .second p {
   margin: 5px 0;
-  line-height: 1.5; 
+  line-height: 1.5;
 }
 
 .third {

@@ -5,6 +5,7 @@ using db_course_design.Common;
 using AutoMapper;
 using db_course_design.Profiles;
 using NuGet.Packaging;
+using System.Linq;
 
 namespace db_course_design.Services.impl
 {
@@ -65,7 +66,9 @@ namespace db_course_design.Services.impl
                 .Include(t => t.Hotels)
                 .Include(t => t.Guide) // 加载导游信息
                 .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.ReturnTicket) // 加载回程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Select(t => _mapper.Map<TourGroupResponse>(t))
                 .ToListAsync();
         }
@@ -78,7 +81,9 @@ namespace db_course_design.Services.impl
                 .Include(tg => tg.Hotels)
                 .Include(t => t.Guide) // 加载导游信息
                 .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.ReturnTicket) // 加载回程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Where(tg => tg.Departure == request.Departure &&
                        tg.Destination == request.Destination &&
                        (request.Departure_Time == null || tg.StartDate >= request.Departure_Time) &&
@@ -97,7 +102,9 @@ namespace db_course_design.Services.impl
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
                 .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.ReturnTicket) // 加载回程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.Guide); // 加载导游信息;
             var tourGroup = (await query.ToListAsync()).SingleOrDefault();
 
@@ -114,7 +121,9 @@ namespace db_course_design.Services.impl
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
                 .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.ReturnTicket) // 加载回程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.Guide);
             var tourGroups = await query.ToListAsync();
 
@@ -123,16 +132,30 @@ namespace db_course_design.Services.impl
 
         public async Task<IEnumerable<TourGroupResponse>> GetRecommendedTourGroupsAsync()
         {
-            var recommendedGroups = await _context.TourGroups
+            List<TourGroupResponse> recommendedGroups = new List<TourGroupResponse>();
+            int count = 3;
+
+            foreach (var group in await _context.TourGroups
+                .OrderBy(t => t.GroupPrice)
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
-                .Include(t => t.Guide)
                 .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.ReturnTicket) // 加载回程票信息
-                .OrderBy(tg => tg.GroupPrice) // 假设推荐规则是按最低价格排序
-                .ToListAsync();
+                .ThenInclude(v => v != null ? v.Vehicle : null)
+                .Include(t => t.Guide)
+                .ToListAsync())
+            {
+                if (count == 0)
+                    break;
+                if (!recommendedGroups.Select(t => t.Destination).Contains(group.Destination))
+                {
+                    recommendedGroups.Add(_mapper.Map<TourGroupResponse>(group));
+                    count--;
+                }
+            }
 
-            return recommendedGroups.Select(t => _mapper.Map<TourGroupResponse>(t));
+            return recommendedGroups;
         }
 
         public async Task<bool> PurchaseTourGroupOrderAsync(PurchaseTourOrderRequest request, int number = 1)
@@ -145,7 +168,9 @@ namespace db_course_design.Services.impl
             // 查找对应的旅行团
             var tourGroup = await _context.TourGroups
                 .Include(t => t.GoTicket)
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.ReturnTicket)
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .FirstOrDefaultAsync(t => t.GroupId == request.GroupId);
 
             if (tourGroup == null)
@@ -220,9 +245,14 @@ namespace db_course_design.Services.impl
             try
             {
                 var target = (await _context.TourGroups
-                .Include(t => t.TourItineraries)
-                .Include(t => t.Hotels)
                 .Where(t => t.GroupId == id)
+                .Include(tg => tg.TourItineraries)
+                .Include(tg => tg.Hotels)
+                .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
+                .Include(t => t.ReturnTicket) // 加载回程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
+                .Include(t => t.Guide)
                 .ToListAsync()).SingleOrDefault();
                 if (target == null)
                     throw new Exception();
@@ -262,7 +292,7 @@ namespace db_course_design.Services.impl
                 .OrderBy(i => i.ItineraryTime);
         }
 
-        public async Task<TourItineraryResponse?> GetTourItineraryByIdAsync(byte itineraryId)
+        public async Task<TourItineraryResponse?> GetTourItineraryByIdAsync(decimal itineraryId)
         {
             var itinerary = await _context.TourItineraries.FindAsync(itineraryId);
 
@@ -286,7 +316,7 @@ namespace db_course_design.Services.impl
             }
         }
 
-        public async Task<bool> DeleteTourItineraryAsync(byte id)
+        public async Task<bool> DeleteTourItineraryAsync(decimal id)
         {
             var target = await _context.TourItineraries.FindAsync(id);
 
@@ -298,7 +328,7 @@ namespace db_course_design.Services.impl
             return true;
         }
 
-        public async Task<TourItineraryResponse?> UpdateTourItineraryAsync(byte id, TourItineraryRequest request)
+        public async Task<TourItineraryResponse?> UpdateTourItineraryAsync(decimal id, TourItineraryRequest request)
         {
             try
             {

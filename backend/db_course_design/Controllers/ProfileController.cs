@@ -16,7 +16,7 @@ namespace db_course_design.Controllers
                     GET             - 获取指定ID的普通用户信息
                     name/{name}/
                         PUT         - 修改指定ID的普通用户的用户名
-                    picture/{picture}/
+                    picture/
                         PUT         - 修改指定ID的普通用户的头像
                     gender/{gender}/
                         PUT         - 修改指定ID的普通用户的性别
@@ -36,7 +36,7 @@ namespace db_course_design.Controllers
                     GET             - 获取指定ID的导游信息
                     name/{name}/
                         PUT         - 修改指定ID的导游的用户名
-                    picture/{picture}/
+                    picture/
                         PUT         - 修改指定ID的导游的头像
                     gender/{gender}/
                         PUT         - 修改指定ID的导游的性别
@@ -150,6 +150,16 @@ namespace db_course_design.Controllers
             return Ok(target);
         }
 
+        [HttpPut("user/{id}/picture")]
+        public async Task<IActionResult> UpdateUserAvatar(int id, [FromForm] IFormFile avatar)
+        {
+            var updated = await _profileService.UpdateUserAvatarAsync(id, avatar);
+
+            if (updated.code != 0)
+                return BadRequest(updated);
+            return Ok(updated);
+        }
+
         [HttpPost("user/{id}/phone/add/{number}")]
         public async Task<IActionResult> AddUserPhoneNumber(int id, string number)
         {
@@ -206,6 +216,16 @@ namespace db_course_design.Controllers
             if (target == null)
                 return BadRequest("Cannot update item '" + item + "' of guide " + id);
             return Ok(target);
+        }
+
+        [HttpPut("guide/{id}/picture")]
+        public async Task<IActionResult> UpdateGuideAvatar(byte id, [FromForm] IFormFile avatar)
+        {
+            var updated = await _profileService.UpdateGuideAvatarAsync(id, avatar);
+
+            if (updated.code != 0)
+                return BadRequest(updated);
+            return Ok(updated);
         }
 
         [HttpPost("guide/{id}/phone/add/{number}")]

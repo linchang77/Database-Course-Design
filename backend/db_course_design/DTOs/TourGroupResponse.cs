@@ -16,10 +16,6 @@ namespace db_course_design.DTOs
 
         public decimal? GroupPrice { get; set; }
 
-        public decimal? GoTicketId { get; set; }
-
-        public decimal? ReturnTicketId { get; set; }
-
         public string? Departure { get; set; }
 
         public string? Destination { get; set; }
@@ -34,9 +30,12 @@ namespace db_course_design.DTOs
 
         public ICollection<HotelResponse> Hotels { get; set; } = new List<HotelResponse>();
     }
+
     public class TourTicket
     {
         public string? VehicleId { get; set; }
+
+        public string? VehicleType { get; set; }
 
         public string? TicketType { get; set; }
 
@@ -54,7 +53,7 @@ namespace db_course_design.DTOs
     }
     public class TourItineraryResponse
     {
-        public byte ItineraryId { get; set; }
+        public decimal ItineraryId { get; set; }
 
         public byte? GroupId { get; set; }
 

@@ -240,7 +240,7 @@ public partial class ModelContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("PASSWORD");
             entity.Property(e => e.ProfilePicture)
-                .HasMaxLength(40)
+                .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("PROFILE_PICTURE");
         });
@@ -525,7 +525,7 @@ public partial class ModelContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("SCENIC_SPOT_LOCATION");
             entity.Property(e => e.ScenicSpotName)
-                .HasMaxLength(20)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("SCENIC_SPOT_NAME");
             entity.Property(e => e.ScenicSpotRemoteness)
@@ -603,8 +603,6 @@ public partial class ModelContext : DbContext
             entity.HasKey(e => e.GroupId).HasName("GROUP_ID_AS_PK_OF_TOUR_GROUP");
 
             entity.ToTable("TOUR_GROUP");
-
-            entity.HasIndex(e => e.GroupName, "GROUP_NAME_UNIQUE").IsUnique();
 
             entity.Property(e => e.GroupId)
                 .HasPrecision(4)
@@ -707,8 +705,8 @@ public partial class ModelContext : DbContext
             entity.ToTable("TOUR_ITINERARY");
 
             entity.Property(e => e.ItineraryId)
-                .HasPrecision(2)
                 .ValueGeneratedOnAdd()
+                .HasColumnType("NUMBER(38)")
                 .HasColumnName("ITINERARY_ID");
             entity.Property(e => e.Activities)
                 .HasMaxLength(100)
@@ -823,7 +821,7 @@ public partial class ModelContext : DbContext
                 .HasDefaultValueSql("null\n")
                 .HasColumnName("PASSWORD");
             entity.Property(e => e.ProfilePicture)
-                .HasMaxLength(40)
+                .HasMaxLength(100)
                 .IsUnicode(false)
                 .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("null\n")

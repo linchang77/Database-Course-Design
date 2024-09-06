@@ -26,8 +26,10 @@ namespace db_course_design.Controllers
                 {vehicleId}/
                     GET               - 获取指定班号的所有车票列表
             info/
-                {type},{ArrivalCity},{DepartureCity},{DepartureTime}/
-                    GET               - 获取该条件下所有的车次信息
+                {type}/
+                    GET               - 获取指定交通类型的所有车次信息
+                    {ArrivalCity},{DepartureCity},{DepartureTime}/
+                        GET           - 获取该条件下所有的车次信息
       业务逻辑（管理交通工具班次和车票信息）：
          交通工具管理界面
     api/
@@ -95,7 +97,7 @@ namespace db_course_design.Controllers
         [HttpGet("tickets")]
         public async Task<IActionResult> GetAllVehicleTickets()
         {
-            var list = await _vehicleService.GetAllVehicleTicketAsync();
+            var list = await _vehicleService.GetAllVehicleTicketsAsync();
 
             return Ok(list.Select(v => _vehicleService._mapper.Map<VehicleTicketResponse>(v)));
         }
@@ -110,7 +112,17 @@ namespace db_course_design.Controllers
             return Ok(tickets.Select(t => _vehicleService._mapper.Map<VehicleTicketResponse>(t)).ToList());
         }
 
-        [HttpGet("info/{type},{arrivalCity},{departureCity},{departureTime}")]
+        [HttpGet("info/{type}")]
+        public async Task<IActionResult> GetVehicleInfoByType(string type)
+        {
+            var schedules = await _vehicleService.GetVehicleInfoAsync(type);
+
+            if (schedules == null || schedules.Count == 0)
+                return NotFound("No vehicle information found for the given criteria.");
+            return Ok(schedules);
+        }
+
+        [HttpGet("info/{type}/{arrivalCity},{departureCity},{departureTime}")]
         public async Task<IActionResult> GetVehicleInfoByFilters(string type, string arrivalCity, string departureCity, DateTime departureTime)
         {
             var schedules = await _vehicleService.GetVehicleInfoAsync(type, arrivalCity, departureCity, departureTime);

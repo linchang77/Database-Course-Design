@@ -4,8 +4,11 @@ using db_course_design.Common;
 using db_course_design.DTOs;
 using db_course_design.Profiles;
 using EntityFramework.Models;
+using MessagePack.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using System.ComponentModel;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
 namespace db_course_design.Services.impl
@@ -27,12 +30,14 @@ namespace db_course_design.Services.impl
     public class ProfileService : IProfileService
     {
         private readonly ModelContext _context;
+        private readonly PictureUtils _pictureUtils;
 
         public IMapper _mapper { get; }
 
         public ProfileService(ModelContext context)
         {
             _context = context;
+            _pictureUtils = new PictureUtils();
             _mapper = new MapperConfiguration(cfg => cfg.AddProfile<ProfileProfile>()).CreateMapper();
         }
 
@@ -82,9 +87,6 @@ namespace db_course_design.Services.impl
                     case "name":
                         target.UserName = value; 
                         break;
-                    case "picture":
-                        target.ProfilePicture = value; 
-                        break;
                     case "gender":
                         target.UserGender = value;
                         break;
@@ -111,9 +113,6 @@ namespace db_course_design.Services.impl
                 {
                     case "name":
                         target.GuideName = value;
-                        break;
-                    case "picture":
-                        target.ProfilePicture = value;
                         break;
                     case "gender":
                         target.GuideGender = value;
@@ -158,6 +157,40 @@ namespace db_course_design.Services.impl
             {
                 return null;
             }
+        }
+
+        public async Task<Result<string>> UpdateUserAvatarAsync(int id, IFormFile avatar)
+        {
+            var target = await _context.Users.FindAsync(id);
+
+            if (target == null)
+                return Result<string>.Error("User " + id + " doesn't exist.");
+
+            var newPath = await _pictureUtils.SetPictureAsync(target.ProfilePicture, avatar);
+
+            if (newPath.code != 0)
+                return newPath;
+
+            target.ProfilePicture = newPath.data;
+            await _context.SaveChangesAsync();
+            return newPath;
+        }
+
+        public async Task<Result<string>> UpdateGuideAvatarAsync(byte id, IFormFile avatar)
+        {
+            var target = await _context.Guides.FindAsync(id);
+
+            if (target == null)
+                return Result<string>.Error("Guide " + id + " doesn't exist.");
+
+            var newPath = await _pictureUtils.SetPictureAsync(target.ProfilePicture, avatar);
+
+            if (newPath.code != 0)
+                return newPath;
+
+            target.ProfilePicture = newPath.data;
+            await _context.SaveChangesAsync();
+            return newPath;
         }
 
         public async Task<string?> AddUserPhoneNumberAsync(int id, string number)
@@ -300,6 +333,7 @@ namespace db_course_design.Services.impl
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
+            File.Delete(user.ProfilePicture);
 
             return true;
         }
