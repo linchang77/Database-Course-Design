@@ -12,7 +12,7 @@
       @keyup.enter="onSearch"
     >
       <template #append>
-        <el-button @click="onSearch" >更新</el-button>
+        <el-button type="primary" @click="onSearch" style="background-color: #409eff; color: #fff; border: none; padding: 5px 10px; border-radius: 4px;">更新</el-button>
       </template>
     </el-input>
 

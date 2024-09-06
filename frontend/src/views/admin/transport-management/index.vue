@@ -15,7 +15,7 @@ import modify from "./component/modify.vue";
   <div class="app-container">
     <AddScheduleTicket />
     <!-- <ModifyScheduleTicket /> -->
-    <modify />
-    <SearchScheduleAndTicket />
+    <modify style="margin-top: 10px; margin-bottom: 10px"/>
+    <SearchScheduleAndTicket style="margin-top: 10px; margin-bottom: 10px"/>
   </div>
 </template>

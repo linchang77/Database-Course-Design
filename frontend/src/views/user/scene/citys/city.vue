@@ -196,7 +196,7 @@ const currentCityIntro = computed(() => {
 
     <div v-if="currentPage === 'attractions'" class="filters-container">
       <div class="search-bar">
-        <input type="text" v-model="searchQuery" placeholder="输入景点名称或ID进行搜索" />
+        <input type="text" v-model="searchQuery" placeholder="输入景点名称进行搜索" />
         <button @click="searchAttraction">搜索</button>
       </div>
       <div class="filter-row">

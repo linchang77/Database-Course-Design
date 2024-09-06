@@ -48,6 +48,7 @@ const handleCityClick = (cityLower: string) => {
       <input placeholder="搜索景点/城市" />
       <button class="Search-Scene">搜索</button>
     </div>
+
     <el-container>
       <el-aside width="300px" class="aside">
         <el-menu :default-active="selectedItem">

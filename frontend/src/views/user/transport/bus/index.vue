@@ -3,11 +3,12 @@ defineOptions({
   name: "Bus"
 })
 
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import PlaceSelector from "./components/PlaceSelector.vue"
 import TimeSelector from "./components/TimeSelector.vue"
 import { useSearchResultsStoreForBus } from "@/store/modules/searchResultsForBus"
 import { storeToRefs } from 'pinia'
+import { ElMessage } from "element-plus"
 const departure = ref("")
 const destination = ref("")
 const departureTime = ref("")
@@ -76,7 +77,7 @@ async function newSchedule(){
 }
 
 async function fetchTickets() {
-  const url = `https://123.60.14.84/api/Vehicle/info/car,${destination.value},${departure.value},${encodeURIComponent(departureTime.value)}`
+  const url = `https://123.60.14.84/api/Vehicle/info/car/${destination.value},${departure.value},${encodeURIComponent(departureTime.value)}`
   console.log("url:", url)
   axios
     .get(url)
@@ -86,6 +87,7 @@ async function fetchTickets() {
     })
     .catch((error) => {
       console.error(error)
+      ElMessage.error("车票信息不存在")
     })
 }
 
@@ -153,6 +155,25 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
 
   return { hours, minutes };
 }
+function fetchAllTickets() {
+  const url = `https://123.60.14.84/api/Vehicle/info/car`
+  console.log("url:", url)
+  axios
+    .get(url)
+    .then((response) => {
+      store.setsearchResultsForBus(response.data)
+      console.log("searchResults:", response.data)
+    })
+    .catch((error) => {
+      console.error(error)
+      ElMessage.error("车票信息不存在")
+    })
+}
+
+// onMounted(() => {
+//   fetchAllTickets()
+// })
+
 </script>
 
 <template>
@@ -160,8 +181,8 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
     <div class="app-container">
       <el-card header="车票查询">
         <div class="index-container">
-          <PlaceSelector @updateValue="setDestination">目的地</PlaceSelector>
           <PlaceSelector @updateValue="setDeparture">出发地</PlaceSelector>
+          <PlaceSelector @updateValue="setDestination">目的地</PlaceSelector>
           <TimeSelector @updateValue="setDepartureTime">请选择出发时间</TimeSelector>
           <el-button type="primary" size="large" icon="search" :disabled="isSearchDisabled" @click="fetchTickets"
             >搜索</el-button
@@ -274,11 +295,13 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
   padding: 10px;
   border-radius: 10px;
   background-color: #f5f5f5;
+  width: 100%;
 }
 .flight-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-width: 400px; // 添加最小宽度
   margin-bottom: 10px;
 }
 .flight-list {
@@ -289,13 +312,15 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
 }
 
 .flight-card {
-
   margin: 10px;
+  align-items: stretch;
+  display: flex;
   box-sizing: border-box; /* 包含边框和内边距在元素总宽高内 */
 }
 
 .flight-item {
   display: flex;
+  flex: 1;
   justify-content: space-between;
   align-items: center;
 }
@@ -324,6 +349,7 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
   justify-content: space-between;
   align-items: center;
   margin-left: 10px;
+  column-gap: 10px;
 }
 
 .depart-box,

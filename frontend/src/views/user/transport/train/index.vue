@@ -3,11 +3,12 @@ defineOptions({
   name: "Train"
 })
 
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import PlaceSelector from "./components/PlaceSelector.vue"
 import TimeSelector from "./components/TimeSelector.vue"
 import { useSearchResultsStoreForTrain } from "@/store/modules/searchResultsForTrain"
 import { storeToRefs } from 'pinia'
+import { ElMessage } from "element-plus"
 const departure = ref("")
 const destination = ref("")
 const departureTime = ref("")
@@ -76,7 +77,7 @@ async function newSchedule(){
 }
 
 async function fetchTickets() {
-  const url = `https://123.60.14.84/api/Vehicle/info/train,${destination.value},${departure.value},${encodeURIComponent(departureTime.value)}`
+  const url = `https://123.60.14.84/api/Vehicle/info/train/${destination.value},${departure.value},${encodeURIComponent(departureTime.value)}`
   console.log("url:", url)
   axios
     .get(url)
@@ -86,6 +87,7 @@ async function fetchTickets() {
     })
     .catch((error) => {
       console.error(error)
+      ElMessage.error("车票信息不存在")
     })
 }
 
@@ -153,6 +155,25 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
 
   return { hours, minutes };
 }
+function fetchAllTickets() {
+  const url = `https://123.60.14.84/api/Vehicle/info/train`
+  console.log("url:", url)
+  axios
+    .get(url)
+    .then((response) => {
+      store.setsearchResultsForTrain(response.data)
+      console.log("searchResults:", response.data)
+    })
+    .catch((error) => {
+      console.error(error)
+      ElMessage.error("车票信息不存在")
+    })
+}
+
+// onMounted(() => {
+//   fetchAllTickets()
+// })
+
 </script>
 
 <template>
@@ -160,8 +181,8 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
     <div class="app-container">
       <el-card header="车票查询">
         <div class="index-container">
-          <PlaceSelector @updateValue="setDestination">目的地</PlaceSelector>
           <PlaceSelector @updateValue="setDeparture">出发地</PlaceSelector>
+          <PlaceSelector @updateValue="setDestination">目的地</PlaceSelector>
           <TimeSelector @updateValue="setDepartureTime">请选择出发时间</TimeSelector>
           <el-button type="primary" size="large" icon="search" :disabled="isSearchDisabled" @click="fetchTickets"
             >搜索</el-button
@@ -201,7 +222,7 @@ function calculateTimeDifference(departureTime: string, arrivalTime: string): { 
                           <div class="time">{{ flight.departureTime.split("T")[1] }}</div>
                           <div class="airport">
                             <span>Departure</span>
-                            <span>Airport</span>
+                            <span>Station</span>
                             <br />
                             <span>{{ flight.departureStation }}</span>
                           </div>

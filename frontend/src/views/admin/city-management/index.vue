@@ -11,7 +11,7 @@ import SearchCity from "./component/SearchCity.vue";
 
 <template>
   <div class="app-container">
-    <AddAndModifyCity />
+    <AddAndModifyCity style=" margin-bottom: 10px" />
     <SearchCity />
     <!-- <el-card header="城市管理">
     </el-card>
