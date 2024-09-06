@@ -14,7 +14,7 @@ namespace db_course_design.Services
         Task<List<VehicleSchedule>> GetAllVehicleSchedulesAsync();
         Task<List<VehicleTicket>> GetAllVehicleTicketsAsync();
         Task<List<VehicleTicket>> GetVehicleTicketsAsync(string vehicleId);
-        Task<List<VehicleResponse>> GetVehicleInfoAsync(string type, string arrivalCity, string departureCity, DateTime departureDate);
+        Task<List<VehicleResponse>> GetVehicleInfoAsync(string type, string? arrivalCity=null, string? departureCity=null, DateTime? departureDate=null);
         Task<VehicleSchedule?> AddVehicleScheduleAsync(VehicleScheduleRequest request);
         Task<VehicleTicket?> AddVehicleTicketAsync(VehicleTicketRequest request);
         Task<VehicleOrder?> AddVehicleOrderAsync(VehicleOrderRequest request);
