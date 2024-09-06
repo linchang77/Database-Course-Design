@@ -50,10 +50,6 @@ const handleCityClick = (cityLower: string) => {
 
 <template>
   <div class="no-scroll">
-    <div>
-      <input placeholder="搜索景点/城市" />
-      <button class="Search-Scene">搜索</button>
-    </div>
     <el-container>
       <el-aside width="300px" class="aside">
         <el-menu @select="handleSelect" :default-active="selectedItem">
@@ -89,7 +85,6 @@ const handleCityClick = (cityLower: string) => {
               </div>
 
               <div v-else-if="selectedItem === '2' || selectedItem === '3' || selectedItem === '4' || selectedItem === '5' || selectedItem === '6' || selectedItem === '7'" class="city-links">
-                <a>敬请期待</a>
               </div>
             </div>
           </div>
@@ -162,7 +157,7 @@ button.Search-Scene {
 /* 覆盖图片上方的标签样式 */
 .overlay-label {
   position: absolute;
-  top: 12%;
+  top: 1%;
   left: 28%;
   width: 30%;
   height: 20%;
