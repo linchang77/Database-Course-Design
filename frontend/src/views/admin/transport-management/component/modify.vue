@@ -1,13 +1,14 @@
 <template>
   <div>
-    <el-button @click="showModifyScheduleForm">修改行程</el-button>
-    <el-button @click="showModifySpecificTicketForm">修改某张特定车票</el-button>
+    <el-button type="primary" @click="showModifyScheduleForm">修改行程</el-button>
+    <el-button type="primary" @click="showModifySpecificTicketForm">修改某张特定车/机票</el-button>
 
     <!-- 修改行程的对话框 -->
     <el-dialog v-model="modifyScheduleFormVisible" title="修改行程" :before-close="handleCloseModifyScheduleForm">
       <el-form :model="vehicleScheduleData" label-width="120px">
-        <el-form-item label="班次ID">
-          <el-input v-model="vehicleScheduleData.vehicleId" placeholder="请输入班次ID"></el-input>
+        <el-form-item label="交通工具ID">
+          <el-input v-model="vehicleScheduleData.vehicleId" placeholder="请输入交通工具ID"></el-input>
+          <div style="font-size: 12px; color: #909399">请输入交通工具ID后点击右下方查询按钮</div>
         </el-form-item>
         <el-form-item label="出发城市">
           <el-input v-model="vehicleScheduleData.departureCity" :disabled="!isEditingVehicleSchedule"></el-input>
@@ -63,10 +64,11 @@
     </el-dialog>
 
     <!-- 修改某张特定车票的对话框 -->
-    <el-dialog v-model="modifySpecificTicketFormVisible" title="修改某张特定车票" :before-close="handleCloseModifySpecificTicketForm">
+    <el-dialog v-model="modifySpecificTicketFormVisible" title="修改某张特定车/机票" :before-close="handleCloseModifySpecificTicketForm">
       <el-form :model="vehicleTicketData" label-width="120px">
-        <el-form-item label="车票ID">
-          <el-input v-model="vehicleTicketData.ticketId" placeholder="请输入车票ID"></el-input>
+        <el-form-item label="票据ID">
+          <el-input v-model="vehicleTicketData.ticketId" placeholder="请输入票据ID"></el-input>
+          <div style="font-size: 12px; color: #909399">请输入票据ID后点击右下方查询按钮</div>
         </el-form-item>
         <el-form-item label="车次号">
           <el-input v-model="vehicleTicketData.vehicleId" :disabled="true"></el-input>

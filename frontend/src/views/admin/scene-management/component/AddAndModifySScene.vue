@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-button @click="showAddScenicForm">新增景区</el-button>
-    <el-button @click="showDeleteScenicForm">删除景区</el-button>
-    <el-button @click="showModifyScenicForm">修改景区</el-button>
+    <el-button type="primary" @click="showAddScenicForm">新增景区</el-button>
+    <el-button type="danger" @click="showDeleteScenicForm">删除景区</el-button>
+    <el-button type="primary" @click="showModifyScenicForm">修改景区</el-button>
 
     <!-- 新增景区的对话框 -->
     <el-dialog v-model="addScenicFormVisible" title="新增景区" :before-close="handleCloseAddScenicForm">
@@ -65,7 +65,7 @@
     </el-dialog>
 
     <!-- 显示查询结果的卡片 -->
-    <el-card v-if="scenic" shadow="hover">
+    <el-card v-if="scenic" shadow="hover" class="scenic-card">
       <template #header>
         <div>景区信息</div>
       </template>
@@ -95,7 +95,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="4" class="edit-button-col">
           <el-button type="primary" @click="editScenic" v-if="!isEditingScenic">编辑</el-button>
           <el-button type="success" @click="updateScenic" v-else>完成</el-button>
         </el-col>
@@ -271,3 +271,14 @@ const scenicToModify = reactive({
   scenicSpotId: ''
 });
 </script>
+
+<style lang="scss" scoped>
+.scenic-card {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.edit-button-col {
+  margin-left: 20px;
+}
+</style>

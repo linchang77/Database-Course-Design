@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-button @click="showAddCityForm">新增城市</el-button>
-    <el-button @click="showDeleteCityForm">删除城市</el-button>
-    <el-button @click="showModifyCityForm">修改城市</el-button>
+    <el-button type="primary" @click="showAddCityForm">新增城市</el-button>
+    <el-button type="danger" @click="showDeleteCityForm">删除城市</el-button>
+    <el-button type="primary" @click="showModifyCityForm">修改城市</el-button>
 
     <!-- 新增城市的对话框 -->
     <el-dialog v-model="addCityFormVisible" title="新增城市" :before-close="handleCloseAddCityForm">

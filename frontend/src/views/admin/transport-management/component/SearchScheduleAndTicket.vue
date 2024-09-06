@@ -5,43 +5,47 @@
       <el-option label="搜索票务" value="ticket"></el-option>
     </el-select>
     <el-input
-      placeholder="请输入班号或车票编号"
+      placeholder="请输入交通工具ID或票据编号"
       v-model="searchKeyword"
       clearable
       style="width: 500px; margin-left: 10px;"
       @keyup.enter="onSearch"
     >
       <template #append>
-        <el-button @click="onSearch">更新</el-button>
+        <el-button type="primary" @click="onSearch" style="background-color: #409eff; color: #fff; border: none; padding: 5px 10px; border-radius: 4px;">更新</el-button>
       </template>
     </el-input>
 
     <!-- 展示搜索结果 -->
     <div v-if="searchResults.length > 0">
-      <el-table :data="searchResults" border style="width: 100%;">
+      <el-table :data="searchResults" border style="width: 100%;margin-top: 10px;">
         <template v-if="searchType === 'schedule'">
-          <el-table-column prop="vehicleId" label="班号" width="150"></el-table-column>
-          <el-table-column prop="vehicleType" label="交通类型" width="150"></el-table-column>
+          <el-table-column prop="vehicleId" label="交通工具ID" width="100"></el-table-column>
+          <el-table-column prop="vehicleType" label="交通工具类型" width="120">
+            <template #default="{ row }">
+              {{ getVehicleTypeLabel(row.vehicleType) }}
+            </template>
+          </el-table-column>
           <el-table-column prop="departureTime" label="出发时间" width="180"></el-table-column>
           <el-table-column prop="arrivalTime" label="到达时间" width="180"></el-table-column>
-          <el-table-column prop="departureStation" label="出发站" width="180"></el-table-column>
-          <el-table-column prop="arrivalStation" label="到达站" width="180"></el-table-column>
-          <el-table-column prop="vehicleModel" label="机型" width="180"></el-table-column>
-          <el-table-column prop="departureCity" label="出发城市" width="180"></el-table-column>
-          <el-table-column prop="arrivalCity" label="到达城市" width="180"></el-table-column>
+          <el-table-column prop="departureStation" label="出发站" width="140"></el-table-column>
+          <el-table-column prop="arrivalStation" label="到达站" width="140"></el-table-column>
+          <el-table-column prop="vehicleModel" label="交通工具型号" width="140"></el-table-column>
+          <el-table-column prop="departureCity" label="出发城市" width="130"></el-table-column>
+          <el-table-column prop="arrivalCity" label="到达城市" width="130"></el-table-column>
         </template>
 
         <template v-else-if="searchType === 'ticket'">
-          <el-table-column prop="vehicleId" label="班号" width="140"></el-table-column>
-          <el-table-column prop="ticketId" label="车票编号" width="140"></el-table-column>
-          <el-table-column prop="ticketType" label="票种" width="140"></el-table-column>
-          <el-table-column prop="ticketPrice" label="票价" width="130"></el-table-column>
+          <el-table-column prop="vehicleId" label="交通工具ID" width="130"></el-table-column>
+          <el-table-column prop="ticketId" label="车票编号" width="100"></el-table-column>
+          <el-table-column prop="ticketType" label="票种" width="100"></el-table-column>
+          <el-table-column prop="ticketPrice" label="票价" width="80"></el-table-column>
           <el-table-column prop="ticketDepartureTime" label="出发时间" width="180"></el-table-column>
           <el-table-column prop="ticketArrivalTime" label="到达时间" width="180"></el-table-column>
-          <el-table-column prop="ticketDepartureStation" label="出发站" width="180"></el-table-column>
-          <el-table-column prop="ticketArrivalStation" label="到达站" width="180"></el-table-column>
-          <el-table-column prop="ticketDepartureCity" label="出发城市" width="150"></el-table-column>
-          <el-table-column prop="ticketArrivalCity" label="到达城市" width="150"></el-table-column>
+          <el-table-column prop="ticketDepartureStation" label="出发站" width="160"></el-table-column>
+          <el-table-column prop="ticketArrivalStation" label="到达站" width="160"></el-table-column>
+          <el-table-column prop="ticketDepartureCity" label="出发城市" width="100"></el-table-column>
+          <el-table-column prop="ticketArrivalCity" label="到达城市" width="100"></el-table-column>
           <el-table-column prop="ticketRemaining" label="剩余票数" width="100"></el-table-column>
         </template>
         <el-table-column label="操作" fixed="right" >
@@ -154,12 +158,22 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { get } from 'node_modules/axios/index.cjs';
 
 const vehicleTypes = [
   { value: 'plane', label: '飞机' },
   { value: 'train', label: '火车' },
   { value: 'car', label: '大巴' },
 ];
+const vehicleTypeMap = {
+  plane: '飞机',
+  train: '火车',
+  car: '大巴',
+}
+
+const getVehicleTypeLabel = (type: string) => {
+  return vehicleTypeMap[type] || type;
+}
 // 定义行程数据模型
 interface Schedule {
   vehicleId: string;
