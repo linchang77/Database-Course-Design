@@ -66,7 +66,9 @@ namespace db_course_design.Services.impl
                 .Include(t => t.Hotels)
                 .Include(t => t.Guide) // 加载导游信息
                 .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.ReturnTicket) // 加载回程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Select(t => _mapper.Map<TourGroupResponse>(t))
                 .ToListAsync();
         }
@@ -79,7 +81,9 @@ namespace db_course_design.Services.impl
                 .Include(tg => tg.Hotels)
                 .Include(t => t.Guide) // 加载导游信息
                 .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.ReturnTicket) // 加载回程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Where(tg => tg.Departure == request.Departure &&
                        tg.Destination == request.Destination &&
                        (request.Departure_Time == null || tg.StartDate >= request.Departure_Time) &&
@@ -98,7 +102,9 @@ namespace db_course_design.Services.impl
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
                 .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.ReturnTicket) // 加载回程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.Guide); // 加载导游信息;
             var tourGroup = (await query.ToListAsync()).SingleOrDefault();
 
@@ -115,7 +121,9 @@ namespace db_course_design.Services.impl
                 .Include(tg => tg.TourItineraries)
                 .Include(tg => tg.Hotels)
                 .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.ReturnTicket) // 加载回程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.Guide);
             var tourGroups = await query.ToListAsync();
 
@@ -124,18 +132,21 @@ namespace db_course_design.Services.impl
 
         public async Task<IEnumerable<TourGroupResponse>> GetRecommendedTourGroupsAsync()
         {
-            var recommendedGroupIDs = new List<byte>
+            IEnumerable<TourGroupResponse> recommendedGroups = new List<TourGroupResponse>();
+            int count = 3;
+
+            foreach (var group in _context.TourGroups.OrderBy(t => t.GroupPrice))
             {
-                1,
-                126,
-                125
-            };
+                if (count == 0)
+                    break;
+                if (!recommendedGroups.Select(t => t.Destination).Contains(group.Destination))
+                {
+                    recommendedGroups.Append(_mapper.Map<TourGroupResponse>(group));
+                    count--;
+                }
+            }
 
-            var recommendedGroups = await _context.TourGroups
-                .Where(ss => recommendedGroupIDs.Contains(ss.GroupId))
-                .ToListAsync();
-
-            return recommendedGroups.Select(t => _mapper.Map<TourGroupResponse>(t));
+            return recommendedGroups;
         }
 
         public async Task<bool> PurchaseTourGroupOrderAsync(PurchaseTourOrderRequest request, int number = 1)
@@ -148,7 +159,9 @@ namespace db_course_design.Services.impl
             // 查找对应的旅行团
             var tourGroup = await _context.TourGroups
                 .Include(t => t.GoTicket)
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .Include(t => t.ReturnTicket)
+                .ThenInclude(v => v != null ? v.Vehicle : null)
                 .FirstOrDefaultAsync(t => t.GroupId == request.GroupId);
 
             if (tourGroup == null)
@@ -223,9 +236,14 @@ namespace db_course_design.Services.impl
             try
             {
                 var target = (await _context.TourGroups
-                .Include(t => t.TourItineraries)
-                .Include(t => t.Hotels)
                 .Where(t => t.GroupId == id)
+                .Include(tg => tg.TourItineraries)
+                .Include(tg => tg.Hotels)
+                .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
+                .Include(t => t.ReturnTicket) // 加载回程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
+                .Include(t => t.Guide)
                 .ToListAsync()).SingleOrDefault();
                 if (target == null)
                     throw new Exception();
