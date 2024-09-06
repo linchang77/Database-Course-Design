@@ -132,16 +132,25 @@ namespace db_course_design.Services.impl
 
         public async Task<IEnumerable<TourGroupResponse>> GetRecommendedTourGroupsAsync()
         {
-            IEnumerable<TourGroupResponse> recommendedGroups = new List<TourGroupResponse>();
+            List<TourGroupResponse> recommendedGroups = new List<TourGroupResponse>();
             int count = 3;
 
-            foreach (var group in _context.TourGroups.OrderBy(t => t.GroupPrice))
+            foreach (var group in await _context.TourGroups
+                .OrderBy(t => t.GroupPrice)
+                .Include(tg => tg.TourItineraries)
+                .Include(tg => tg.Hotels)
+                .Include(t => t.GoTicket) // 加载去程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
+                .Include(t => t.ReturnTicket) // 加载回程票信息
+                .ThenInclude(v => v != null ? v.Vehicle : null)
+                .Include(t => t.Guide)
+                .ToListAsync())
             {
                 if (count == 0)
                     break;
                 if (!recommendedGroups.Select(t => t.Destination).Contains(group.Destination))
                 {
-                    recommendedGroups.Append(_mapper.Map<TourGroupResponse>(group));
+                    recommendedGroups.Add(_mapper.Map<TourGroupResponse>(group));
                     count--;
                 }
             }
