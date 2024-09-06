@@ -13,7 +13,6 @@ const user = ref({
 
 const guide = ref({
   Id: null,
-  Password: "未设置",
   Name: "未设置",
   Gender: "未设置",
   Introduction: "未设置",
@@ -28,8 +27,8 @@ const guide = ref({
 
 const admin = ref({
   Id: null,
-  Password: "未设置",
-  Name: "未设置"
+  Name: "未设置",
+  ProfilePicture: ""
 })
 
 const isEditing = ref({
@@ -53,6 +52,9 @@ const newRegion = ref("") // 存储新区域的变量
 const addingRegion = ref(false) // 控制是否在添加新区域
 
 const baseUrl = "https://123.60.14.84"
+
+// 用于存储选择的头像文件
+const selectedFile = ref(null)
 
 // 获取用户信息
 async function fetchUserData() {
@@ -83,7 +85,8 @@ async function fetchUserData() {
       const response = await axios.get(`${baseUrl}/api/Profile/admin/${admin.value.Id}`)
       admin.value = {
         Id: response.data.id || "未设置",
-        Name: response.data.name || "未设置"
+        Name: response.data.name || "未设置",
+        ProfilePicture: response.data.profilePicture || ""
       }
     }
   } catch (error) {
@@ -92,6 +95,55 @@ async function fetchUserData() {
   }
 }
 
+// 上传头像
+async function uploadAvatar() {
+  if (!selectedFile.value) {
+    alert("请选择一个头像文件")
+    return
+  }
+
+  const formData = new FormData()
+  formData.append("file", selectedFile.value)
+
+  try {
+    let apiUrl = ""
+    if (userType.value === "user") {
+      apiUrl = `${baseUrl}/api/Profile/user/${user.value.Id}/picture/`
+    } else if (userType.value === "guide") {
+      apiUrl = `${baseUrl}/api/Profile/guide/${guide.value.Id}/picture/`
+    } else if (userType.value === "admin") {
+      apiUrl = `${baseUrl}/api/Profile/admin/${admin.value.Id}/picture/`
+    }
+
+    const response = await axios.post(apiUrl, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+
+    // 更新头像路径
+    const newProfilePicture = response.data.profilePicture // 服务器返回的新头像路径
+    if (userType.value === "user") {
+      user.value.ProfilePicture = newProfilePicture
+    } else if (userType.value === "guide") {
+      guide.value.ProfilePicture = newProfilePicture
+    } else if (userType.value === "admin") {
+      admin.value.ProfilePicture = newProfilePicture
+    }
+    alert("头像上传成功！")
+  } catch (error) {
+    console.error("Error uploading avatar:", error)
+    alert("头像上传失败！")
+  }
+}
+
+// 处理文件选择事件
+function handleFileChange(event) {
+  const files = event.target.files
+  if (files.length > 0) {
+    selectedFile.value = files[0]
+  }
+}
 // 更新用户信息
 async function updateUserData(field, value) {
   try {
@@ -310,7 +362,6 @@ async function saveChanges(field, value) {
     alert("保存失败!")
   }
 }
-
 onMounted(() => {
   const id = localStorage.getItem("id")
   const role = localStorage.getItem("role")
@@ -338,6 +389,14 @@ onMounted(() => {
     <h1 class="title">个人信息</h1>
 
     <div v-if="userType === 'user'">
+      <div class="info-section">
+        <div class="label">头像</div>
+        <div class="content">
+          <img :src="user.ProfilePicture || '/default_avatar.png'" alt="User Avatar" class="avatar" />
+          <input type="file" @change="handleFileChange" accept="image/*" />
+          <button @click="uploadAvatar">上传头像</button>
+        </div>
+      </div>
       <div class="info-section">
         <div class="label">ID</div>
         <div class="content">{{ user.Id }}</div>
@@ -393,6 +452,14 @@ onMounted(() => {
       </div>
     </div>
     <div v-else-if="userType === 'guide'">
+      <div class="info-section">
+        <div class="label">头像</div>
+        <div class="content">
+          <img :src="guide.ProfilePicture || '/default_avatar.png'" alt="Guide Avatar" class="avatar" />
+          <input type="file" @change="handleFileChange" accept="image/*" />
+          <button @click="uploadAvatar">上传头像</button>
+        </div>
+      </div>
       <div class="info-section">
         <div class="label">ID</div>
         <div class="content">{{ guide.Id }}</div>
@@ -495,6 +562,14 @@ onMounted(() => {
 
     <div v-else-if="userType === 'admin'">
       <div class="info-section">
+        <div class="label">头像</div>
+        <div class="content">
+          <img :src="admin.ProfilePicture || '/default_avatar.png'" alt="Admin Avatar" class="avatar" />
+          <input type="file" @change="handleFileChange" accept="image/*" />
+          <button @click="uploadAvatar">上传头像</button>
+        </div>
+      </div>
+      <div class="info-section">
         <div class="label">ID</div>
         <div class="content">{{ admin.Id }}</div>
       </div>
@@ -523,6 +598,13 @@ onMounted(() => {
   font-size: 56px;
   margin-bottom: 20px;
   color: rgb(0, 157, 255);
+}
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
 }
 
 .info-section {

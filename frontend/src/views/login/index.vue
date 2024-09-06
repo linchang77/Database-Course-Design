@@ -37,13 +37,18 @@ const selectRole = (role: string) => {
 /** 切换登录/注册 */
 const toggleForm = () => {
   isLogin.value = !isLogin.value;
+  if (!isLogin.value) {
+    // 在注册模式下，只能选择游客角色
+    selectedRole.value = "user";
+    loginFormData.role = "user";
+  }
 };
 
 /** 登录/注册逻辑 */
 const loginFormData = reactive({
   username: "",
   password: "",
-  role:"user" // 默认为游客角色
+  role: "user" // 默认为游客角色
 });
 
 // 修改登录/注册逻辑
@@ -63,8 +68,7 @@ const handleLoginOrRegister = () => {
             role: selectedRole.value // 需要动态传递角色
           })
           .then(() => {
-            switch(selectedRole.value)
-            {
+            switch(selectedRole.value) {
               case "user":
                 router.push({ path: "/dashboard" });
                 break;
@@ -93,20 +97,7 @@ const handleLoginOrRegister = () => {
             role: selectedRole.value // 需要动态传递角色
           })
           .then(() => {
-            switch(selectedRole.value)
-            {
-              case "user":
-                router.push({ path: "/dashboard" });
-                break;
-              case "guide":
-                router.push({ path: "/guide-travel" });
-                break;
-              case "admin":
-                router.push({ path: "/self-center" });
-                break;
-              default:
-                router.push({ path: "/" });
-            }
+            router.push({ path: "/dashboard" });
           })
           .catch(() => {
             loginFormData.password = "";
@@ -133,13 +124,16 @@ const handleLoginOrRegister = () => {
         >
           游客
         </button>
+        <!-- 仅在登录模式下显示管理员和导游 -->
         <button
+          v-if="isLogin"
           :class="{ selected: selectedRole === 'guide' }"
           @click="selectRole('guide')"
         >
           导游
         </button>
         <button
+          v-if="isLogin"
           :class="{ selected: selectedRole === 'admin' }"
           @click="selectRole('admin')"
         >
