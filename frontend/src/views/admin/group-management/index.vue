@@ -38,6 +38,7 @@ interface Hotel {
 // 定义门票接口
 interface TourTicket {
   vehicleId?: string
+  vehicleType?: string
   ticketType?: string
   ticketPrice?: number
   ticketDepartureTime?: string
@@ -55,13 +56,11 @@ interface TourGroup {
   endDate?: string
   groupName?: string
   groupPrice?: number | null
-  goTicketId?: string
-  returnTicketId?: string
   departure?: string
   destination?: string
   guideName?: string
-  goTicket?: TourTicket | null
-  returnTicket?: TourTicket | null
+  goTicket: TourTicket
+  returnTicket: TourTicket
   tourItineraries: TourItinerary[]
   hotels: Hotel[]
 }
@@ -107,37 +106,13 @@ const fetchTourGroups = () => {
           guideId: group.guideId,
           groupName: group.groupName,
           groupPrice: group.groupPrice,
-          goTicketId: group.goTicketId,
-          returnTicketId: group.returnTicketId,
           startDate: group.startDate,
           endDate: group.endDate,
           departure: group.departure,
           destination: group.destination,
           guideName: group.guideName,
-          goTicket: group.goTicket
-            ? {
-                vehicleId: group.goTicket.vehicleId,
-                ticketType: group.goTicket.ticketType,
-                ticketPrice: group.goTicket.ticketPrice,
-                ticketDepartureTime: group.goTicket.ticketDepartureTime,
-                ticketArrivalTime: group.goTicket.ticketArrivalTime,
-                ticketDepartureCity: group.goTicket.ticketDepartureCity,
-                ticketArrivalCity: group.goTicket.ticketArrivalCity,
-                ticketId: group.goTicket.ticketId
-              }
-            : null,
-          returnTicket: group.returnTicket
-            ? {
-                vehicleId: group.returnTicket.vehicleId,
-                ticketType: group.returnTicket.ticketType,
-                ticketPrice: group.returnTicket.ticketPrice,
-                ticketDepartureTime: group.returnTicket.ticketDepartureTime,
-                ticketArrivalTime: group.returnTicket.ticketArrivalTime,
-                ticketDepartureCity: group.returnTicket.ticketDepartureCity,
-                ticketArrivalCity: group.returnTicket.ticketArrivalCity,
-                ticketId: group.returnTicket.ticketId
-              }
-            : null,
+          goTicket: group.goTicket,
+          returnTicket: group.returnTicket,
           tourItineraries: Array.isArray(group.tourItineraries)
             ? group.tourItineraries.map((itinerary: any) => ({
                 itineraryId: itinerary.itineraryId,
@@ -229,6 +204,20 @@ const addTour = () => {
     .catch((error) => {
       ElMessage.error("新增失败: " + error.message)
     })
+}
+
+// 转换出行类别为中文
+const formatVehicleType = (type?: string) => {
+  switch (type) {
+    case "plane":
+      return "飞机"
+    case "train":
+      return "火车"
+    case "car":
+      return "汽车"
+    default:
+      return "其他"
+  }
 }
 
 // 编辑旅行团
@@ -449,8 +438,6 @@ const openAddTourDialog = () => {
     endDate: "",
     groupName: "",
     groupPrice: null,
-    goTicketId: "",
-    returnTicketId: "",
     departure: "",
     destination: "",
     guideName: "",
@@ -601,11 +588,13 @@ onMounted(() => {
             <el-input v-model="tourForm.destination" />
           </el-form-item>
           <el-form-item label="出发车票">
-            <el-select v-model="tourForm.goTicketId" placeholder="请选择出发车票">
+            <el-select v-model="tourForm.goTicket.ticketId" placeholder="请选择出发车票">
               <el-option
                 v-for="ticket in tourTickets"
                 :key="ticket.ticketId"
                 :label="
+                  formatVehicleType(ticket.vehicleType) +
+                  ' ' +
                   ticket.vehicleId +
                   ': ' +
                   ticket.ticketDepartureCity +
@@ -627,11 +616,13 @@ onMounted(() => {
             </el-select>
           </el-form-item>
           <el-form-item label="返回车票">
-            <el-select v-model="tourForm.returnTicketId" placeholder="请选择返回车票">
+            <el-select v-model="tourForm.returnTicket.ticketId" placeholder="请选择返回车票">
               <el-option
                 v-for="ticket in tourTickets"
                 :key="ticket.ticketId"
                 :label="
+                  formatVehicleType(ticket.vehicleType) +
+                  ' ' +
                   ticket.vehicleId +
                   ': ' +
                   ticket.ticketDepartureCity +
