@@ -410,16 +410,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         }
       },
       {
-        path: "funds-management",
-        component: () => import("@/views/admin/funds-management/index.vue"),
-        name: "Funds-management",
-        meta: {
-          title: "资金管理",
-          svgIcon: "fund",
-          affix: true
-        }
-      },
-      {
         path: "guides-management",
         component: () => import("@/views/admin/guides-management/index.vue"),
         name: "Guides-management",
