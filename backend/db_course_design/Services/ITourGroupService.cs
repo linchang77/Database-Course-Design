@@ -19,10 +19,10 @@ namespace db_course_design.Services
         Task<bool> DeleteTourGroupAsync(byte id);
         Task<TourGroupResponse?> UpdateTourGroupAsync(byte id, TourGroupRequest request);
         Task<IEnumerable<TourItineraryResponse>> GetAllTourItinerarysAsync(byte groupId);
-        Task<TourItineraryResponse?> GetTourItineraryByIdAsync(byte itineraryId);
+        Task<TourItineraryResponse?> GetTourItineraryByIdAsync(decimal itineraryId);
         Task<TourItineraryResponse?> AddTourItineraryAsync(TourItineraryRequest request);
-        Task<bool> DeleteTourItineraryAsync(byte id);
-        Task<TourItineraryResponse?> UpdateTourItineraryAsync(byte id, TourItineraryRequest request);
+        Task<bool> DeleteTourItineraryAsync(decimal id);
+        Task<TourItineraryResponse?> UpdateTourItineraryAsync(decimal id, TourItineraryRequest request);
         Task<IEnumerable<HotelResponse>> GetAllTourHotelsAsync(byte groupId);
         Task<HotelResponse?> AddTourHotelAsync(byte groupId, decimal hotelId);
         Task<bool> DeleteTourHotelAsync(byte groupId, decimal hotelId);

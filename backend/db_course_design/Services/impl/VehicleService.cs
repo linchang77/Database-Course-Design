@@ -89,7 +89,10 @@ namespace db_course_design.Services.impl
 
         public async Task<VehicleTicket?> GetVehicleTicketAsync(decimal ticketId)
         {
-            var ticket = await _context.VehicleTickets.FindAsync(ticketId);
+            var ticket = await _context.VehicleTickets
+                .Where(v => v.TicketId == ticketId)
+                .Include(v => v.Vehicle)
+                .SingleOrDefaultAsync();
 
             if (ticket == null) 
                 return null;
@@ -101,9 +104,9 @@ namespace db_course_design.Services.impl
             return await _context.VehicleSchedules.ToListAsync();
         }
 
-        public async Task<List<VehicleTicket>> GetAllVehicleTicketAsync()
+        public async Task<List<VehicleTicket>> GetAllVehicleTicketsAsync()
         {
-            return await _context.VehicleTickets.ToListAsync();
+            return await _context.VehicleTickets.Include(v => v.Vehicle).ToListAsync();
         }
 
         public async Task<List<VehicleTicket>> GetVehicleTicketsAsync(string vehicleId)
@@ -160,6 +163,7 @@ namespace db_course_design.Services.impl
                 var ticket = _mapper.Map<VehicleTicket>(request);
                 _context.VehicleTickets.Add(ticket);
                 await _context.SaveChangesAsync();
+                _context.Entry(ticket).Reference(t => t.Vehicle).Load();
                 return ticket;
             }
             catch

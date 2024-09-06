@@ -705,8 +705,8 @@ public partial class ModelContext : DbContext
             entity.ToTable("TOUR_ITINERARY");
 
             entity.Property(e => e.ItineraryId)
-                .HasPrecision(2)
                 .ValueGeneratedOnAdd()
+                .HasColumnType("NUMBER(38)")
                 .HasColumnName("ITINERARY_ID");
             entity.Property(e => e.Activities)
                 .HasMaxLength(100)

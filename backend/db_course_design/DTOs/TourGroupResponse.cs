@@ -53,7 +53,7 @@ namespace db_course_design.DTOs
     }
     public class TourItineraryResponse
     {
-        public byte ItineraryId { get; set; }
+        public decimal ItineraryId { get; set; }
 
         public byte? GroupId { get; set; }
 
