@@ -95,7 +95,7 @@ namespace db_course_design.Controllers
         [HttpGet("tickets")]
         public async Task<IActionResult> GetAllVehicleTickets()
         {
-            var list = await _vehicleService.GetAllVehicleTicketAsync();
+            var list = await _vehicleService.GetAllVehicleTicketsAsync();
 
             return Ok(list.Select(v => _vehicleService._mapper.Map<VehicleTicketResponse>(v)));
         }

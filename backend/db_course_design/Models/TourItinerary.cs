@@ -5,7 +5,7 @@ namespace EntityFramework.Models;
 
 public partial class TourItinerary
 {
-    public byte ItineraryId { get; set; }
+    public decimal ItineraryId { get; set; }
 
     public byte? GroupId { get; set; }
 

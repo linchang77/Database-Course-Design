@@ -211,7 +211,7 @@ namespace db_course_design.Controllers
         }
 
         [HttpGet("itinerary/{itineraryId}")]
-        public async Task<IActionResult> GetTourItineraryById(byte itineraryId)
+        public async Task<IActionResult> GetTourItineraryById(decimal itineraryId)
         {
             var itinerary = await _tourGroupService.GetTourItineraryByIdAsync(itineraryId);
 
@@ -231,7 +231,7 @@ namespace db_course_design.Controllers
         }
 
         [HttpDelete("itinerary/del/{itineraryId}")]
-        public async Task<IActionResult> DeleteTourItinerary(byte itineraryId)
+        public async Task<IActionResult> DeleteTourItinerary(decimal itineraryId)
         {
             var deleted = await _tourGroupService.DeleteTourItineraryAsync(itineraryId);
 
@@ -241,7 +241,7 @@ namespace db_course_design.Controllers
         }
 
         [HttpPut("itinerary/mod/{itineraryId}")]
-        public async Task<IActionResult> UpdateTourItinerary(byte itineraryId, [FromBody] TourItineraryRequest request)
+        public async Task<IActionResult> UpdateTourItinerary(decimal itineraryId, [FromBody] TourItineraryRequest request)
         {
             var target = await _tourGroupService.UpdateTourItineraryAsync(itineraryId, request);
 

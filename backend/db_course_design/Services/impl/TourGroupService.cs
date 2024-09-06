@@ -292,7 +292,7 @@ namespace db_course_design.Services.impl
                 .OrderBy(i => i.ItineraryTime);
         }
 
-        public async Task<TourItineraryResponse?> GetTourItineraryByIdAsync(byte itineraryId)
+        public async Task<TourItineraryResponse?> GetTourItineraryByIdAsync(decimal itineraryId)
         {
             var itinerary = await _context.TourItineraries.FindAsync(itineraryId);
 
@@ -316,7 +316,7 @@ namespace db_course_design.Services.impl
             }
         }
 
-        public async Task<bool> DeleteTourItineraryAsync(byte id)
+        public async Task<bool> DeleteTourItineraryAsync(decimal id)
         {
             var target = await _context.TourItineraries.FindAsync(id);
 
@@ -328,7 +328,7 @@ namespace db_course_design.Services.impl
             return true;
         }
 
-        public async Task<TourItineraryResponse?> UpdateTourItineraryAsync(byte id, TourItineraryRequest request)
+        public async Task<TourItineraryResponse?> UpdateTourItineraryAsync(decimal id, TourItineraryRequest request)
         {
             try
             {
