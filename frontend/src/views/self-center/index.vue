@@ -103,7 +103,7 @@ async function uploadAvatar() {
   }
 
   const formData = new FormData()
-  formData.append("file", selectedFile.value)
+  formData.append("avatar", selectedFile.value)
 
   try {
     let apiUrl = ""
