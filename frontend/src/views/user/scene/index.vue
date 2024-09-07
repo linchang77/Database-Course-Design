@@ -154,7 +154,7 @@ const handleCityClick = (cityLower: string) => {
 }
 
 .el-menu-item {
-  cursor: pointer;
+  cursor: default;
   height: 132px;
 }
 
@@ -170,6 +170,7 @@ const handleCityClick = (cityLower: string) => {
   display: inline-block;
   margin-right: 10px;
   color: grey;
+  cursor: pointer;
 }
 
 .city-links a:hover {
