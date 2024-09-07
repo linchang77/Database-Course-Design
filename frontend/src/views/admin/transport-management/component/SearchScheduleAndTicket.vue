@@ -12,7 +12,7 @@
       @keyup.enter="onSearch"
     >
       <template #append>
-        <el-button type="primary" @click="onSearch" style="background-color: #409eff; color: #fff; border: none; padding: 5px 10px; border-radius: 4px;">更新</el-button>
+        <el-button type="primary" :icon="Search" @click="onSearch" style="background-color: #409eff; color: #fff; border: none; padding: 5px 10px; border-radius: 4px;">更新</el-button>
       </template>
     </el-input>
 
@@ -159,6 +159,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { get } from 'node_modules/axios/index.cjs';
+import { Search } from '@element-plus/icons-vue';
 
 const vehicleTypes = [
   { value: 'plane', label: '飞机' },

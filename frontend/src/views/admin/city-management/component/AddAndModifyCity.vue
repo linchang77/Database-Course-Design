@@ -1,8 +1,9 @@
 <template>
   <div>
-    <el-button type="primary" @click="showAddCityForm">新增城市</el-button>
-    <el-button type="danger" @click="showDeleteCityForm">删除城市</el-button>
-    <el-button type="primary" @click="showModifyCityForm">修改城市</el-button>
+    <el-button type="primary" :icon="CirclePlus" @click="showAddCityForm">新增城市</el-button>
+    <el-button type="primary" :icon="EditPen" @click="showModifyCityForm">修改城市</el-button>
+    <el-button type="danger" :icon="Delete" @click="showDeleteCityForm">删除城市</el-button>
+
 
     <!-- 新增城市的对话框 -->
     <el-dialog v-model="addCityFormVisible" title="新增城市" :before-close="handleCloseAddCityForm">
@@ -87,6 +88,8 @@
 import { ref, reactive } from 'vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import { CirclePlus, Delete, EditPen } from '@element-plus/icons-vue';
+import { Edit } from 'vxe-table';
 
 // 新增城市表单是否可见
 const addCityFormVisible = ref(false);

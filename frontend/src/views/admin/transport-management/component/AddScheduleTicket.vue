@@ -1,11 +1,11 @@
 <template>
   <div>
-    <el-button type="primary" @click="showAddScheduleForm">添加行程</el-button>
-    <el-button type="primary" @click="showAddTicketForm">添加票务信息</el-button>
+    <el-button :icon="CirclePlus" type="primary" @click="showAddScheduleForm">添加行程</el-button>
+    <el-button :icon="CirclePlus" type="primary" @click="showAddTicketForm">添加票务信息</el-button>
     <!-- 删除行程按钮 -->
-    <el-button type="danger" @click="showDeleteScheduleForm">删除行程</el-button>
+    <el-button type="danger" :icon="Delete" @click="showDeleteScheduleForm">删除行程</el-button>
     <!-- 删除车票按钮 -->
-    <el-button type="danger" @click="showDeleteTicketForm">删除票务</el-button>
+    <el-button type="danger" :icon="Delete" @click="showDeleteTicketForm">删除票务</el-button>
 
 <!-- 删除车票的对话框 -->
     <el-dialog v-model="deleteTicketFormVisible" title="删除车票" :before-close="handleCloseDeleteTicketForm">
@@ -155,6 +155,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import { visualHiddenProps } from 'element-plus/es/components/visual-hidden/index.mjs';
+import { CirclePlus, Delete } from '@element-plus/icons-vue';
 
 
 const vehicleTypes = [
