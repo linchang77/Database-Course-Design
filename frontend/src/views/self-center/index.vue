@@ -65,7 +65,7 @@ async function fetchUserData() {
         Id: response.data.id || "未设置",
         Name: response.data.name || "未设置",
         Gender: response.data.gender || "未设置",
-        ProfilePicture: response.data.profilePicture || "",
+        ProfilePicture: `${baseUrl}${response.data.profilePicture}` || "",
         PhoneNumbers: response.data.phoneNumbers.length ? response.data.phoneNumbers : []
       }
     } else if (userType.value === "guide") {
@@ -74,7 +74,7 @@ async function fetchUserData() {
         Id: response.data.id || "未设置",
         Name: response.data.name || "未设置",
         Gender: response.data.gender || "未设置",
-        ProfilePicture: response.data.profilePicture || "",
+        ProfilePicture: `${baseUrl}${response.data.profilePicture}` || "",
         Introduction: response.data.introduction || "未设置",
         Price: response.data.price || "未设置",
         Salary: response.data.salary || "未设置",
@@ -86,7 +86,7 @@ async function fetchUserData() {
       admin.value = {
         Id: response.data.id || "未设置",
         Name: response.data.name || "未设置",
-        ProfilePicture: response.data.profilePicture || ""
+        ProfilePicture: ""
       }
     }
   } catch (error) {
@@ -103,7 +103,7 @@ async function uploadAvatar() {
   }
 
   const formData = new FormData()
-  formData.append("file", selectedFile.value)
+  formData.append("avatar", selectedFile.value)
 
   try {
     let apiUrl = ""
@@ -111,24 +111,22 @@ async function uploadAvatar() {
       apiUrl = `${baseUrl}/api/Profile/user/${user.value.Id}/picture`
     } else if (userType.value === "guide") {
       apiUrl = `${baseUrl}/api/Profile/guide/${guide.value.Id}/picture`
-    } else if (userType.value === "admin") {
-      apiUrl = `${baseUrl}/api/Profile/admin/${admin.value.Id}/picture`
     }
-
-    const response = await axios.post(apiUrl, formData, {
+    const response = await axios.put(apiUrl, formData, {
       headers: {
         "Content-Type": "multipart/form-data"
       }
     })
 
+    // 假设服务器返回头像的真实路径
+    const realProfilePicture = response.data
+    // 映射虚拟路径，假设虚拟路径规则是将实际路径转换为虚拟地址
+    const virtualProfilePicture = `${baseUrl}${realProfilePicture}`
     // 更新头像路径
-    const newProfilePicture = response.data.profilePicture // 服务器返回的新头像路径
     if (userType.value === "user") {
-      user.value.ProfilePicture = newProfilePicture
+      user.value.ProfilePicture = virtualProfilePicture
     } else if (userType.value === "guide") {
-      guide.value.ProfilePicture = newProfilePicture
-    } else if (userType.value === "admin") {
-      admin.value.ProfilePicture = newProfilePicture
+      guide.value.ProfilePicture = virtualProfilePicture
     }
     alert("头像上传成功！")
   } catch (error) {
@@ -387,7 +385,6 @@ onMounted(() => {
 <template>
   <div class="profile-container">
     <h1 class="title">个人信息</h1>
-
     <div v-if="userType === 'user'">
       <div class="info-section">
         <div class="label">头像</div>
@@ -397,6 +394,7 @@ onMounted(() => {
           <button @click="uploadAvatar">上传头像</button>
         </div>
       </div>
+
       <div class="info-section">
         <div class="label">ID</div>
         <div class="content">{{ user.Id }}</div>
@@ -565,8 +563,6 @@ onMounted(() => {
         <div class="label">头像</div>
         <div class="content">
           <img :src="admin.ProfilePicture || '/default_avatar.png'" alt="Admin Avatar" class="avatar" />
-          <input type="file" @change="handleFileChange" accept="image/*" />
-          <button @click="uploadAvatar">上传头像</button>
         </div>
       </div>
       <div class="info-section">

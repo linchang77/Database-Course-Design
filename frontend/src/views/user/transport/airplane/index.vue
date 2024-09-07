@@ -33,6 +33,7 @@ const isSearchDisabled = computed(() => {
 })
 
 import axios from "axios"
+import router from "@/router";
 
 
 const store = useSearchResultsStore()
@@ -58,6 +59,9 @@ async function fetchTickets() {
 function recordIndex(index: number) {
   store.index = index
   console.log("index:", store.index)
+  router.push({
+    name: "OrderForAirplane"
+  })
 }
 
 function calculateTimeDifference(departureTime: string, arrivalTime: string): { hours: number, minutes: number } {
@@ -163,8 +167,8 @@ function fetchAllTickets() {
                     </div>
                   </div>
                   <div class="flight-price">¥{{ flight.ticketPrice }}</div>
-                  <el-button type="primary" @click="recordIndex(index)">
-                    <a href="http://localhost:3333/#/transport/airplane/order">购票</a>
+                  <el-button type="primary" @click="recordIndex(index)" >
+                    购票
                   </el-button>
                 </div>
               </div>

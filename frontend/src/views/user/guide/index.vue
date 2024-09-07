@@ -34,7 +34,7 @@ const selectedGuide = ref<Guide | null>(null)
 const date_input = ref('')
 const showEmptyMessage = ref(false)
 const busyDates = ref<{ startDate: Date; endDate: Date }[]>([])
-
+const baseUrl = "https://123.60.14.84"
 
 const imageMap: Record<number, string> = {
   2: "https://th.bing.com/th/id/R.d68dcaee479f08cce46b46d2f268691f?rik=1gR2azuO%2fp1%2b3g&riu=http%3a%2f%2fgss0.baidu.com%2f9fo3dSag_xI4khGko9WTAnF6hhy%2fzhidao%2fpic%2fitem%2f37d12f2eb9389b50053be23b8635e5dde6116e96.jpg&ehk=bvj7ZF98h7hwoPr%2b12EMgI%2fmXfSvZfSfzyvvz6vgjqw%3d&risl=&pid=ImgRaw&r=0",
@@ -58,7 +58,7 @@ const imageMap: Record<number, string> = {
 // 获取导游信息
 const fetchGuides = () => {
   axios
-    .get("https://123.60.14.84:11100/api/Guide/all")
+    .get("https://123.60.14.84/api/Guide/all")
     .then((response) => {
       console.log("API Response:", response.data)
       const data = response.data
@@ -72,7 +72,7 @@ const fetchGuides = () => {
           guidePerformanceLevel: Number(guide.guidePerformanceLevel),
           guideSeniority: guide.guideSeniority,
           guidePrice: guide.guidePrice,
-          imageUrl: guide.profilePicture
+          imageUrl: `${baseUrl}${guide.profilePicture}`
         }))
         showEmptyMessage.value = false
       } else {
