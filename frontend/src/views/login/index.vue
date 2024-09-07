@@ -170,7 +170,7 @@ const handleLoginOrRegister = () => {
   align-items: center;
   width: 100vw;
   height: 100vh;
-  background: url("~@/assets/login/bg1.avif") no-repeat center center/cover;
+  background: url("~@/assets/login/bg2.jpg") no-repeat center center/cover;
   position: relative;
   overflow: hidden;
 }
