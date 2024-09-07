@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from "vue"
+import axios from "axios"
+import { useRouter } from "vue-router"
 
 interface GoTicket {
   vehicleId: string
@@ -66,25 +66,25 @@ interface TourGroup {
 
 //景点数据接口
 interface Attraction {
-  scenicSpotId: string;
-  scenicSpotName: string;
-  scenicSpotGrade: string;
-  scenicSpotIntroduction: string;
-  scenicSpotLocation: string;
-  scenicSpotRemoteness: string;
+  scenicSpotId: string
+  scenicSpotName: string
+  scenicSpotGrade: string
+  scenicSpotIntroduction: string
+  scenicSpotLocation: string
+  scenicSpotRemoteness: string
 }
 // 景点数据
 const scenicSpots = ref<Attraction[]>([])
-const childTicketPrices = ref<{ [key: string]: number }>({});
+const childTicketPrices = ref<{ [key: string]: number }>({})
 const router = useRouter()
 const return2 = (str: string) => {
-  return str.slice(0, 2);
-};
+  return str.slice(0, 2)
+}
 const tourGroups = ref<TourGroup[]>([])
 // 获取景点信息
 const fetchScenicSpots = async () => {
   try {
-    const response = await axios.get('https://123.60.14.84/scenicspots')
+    const response = await axios.get("https://123.60.14.84/scenicspots")
     scenicSpots.value = response.data // 获取前3个景点信息
     for (const spot of scenicSpots.value) {
       fetchTicketInfo(spot.scenicSpotName)
@@ -112,27 +112,27 @@ const goToAttraction = (scenicSpotName: string, scenicSpotIntroduction: string, 
   router.push({
     path: `scene/city/tickets`,
     query: { name: scenicSpotName, introduction: scenicSpotIntroduction, id: scenicSpotId }
-  });
-};
+  })
+}
 
 // 获取推荐旅游团
 const fetchTourGroups = () => {
   axios
     .get("https://123.60.14.84/api/TourGroup/recommendedtours")
     .then((response) => {
-      const data = response.data;
+      const data = response.data
       if (Array.isArray(data)) {
         tourGroups.value = data.map((group) => ({
           ...group,
           imageUrl: group.imageUrl || imageMap[return2(group.groupName)] // 使用映射或者默认图片
-        }));
+        }))
       } else {
-        console.error("Unexpected response format.");
+        console.error("Unexpected response format.")
       }
     })
     .catch((error) => {
-      console.error("Error fetching tour groups:", error);
-    });
+      console.error("Error fetching tour groups:", error)
+    })
 }
 
 // 旅游团跳转
@@ -149,53 +149,49 @@ const goToGroup = (group: TourGroup) => {
       departure: group.departure,
       destination: group.destination,
       guideName: group.guideName,
-      goTicket:JSON.stringify(group.goTicket), 
-      returnTicket:JSON.stringify(group.returnTicket), 
-      tourItineraries: JSON.stringify(group.tourItineraries), 
+      goTicket: JSON.stringify(group.goTicket),
+      returnTicket: JSON.stringify(group.returnTicket),
+      tourItineraries: JSON.stringify(group.tourItineraries),
       hotels: JSON.stringify(group.hotels),
       imageUrl: group.imageUrl
     }
-  });
+  })
 }
 
 // 日期格式化
 const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  return new Date(date).toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" })
 }
 
 onMounted(() => {
-  fetchScenicSpots();
-  fetchTourGroups();
-});
+  fetchScenicSpots()
+  fetchTourGroups()
+})
 
 // 旅游团图片映射
 const imageMap: Record<string, string> = {
-  '上海': 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
-  '北京': 'https://img.zcool.cn/community/010e2d5de0f549a80120686b802e63.jpg@1280w_1l_2o_100sh.jpg',
-  '南京': 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
-  '成都': 'https://img1.qunarzz.com/travel/poi/201407/30/cc58461b40f01e3cc8d65eac.jpg',
-  '武汉': 'https://th.bing.com/th/id/R.43107bcfc6d493fd0e41b86a47f8a125?rik=Gy0Juky%2b9G1B4g&riu=http%3a%2f%2fimg.pconline.com.cn%2fimages%2fupload%2fupc%2ftx%2fphotoblog%2f1410%2f26%2fc2%2f40147263_1414299382894_mthumb.jpg&ehk=Vqm38FQdH7T8bH%2fAlDVATSrxmDaeqAosJOIE31tqabQ%3d&risl=&pid=ImgRaw&r=0',
-};
+  上海: "https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg",
+  北京: "https://img.zcool.cn/community/010e2d5de0f549a80120686b802e63.jpg@1280w_1l_2o_100sh.jpg",
+  南京: "https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg",
+  成都: "https://img1.qunarzz.com/travel/poi/201407/30/cc58461b40f01e3cc8d65eac.jpg",
+  武汉: "https://th.bing.com/th/id/R.43107bcfc6d493fd0e41b86a47f8a125?rik=Gy0Juky%2b9G1B4g&riu=http%3a%2f%2fimg.pconline.com.cn%2fimages%2fupload%2fupc%2ftx%2fphotoblog%2f1410%2f26%2fc2%2f40147263_1414299382894_mthumb.jpg&ehk=Vqm38FQdH7T8bH%2fAlDVATSrxmDaeqAosJOIE31tqabQ%3d&risl=&pid=ImgRaw&r=0"
+}
 </script>
 
 <template>
   <div>
     <div class="header">
-      <img src="@\assets\layouts\logo.png" alt="Logo" class="logo">
+      <img src="@\assets\layouts\logo.png" alt="Logo" class="logo" />
       <h1 class="title1">e行天下</h1>
+      <p class="slogan">漫步云端之下，心随风景轻舞，每一段旅程，皆有惊喜！</p>
     </div>
-  
+
     <div>
       <!-- 上部: 热门旅游团 -->
       <section>
         <h2 class="section-title">热门旅游团</h2>
         <div class="group-container">
-          <div 
-            class="group-card" 
-            v-for="group in tourGroups" 
-            :key="group.groupId" 
-            @click="goToGroup(group)"
-          >
+          <div class="group-card" v-for="group in tourGroups" :key="group.groupId" @click="goToGroup(group)">
             <div class="group-image">
               <img :src="group.imageUrl" alt="旅游团图片" />
             </div>
@@ -210,28 +206,32 @@ const imageMap: Record<string, string> = {
           </div>
         </div>
       </section>
-  
+
       <!-- 下部: 景点推荐 -->
       <section>
         <h2 class="section-title">景点推荐</h2>
         <div class="content-wrapper">
           <div v-if="scenicSpots.length" class="attraction-container">
-            <div 
-              v-for="spot in scenicSpots" 
-              :key="spot.scenicSpotId" 
-              class="attraction-card" 
+            <div
+              v-for="spot in scenicSpots"
+              :key="spot.scenicSpotId"
+              class="attraction-card"
               @click="goToAttraction(spot.scenicSpotName, spot.scenicSpotIntroduction, spot.scenicSpotId)"
             >
               <div class="image-wrapper">
                 <img :src="`/images/${spot.scenicSpotName}.jpg`" :alt="spot.scenicSpotName" class="attraction-image" />
               </div>
               <div class="attraction-info">
-                <h3>{{ spot.scenicSpotName }} <span>{{ spot.scenicSpotGrade }}A</span></h3>
-                <span class="price">{{ childTicketPrices[spot.scenicSpotName] ? childTicketPrices[spot.scenicSpotName] + '元起' : '免费' }}</span>
+                <h3>
+                  {{ spot.scenicSpotName }} <span>{{ spot.scenicSpotGrade }}A</span>
+                </h3>
+                <span class="price">{{
+                  childTicketPrices[spot.scenicSpotName] ? childTicketPrices[spot.scenicSpotName] + "元起" : "免费"
+                }}</span>
               </div>
             </div>
           </div>
-          <div class="right-space"></div>
+          <div class="right-space" />
         </div>
       </section>
     </div>
@@ -308,7 +308,7 @@ const imageMap: Record<string, string> = {
   text-align: right;
   font-weight: bold;
   margin-left: auto;
-  color:#3498db;
+  color: #3498db;
   background-color: #f8f8f8;
 }
 
@@ -350,17 +350,18 @@ const imageMap: Record<string, string> = {
 .title {
   font-size: 1.25em;
   font-weight: bold;
-  color:#000203;
+  color: #000203;
 }
 
-.group-info, .group-price {
+.group-info,
+.group-price {
   padding: 5px;
 }
 
 .group-price {
   font-size: 1.2em;
   font-weight: bold;
-  color:#3498db;
+  color: #3498db;
   width: 100%;
   padding: 10px;
   background-color: #f8f8f8;
@@ -371,18 +372,26 @@ const imageMap: Record<string, string> = {
   align-items: center;
   padding: 20px;
   background-color: #f8f8f8;
-}
 
-.logo {
-  height: 60px;
-  margin-right: 20px;
-  margin-left: 2%;
+  .logo {
+    height: 60px;
+    margin-right: 20px;
+    margin-left: 2%;
+  }
+
+  .slogan {
+    font-size: 22px;
+    font-weight: bold;
+    color: #51b9ffb8;
+    margin-top: 25px;
+    margin-left: 30px; /* 根据需要调整 */
+  }
 }
 
 .header-title {
   font-size: 2em;
   font-weight: bold;
-  color: #000203
+  color: #000203;
 }
 
 .title1 {
@@ -391,7 +400,8 @@ const imageMap: Record<string, string> = {
   color: #3498db;
 }
 
-.attraction-container, .group-container{
+.attraction-container,
+.group-container {
   margin-left: 100px;
   margin-right: 60px;
 }
