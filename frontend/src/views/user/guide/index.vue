@@ -58,7 +58,7 @@ const imageMap: Record<number, string> = {
 // 获取导游信息
 const fetchGuides = () => {
   axios
-    .get("https://123.60.14.84:11100/api/Guide/all")
+    .get("https://123.60.14.84/api/Guide/all")
     .then((response) => {
       console.log("API Response:", response.data)
       const data = response.data
