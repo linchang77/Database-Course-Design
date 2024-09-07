@@ -108,11 +108,11 @@ async function uploadAvatar() {
   try {
     let apiUrl = ""
     if (userType.value === "user") {
-      apiUrl = `${baseUrl}/api/Profile/user/${user.value.Id}/picture/`
+      apiUrl = `${baseUrl}/api/Profile/user/${user.value.Id}/picture`
     } else if (userType.value === "guide") {
-      apiUrl = `${baseUrl}/api/Profile/guide/${guide.value.Id}/picture/`
+      apiUrl = `${baseUrl}/api/Profile/guide/${guide.value.Id}/picture`
     } else if (userType.value === "admin") {
-      apiUrl = `${baseUrl}/api/Profile/admin/${admin.value.Id}/picture/`
+      apiUrl = `${baseUrl}/api/Profile/admin/${admin.value.Id}/picture`
     }
 
     const response = await axios.post(apiUrl, formData, {
