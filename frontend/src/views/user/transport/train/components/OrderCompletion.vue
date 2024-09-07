@@ -7,7 +7,7 @@
     </el-button>
   </div>
 </template>
-
+  
 <script lang="ts" setup>
   import router from '@/router';
   function backToQueryPage() {
@@ -16,3 +16,4 @@
     });
   }
 </script>
+  
