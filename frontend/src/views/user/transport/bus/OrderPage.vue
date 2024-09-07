@@ -16,7 +16,7 @@
     </div>
 
     <div class="step-content step-three" v-if="currentStep === 3">
-      <OrderCompletion :search-results="searchResults" @submit="prevStep" />
+      <OrderCompletion :search-results="searchResultsForBus" @submit="prevStep" />
     </div>
   </div>
 </template>
