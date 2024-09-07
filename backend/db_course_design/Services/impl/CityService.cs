@@ -40,7 +40,16 @@ namespace db_course_design.Services.impl
             return await _context.Cities.Select(c => _mapper.Map<CityResponse>(c)).ToListAsync();
         }
 
-        public async Task<CityDetail?> GetCityByNameAsync(string name)
+        public async Task<CityResponse?> GetCityByNameAsync(string name)
+        {
+            var city = await _context.Cities.FindAsync(name);
+
+            if (city == null)
+                return null;
+            return _mapper.Map<CityResponse>(city);
+        }
+
+        public async Task<CityDetail?> GetCityDetailByNameAsync(string name)
         {
             var city = await _context.Cities
                 .Where(c => c.CityName == name)
