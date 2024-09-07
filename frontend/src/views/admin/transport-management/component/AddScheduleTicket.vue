@@ -290,7 +290,7 @@ async function newSchedule() {
     departureStation: vehicleScheduleData.value.DepartureStation
   }
   console.log("data:", data);
-  const url = "https://123.60.14.84:11000/api/Vehicle/schedule";
+  const url = "https://123.60.14.84/api/Vehicle/schedule";
   console.log("url:", url);
 
   axios
@@ -377,7 +377,7 @@ function handleCloseDeleteTicketForm() {
 
 // 删除行程的函数
 async function deleteVehicleSchedule() {
-  const url = `https://123.60.14.84:11000/api/Vehicle/schedule/delete/${vehicleScheduleData.value.VehicleId}`;
+  const url = `https://123.60.14.84/api/Vehicle/schedule/delete/${vehicleScheduleData.value.VehicleId}`;
   console.log("url:", url);
   axios
     .delete(url)

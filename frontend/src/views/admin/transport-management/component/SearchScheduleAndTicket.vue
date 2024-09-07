@@ -274,7 +274,7 @@ async function updateSpecificTicket() {
 // 获取所有班次信息
 const getAllSchedules = async () => {
   try {
-    const response = await axios.get('https://123.60.14.84:11000/api/Vehicle/schedules');
+    const response = await axios.get('https://123.60.14.84/api/Vehicle/schedules');
     searchResults.value = response.data.map((item: Schedule) => ({ ...item, id: item.vehicleId }));
   } catch (error) {
     console.error(error);
@@ -285,7 +285,7 @@ const getAllSchedules = async () => {
 // 获取指定班号的班次信息
 const getScheduleById = async (vehicleId: string) => {
   try {
-    const response = await axios.get(`https://123.60.14.84:11000/api/Vehicle/schedule/${vehicleId}`);
+    const response = await axios.get(`https://123.60.14.84/api/Vehicle/schedule/${vehicleId}`);
     searchResults.value = [response.data];
   } catch (error) {
     console.error(error);
@@ -296,7 +296,7 @@ const getScheduleById = async (vehicleId: string) => {
 // 获取所有车票信息
 const getAllTickets = async () => {
   try {
-    const response = await axios.get('https://123.60.14.84:11000/api/Vehicle/tickets');
+    const response = await axios.get('https://123.60.14.84/api/Vehicle/tickets');
     searchResults.value = response.data.map((item: Ticket) => ({ ...item, id: item.ticketId.toString() }));
   } catch (error) {
     console.error(error);
