@@ -28,6 +28,12 @@ const images = [shanghai, nanjing, chengdu, beijing, wuhan];
 
 const router = useRouter();
 
+// 切换侧边栏时展示a标签内容
+const handleSelect = (key: string) => {
+  selectedItem.value = selectedItem.value === key ? "" : key;
+  selectedNumber.value = Number(key);
+};
+
 // 处理图片切换逻辑
 const handleChange = (index: number) => {
   currentIndex.value = index;
@@ -44,60 +50,16 @@ const handleCityClick = (cityLower: string) => {
 
 <template>
   <div class="no-scroll">
-    <div class="search">
-      <input placeholder="搜索景点/城市" />
-      <button class="Search-Scene">搜索</button>
-    </div>
-
     <el-container>
       <el-aside width="300px" class="aside">
-        <el-menu :default-active="selectedItem">
-          <el-menu-item index="1">
-            <div style="display: block;">
-              <div style="display: block;">国内（含港澳台）</div>
-              <div class="city-links">
-                <a v-for="city in supportedCities" :key="city.lower" @click.prevent="handleCityClick(city.lower)">
-                  {{ city.upper }}
-                </a>
-              </div>
-            </div>
-          </el-menu-item>
-          <el-menu-item index="2">
-            <div style="display: block;">
-              <div style="display: block;">亚洲</div>
-              <div class="city-links-no">敬请期待</div>
-            </div>
-          </el-menu-item>
-          <el-menu-item index="3">
-            <div style="display: block;">
-              <div style="display: block;">非洲</div>
-              <div class="city-links-no">敬请期待</div>
-            </div>
-          </el-menu-item>
-          <el-menu-item index="4">
-            <div style="display: block;">
-              <div style="display: block;">欧洲</div>
-              <div class="city-links-no">敬请期待</div>
-            </div>
-          </el-menu-item>
-          <el-menu-item index="5">
-            <div style="display: block;">
-              <div style="display: block;">北美洲</div>
-              <div class="city-links-no">敬请期待</div>
-            </div>
-          </el-menu-item>
-          <el-menu-item index="6">
-            <div style="display: block;">
-              <div style="display: block;">南美洲</div>
-              <div class="city-links-no">敬请期待</div>
-            </div>
-          </el-menu-item>
-          <el-menu-item index="7">
-            <div style="display: block;">
-              <div style="display: block;">大洋洲</div>
-              <div class="city-links-no">敬请期待</div>
-            </div>
-          </el-menu-item>
+        <el-menu @select="handleSelect" :default-active="selectedItem">
+          <el-menu-item index="1">国内（含港澳台）</el-menu-item>
+          <el-menu-item index="2">亚洲</el-menu-item>
+          <el-menu-item index="3">非洲</el-menu-item>
+          <el-menu-item index="4">欧洲</el-menu-item>
+          <el-menu-item index="5">北美洲</el-menu-item>
+          <el-menu-item index="6">南美洲</el-menu-item>
+          <el-menu-item index="7">大洋洲</el-menu-item>
         </el-menu>
       </el-aside>
 
@@ -114,6 +76,18 @@ const handleCityClick = (cityLower: string) => {
             <a @click.prevent="handleCityClick(supportedCities[currentIndex].lower)">
               <img :src="images[currentIndex]" alt="Full Scenic Spot" class="scene-image1" />
             </a>
+            <!-- 在图片上方显示标签 -->
+            <div v-if="selectedItem" class="overlay-label" :style="{top: 12% + menuItemPlace[selectedNumber]}">
+              <div v-if="selectedItem === '1'" class="city-links">
+                <a v-for="city in supportedCities" :key="city.lower" @click.prevent="handleCityClick(city.lower)">
+                 {{ city.upper }}
+                </a>
+              </div>
+
+              <div v-else-if="selectedItem === '2' || selectedItem === '3' || selectedItem === '4' || selectedItem === '5' || selectedItem === '6' || selectedItem === '7'" class="city-links">
+                <span>敬请期待</span>
+              </div>
+            </div>
           </div>
         </div>
       </el-main>
@@ -122,25 +96,8 @@ const handleCityClick = (cityLower: string) => {
 </template>
 
 <style scoped>
-.no-scroll{
-  margin-left:30px;
-  margin-right:30px;
-}
-
 .el-container {
-  height: 90vh;
-  margin: 0 auto;
-  box-sizing: border-box;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.el-main {
-  display: flex;
-  flex-direction: column;
-  width: 70%;
   height: 100%;
-  overflow: hidden;
 }
 
 .el-aside {
@@ -151,38 +108,11 @@ const handleCityClick = (cityLower: string) => {
   margin-left: 2%;
   cursor: pointer;
   border-radius: 8px;
-  margin-right: 2%;
-}
-
-.el-menu{
-  height: 100%;
 }
 
 .el-menu-item {
   cursor: pointer;
   height: 138px;
-}
-
-.el-menu-item.is-active {
-  color: black;
-}
-
-.el-menu-item:hover {
-  background-color: transparent !important;
-}
-
-.city-links a {
-  display: inline-block;
-  margin-right: 10px;
-  color: grey;
-}
-
-.city-links a:hover {
-  color: rgb(0, 157, 255);
-}
-
-.city-links-no{
-  color: grey;
 }
 
 input {
@@ -199,7 +129,7 @@ input {
 
 button.Search-Scene {
   padding: 12px;
-  margin: 10px 0;
+  margin: 20px 0;
   margin-right: 10%;
   width: 10%;
   box-sizing: border-box;
@@ -207,8 +137,6 @@ button.Search-Scene {
   background-color: rgb(0, 157, 255);
   border: 2px rgb(0, 157, 255) solid;
   cursor: pointer;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
 }
 
 .carousel-image {
@@ -220,12 +148,42 @@ button.Search-Scene {
 
 .scene-image1 {
   margin-top: 30px;
-  width: 75%;
+  width: 100%;
   height: auto;
   display: block;
   border-radius: 15px;
   object-fit: contain;
-  margin-left: 127px;
+  cursor: pointer;
 }
 
+/* 覆盖图片上方的标签样式 */
+.overlay-label {
+  position: absolute;
+  top: 1%;
+  left: 28%;
+  width: 30%;
+  height: 20%;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 10;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.overlay-label a {
+  color: black;
+  padding: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.overlay-label span {
+  color: black;
+  padding: 10px;
+  text-decoration: none;
+}
+
+.overlay-label a:hover {
+  color: rgb(0, 157, 255);
+}
 </style>
