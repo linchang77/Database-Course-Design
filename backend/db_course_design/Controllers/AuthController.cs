@@ -138,7 +138,7 @@ namespace db_course_design.Controler
                 UserName = registerRequest.UserName,
                 Password = SaltedPassword.HashPassword(registerRequest.Password, salt),
                 RegistrationTime = DateTime.Now,
-                ProfilePicture = "C:\\Avatars\\users"
+                ProfilePicture = "\\Avatars\\users"
             };
 
             _context.Users.Add(newUser);
@@ -174,7 +174,7 @@ namespace db_course_design.Controler
             {
                 GuideName = registerRequest.UserName,
                 Password = SaltedPassword.HashPassword(registerRequest.Password, salt),
-                ProfilePicture = "C:\\Avatars\\guides"
+                ProfilePicture = "\\Avatars\\guides"
             };
 
             _context.Guides.Add(newguide);

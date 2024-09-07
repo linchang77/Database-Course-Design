@@ -166,12 +166,12 @@ namespace db_course_design.Services.impl
             if (target == null)
                 return Result<string>.Error("User " + id + " doesn't exist.");
 
-            var newPath = await _pictureUtils.SetPictureAsync(target.ProfilePicture, avatar);
+            var newPath = await _pictureUtils.SetPictureAsync("C:" + target.ProfilePicture, avatar);
 
             if (newPath.code != 0)
                 return newPath;
 
-            target.ProfilePicture = newPath.data;
+            target.ProfilePicture = newPath.data.Substring(newPath.data.IndexOf('\\'));
             await _context.SaveChangesAsync();
             return newPath;
         }
@@ -183,12 +183,12 @@ namespace db_course_design.Services.impl
             if (target == null)
                 return Result<string>.Error("Guide " + id + " doesn't exist.");
 
-            var newPath = await _pictureUtils.SetPictureAsync(target.ProfilePicture, avatar);
+            var newPath = await _pictureUtils.SetPictureAsync("C:" + target.ProfilePicture, avatar);
 
             if (newPath.code != 0)
                 return newPath;
 
-            target.ProfilePicture = newPath.data;
+            target.ProfilePicture = newPath.data.Substring(newPath.data.IndexOf('\\'));
             await _context.SaveChangesAsync();
             return newPath;
         }
