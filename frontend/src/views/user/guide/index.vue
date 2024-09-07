@@ -275,7 +275,7 @@ onMounted(() => {
 
       <div class="second_row">
         <span class="word"> 导游星级 </span>
-        <el-input-number v-model="guideGrade_input" :min="1" :max="500000" />
+        <el-input-number v-model="guideGrade_input" :min="1" :max="5" />
         <span class="word"> 导游价格 </span>
         <el-input-number v-model="guidePrice_input[0]" :min="1" :max="500000"/>
         -
