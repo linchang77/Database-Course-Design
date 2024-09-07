@@ -146,6 +146,7 @@ async function onDelete(row: any) {
     }
   ).then(async () => {
     try {
+      console.log(row);
       await axios.delete(`https://123.60.14.84/api/City/del/${row.cityName}`); // 假定API路径
       ElMessage.success('删除成功');
       await onSearch(); // 刷新列表
