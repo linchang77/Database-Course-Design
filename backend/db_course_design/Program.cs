@@ -64,14 +64,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-/*
+
 // Enable static file service.
 app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(@"C:/Avatars"),
     RequestPath = "/Avatars"
-});*/
+});
 
 app.UseHttpsRedirection();
 
