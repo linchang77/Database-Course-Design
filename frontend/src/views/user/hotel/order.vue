@@ -58,10 +58,28 @@ const handleChange = () => {
   }
 };
 
+//时间判断逻辑
+const disabledDate = (time: Date) => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0) // 仅比较日期部分，不比较时间
+  return time.getTime() < today.getTime()
+}
+
+//计算入住天数
+const numberOfNights = computed(() => {
+  if (checkInDate.value && checkOutDate.value) {
+    const tempCheckInDate = new Date(checkInDate.value);
+    const tempCheckOutDate = new Date(checkOutDate.value);
+    const dateDifference = tempCheckOutDate.getTime() - tempCheckInDate.getTime();
+    return dateDifference > 0 ? Math.ceil(dateDifference / (1000 * 60 * 60 * 24)) : 0;
+  }
+  return 0;
+});
+
 //提交订单逻辑
 const handleSubmit = async() => {
-  if (!checkInDate.value || !checkOutDate.value) {
-    alert("请确保入住时间和退房时间都已填写");
+  if (numberOfNights.value <= 0) {
+    alert("请确保入住时间和退房时间都已正确填写");
     return;
   }
   for (let i = 0; i < selectedNumber.value; i++) {
@@ -135,6 +153,7 @@ onMounted(() => {
                     v-model="checkInDate" 
                     type="datetime-local" 
                     placeholder="选择入住时间" 
+                    :disabled-date="disabledDate"
                     @update = "handleChange"
                   />
                   <p>退房时间：</p>
@@ -142,6 +161,7 @@ onMounted(() => {
                     v-model="checkOutDate" 
                     type="datetime-local" 
                     placeholder="选择退房时间" 
+                    :disabled-date="disabledDate"
                      @update = "handleChange"
                   />
                 </template>
@@ -153,7 +173,7 @@ onMounted(() => {
                   :max="room.roomLeft" 
                 />
               </div>
-              <p>订单总价格: ¥{{ room.roomPrice * selectedNumber }}</p>
+              <p>订单总价格: ¥{{ room.roomPrice * selectedNumber * numberOfNights }}</p>
               <button 
               :disabled="isSubmitDisabled"
               @click="handleSubmit"
