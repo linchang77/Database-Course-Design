@@ -2,7 +2,7 @@
 defineOptions({
   name: "Train"
 })
-
+import router from "@/router";
 import { ref, computed, onMounted } from "vue"
 import PlaceSelector from "./components/PlaceSelector.vue"
 import TimeSelector from "./components/TimeSelector.vue"
@@ -140,6 +140,7 @@ async function addVehicleTicket() {
 function recordIndex(index: number) {
   store.index = index
   console.log("index:", store.index)
+  router.push({ name: "OrderForTrain"});
 }
 
 function calculateTimeDifference(departureTime: string, arrivalTime: string): { hours: number, minutes: number } {
@@ -249,7 +250,7 @@ function fetchAllTickets() {
                   </div>
                   <div class="flight-price">¥{{ flight.ticketPrice }}</div>
                   <el-button type="primary" @click="recordIndex(index)">
-                    <a href="http://localhost:3333/#/transport/train/order">购票</a>
+                    购票
                   </el-button>
                 </div>
               </div>

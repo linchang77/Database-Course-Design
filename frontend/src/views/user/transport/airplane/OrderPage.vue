@@ -42,7 +42,7 @@ function nextStep() {
 
 function prevStep() {
   if (currentStep.value > 1) {
-    currentStep.value--;
+    currentStep.value--
   }
 }
 
