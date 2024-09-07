@@ -5,6 +5,7 @@ using db_course_design.Services;
 using db_course_design.Services.impl;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson; // Newtonsoft.Json替代默认的System.Text.Json，提供了AddNewtonsoftJson方法
 using Newtonsoft.Json;  // 引入Newtonsoft.Json命名空间
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +64,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Enable static file service.
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(@"C:/Avatars"),
+    RequestPath = "/Avatars"
+});
 
 app.UseHttpsRedirection();
 
