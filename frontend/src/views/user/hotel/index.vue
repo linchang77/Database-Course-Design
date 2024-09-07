@@ -63,6 +63,10 @@ const fetchHotels = async (): Promise<Hotel[]> => {
 
 //查找酒店
 const searchHotels = () => {
+  if (numberOfNights.value <= 0) {
+    alert("请确保入住时间和退房时间都已正确填写");
+    return;
+  }
   const checkInTimestamp = checkInTime.value ? new Date(checkInTime.value).getTime() : null;
   const checkOutTimestamp = checkOutTime.value ? new Date(checkOutTime.value).getTime() : null;
   //传递参数

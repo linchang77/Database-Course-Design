@@ -64,7 +64,6 @@ const fetchHotelRooms = async (hotelId: number): Promise<HotelRoom[]> => {
   try {
     const response = await axios.get(`https://123.60.14.84/api/Hotel/${encodeURIComponent(hotelId)}/type`);
     hotelRooms.value = response.data
-    console.log(response.data);
     return response.data; 
   } catch (error) {
     console.error(`Error fetching rooms for hotelId ${hotelId}:`, error);
@@ -74,9 +73,16 @@ const fetchHotelRooms = async (hotelId: number): Promise<HotelRoom[]> => {
 
 //更新酒店信息
 const updateHotel = async () => {
-  const hotels = await fetchHotels();
-  for (const hotel of hotels) {
-    const hotelRooms = await fetchHotelRooms(hotel.hotelId);
+  try {
+    const hotelsData = await fetchHotels();
+    const allHotelRooms: HotelRoom[] = [];
+    for (const hotel of hotelsData) {
+      const rooms = await fetchHotelRooms(hotel.hotelId);
+      allHotelRooms.push(...rooms); 
+    }
+    hotelRooms.value = allHotelRooms; 
+  } catch (error) {
+    console.error('Error updating hotels:', error);
   }
 };
 
@@ -125,7 +131,6 @@ const toggleSortByPrice = () => {
 };
 //传递参数
 const viewDetails = (selectedHotelId: number) => {
-  console.log(checkInTime)
   const filteredHotel = hotels.value.filter(hotel => hotel.hotelId === selectedHotelId);
   const filteredHotelRooms = hotelRooms.value.filter(room => room.hotelId === selectedHotelId);
   router.push({

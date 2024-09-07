@@ -225,8 +225,8 @@ const formRef = ref();
           <el-table-column prop="guideIntroduction" label="导游介绍" align="center" />
           <el-table-column prop="guidePerformanceLevel" label="导游表现" align="center"/>
           <el-table-column prop="guidePrice" label="导游价格" align="center" />
-          <el-table-column prop="guideSalary" label="导游薪水介绍" align="center" />
-          <el-table-column prop="guideSeniority" label="导游资历介绍" align="center" />
+          <el-table-column prop="guideSalary" label="导游薪水" align="center" />
+          <el-table-column prop="guideSeniority" label="导游资历" align="center" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button type="primary" text bg size="small" @click="toUpdate(scope.row)">修改</el-button>
