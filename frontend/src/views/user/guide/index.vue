@@ -302,7 +302,7 @@ onMounted(() => {
 
             <div class="second" >
                 <p>导游编号： {{ guide.guideId }}</p>
-                <p>基本介绍: {{ guide.guideIntroduction }}</p>
+                <div class="intro"><p>基本介绍: {{ guide.guideIntroduction }}</p></div>
                 <p>价格（日）: ¥{{ guide.guidePrice }}</p>
                 <el-rate
                     v-model="guide.guidePerformanceLevel"
@@ -377,6 +377,7 @@ onMounted(() => {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-height: 310px;
   max-width: 100%;
   overflow: hidden;
 }
@@ -409,6 +410,9 @@ onMounted(() => {
 .second p {
   margin: 5px 0;
   line-height: 1.5;
+}
+.intro{
+  margin-left: 5px;
 }
 
 .third {
