@@ -65,7 +65,7 @@ async function fetchUserData() {
         Id: response.data.id || "未设置",
         Name: response.data.name || "未设置",
         Gender: response.data.gender || "未设置",
-        ProfilePicture: response.data.profilePicture || "",
+        ProfilePicture: `${baseUrl}${response.data.profilePicture}` || "",
         PhoneNumbers: response.data.phoneNumbers.length ? response.data.phoneNumbers : []
       }
     } else if (userType.value === "guide") {
@@ -74,7 +74,7 @@ async function fetchUserData() {
         Id: response.data.id || "未设置",
         Name: response.data.name || "未设置",
         Gender: response.data.gender || "未设置",
-        ProfilePicture: response.data.profilePicture || "",
+        ProfilePicture: `${baseUrl}${response.data.profilePicture}` || "",
         Introduction: response.data.introduction || "未设置",
         Price: response.data.price || "未设置",
         Salary: response.data.salary || "未设置",
@@ -86,7 +86,7 @@ async function fetchUserData() {
       admin.value = {
         Id: response.data.id || "未设置",
         Name: response.data.name || "未设置",
-        ProfilePicture: response.data.profilePicture || ""
+        ProfilePicture: ""
       }
     }
   } catch (error) {
@@ -119,15 +119,9 @@ async function uploadAvatar() {
     })
 
     // 假设服务器返回头像的真实路径
-    const realProfilePicture = response.data.profilePicture
-
+    const realProfilePicture = response.data
     // 映射虚拟路径，假设虚拟路径规则是将实际路径转换为虚拟地址
-    const virtualProfilePicture = `${baseUrl}/Avatar/users/${response.data.id}`
-
-    if (userType.value === "guide")
-    {
-      virtualProfilePicture = `${baseUrl}/Avatar/guides/${response.data.id}`
-    } 
+    const virtualProfilePicture = `${baseUrl}${realProfilePicture}`
     // 更新头像路径
     if (userType.value === "user") {
       user.value.ProfilePicture = virtualProfilePicture
