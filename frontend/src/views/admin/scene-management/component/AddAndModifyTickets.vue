@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-button type="primary" @click="showAddTicketForm">新增票务信息</el-button>
-    <el-button type="danger" @click="showDeleteTicketForm">删除票务信息</el-button>
-    <el-button type="primary" @click="showModifyTicketForm">修改票务信息</el-button>
+    <el-button type="primary" :icon="CirclePlus" @click="showAddTicketForm">新增票务信息</el-button>
+    <el-button type="primary" :icon="EditPen" @click="showModifyTicketForm">修改票务信息</el-button>
+    <el-button type="danger" :icon="Delete" @click="showDeleteTicketForm">删除票务信息</el-button>
 
     <!-- 新增票务信息的对话框 -->
     <el-dialog v-model="addTicketFormVisible" title="新增票务信息" :before-close="handleCloseAddTicketForm">
@@ -126,6 +126,8 @@
 import { ref, reactive } from 'vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import { CirclePlus, Delete, EditPen } from '@element-plus/icons-vue';
+import { Edit } from 'vxe-table';
 
 // 新增票务表单是否可见
 const addTicketFormVisible = ref(false);
