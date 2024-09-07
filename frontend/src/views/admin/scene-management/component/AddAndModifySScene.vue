@@ -1,8 +1,9 @@
 <template>
   <div>
-    <el-button type="primary" @click="showAddScenicForm">新增景区</el-button>
-    <el-button type="danger" @click="showDeleteScenicForm">删除景区</el-button>
-    <el-button type="primary" @click="showModifyScenicForm">修改景区</el-button>
+    <el-button type="primary" :icon="CirclePlus" @click="showAddScenicForm">新增景区</el-button>
+    <el-button type="primary" :icon="EditPen" @click="showModifyScenicForm">修改景区</el-button>
+    <el-button type="danger" :icon="Delete" @click="showDeleteScenicForm">删除景区</el-button>
+
 
     <!-- 新增景区的对话框 -->
     <el-dialog v-model="addScenicFormVisible" title="新增景区" :before-close="handleCloseAddScenicForm">
@@ -108,6 +109,7 @@
 import { ref, reactive } from 'vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import { CirclePlus, Delete, Edit, EditPen } from '@element-plus/icons-vue';
 
 // 新增景区表单是否可见
 const addScenicFormVisible = ref(false);

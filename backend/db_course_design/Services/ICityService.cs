@@ -9,7 +9,8 @@ namespace db_course_design.Services
         IMapper _mapper { get; }
 
         Task<ICollection<CityResponse>> GetAllCitiesAsync();
-        Task<CityDetail?> GetCityByNameAsync(string name);
+        Task<CityResponse?> GetCityByNameAsync(string name);
+        Task<CityDetail?> GetCityDetailByNameAsync(string name);
         Task<CityResponse?> AddCityAsync(CityRequest request);
         Task<bool> DeleteCityAsync(string name);
         Task<string?> UpdateCityIntroAsync(string name, string intro);

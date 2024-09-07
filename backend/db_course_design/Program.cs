@@ -5,6 +5,7 @@ using db_course_design.Services;
 using db_course_design.Services.impl;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson; // Newtonsoft.Json替代默认的System.Text.Json，提供了AddNewtonsoftJson方法
 using Newtonsoft.Json;  // 引入Newtonsoft.Json命名空间
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +24,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3333", "http://100.80.42.44:3333") // 替换为前端的地址
+            policy.WithOrigins("http://localhost:3333", "http://123.60.14.84:3333") // 替换为前端的地址
                  .AllowAnyHeader()
                  .AllowAnyMethod()
                  .AllowCredentials();
@@ -63,6 +64,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Enable static file service.
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(@"C:/Avatars"),
+    RequestPath = "/Avatars"
+});
 
 app.UseHttpsRedirection();
 
