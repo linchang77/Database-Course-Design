@@ -118,7 +118,7 @@ const handleLoginOrRegister = () => {
 <template>
   <div class="login-container">
     <div class="overlay">
-      <img src="~@/assets/login/bg3.webp" alt="bg" />
+      <img src="~@/assets/login/bg3.jpg" alt="bg" />
     </div>
 
     <div class="login-card">
