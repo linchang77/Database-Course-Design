@@ -12,7 +12,7 @@
       @keyup.enter="onSearch"
     >
       <template #append>
-        <el-button type="primary" :icon="Search" @click="onSearch" style="background-color: #409eff; color: #fff; border: none; padding: 5px 10px; border-radius: 4px;">更新</el-button>
+        <el-button type="primary" :icon="Search" @click="onSearch" style="background-color: #409eff; color: #fff; border: none; padding: 5px 10px; border-radius: 4px;">搜索</el-button>
       </template>
     </el-input>
 
@@ -79,7 +79,17 @@
             <el-input v-model="ticketToModify.scenicSpotId" disabled></el-input>
           </el-form-item>
           <el-form-item label="票种">
-            <el-input v-model="ticketToModify.ticketType"></el-input>
+            <div>
+            <el-select v-model="ticketToModify.ticketType" style="width: 200%;"   :filterable="true"  placeholder="请选择票种">
+              <el-option
+                v-for="item in ticketTypes"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
           </el-form-item>
           <el-form-item label="价格(元)">
             <el-input v-model.number="ticketToModify.ticketPrice"></el-input>
@@ -164,7 +174,7 @@ const getSpotsByName = async (keyword: string) => {
 // 按名称搜索票
 const getTicketsBySpotName = async (keyword: string) => {
   try {
-    const response = await axios.get(`https://123.60.14.84/api/ScenicSpot/ticket/${keyword}`);
+    const response = await axios.get(`https://123.60.14.84/api/ScenicSpot/ticket/${keyword}/all`);
     searchResults.value = response.data;
   } catch (error) {
     console.error(error);
@@ -188,7 +198,6 @@ const onSearch = async () => {
       await getTicketsBySpotName(searchKeyword.value);
     }
   }
-  searchKeyword.value = '';
 };
 
 // 在搜索类型改变时自动触发搜索
