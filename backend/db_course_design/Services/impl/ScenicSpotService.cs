@@ -341,7 +341,35 @@ namespace db_course_design.Services.impl
                 TicketDate = ticket.TicketDate
             };
         }
+        public async Task<IEnumerable<ScenicSpotTicketResponse?>> GetTicketInfoAsync(string scenicSpotName)
+        {
+            // 通过景点名称获取景点信息
+            var scenicSpot = await _context.ScenicSpots
+                .FirstOrDefaultAsync(s => s.ScenicSpotName == scenicSpotName);
 
+            if (scenicSpot == null)
+            {
+                return Enumerable.Empty<ScenicSpotTicketResponse?>(); // 未找到对应景点
+            }
+
+            // 查询该景点的所有门票信息
+            var tickets = await _context.ScenicSpotTickets
+                .Where(t => t.ScenicSpotId == scenicSpot.ScenicSpotId)
+                .OrderBy(t => t.TicketDate) // 按日期排序
+                .ToListAsync();
+
+            // 将查询结果映射为响应对象
+            var ticketResponses = tickets.Select(t => new ScenicSpotTicketResponse
+            {
+                ScenicSpotId = t.ScenicSpotId,
+                TicketType = t.TicketType,
+                TicketPrice = t.TicketPrice,
+                TicketRemaining = t.TicketRemaining,
+                TicketDate = t.TicketDate
+            });
+
+            return ticketResponses;
+        }
         // 获取当天的门票信息
         public async Task<AdultChildTicketResponse?> GetTodayTicketInfoAsync(string scenicSpotName)
         {
