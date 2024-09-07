@@ -239,6 +239,18 @@ namespace db_course_design.Controllers
             return Ok(result);
         }
 
+        [HttpGet("ticket/{scenicSpotName}/all")]
+        public async Task<ActionResult<IEnumerable<ScenicSpotTicketResponse>>> GetTicketInfo(string scenicSpotName)
+        {
+            var result = await _scenicSpotService.GetTicketInfoAsync(scenicSpotName);
+
+            if (result == null || !result.Any())
+            {
+                return NotFound("Scenic spot or tickets not found.");
+            }
+
+            return Ok(result);
+        }
         // 获取指定景点当天的门票信息
         [HttpGet("ticket/{scenicSpotName}")]
         public async Task<ActionResult<AdultChildTicketResponse>> GetTodayTicketInfo(string scenicSpotName)
