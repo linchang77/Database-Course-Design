@@ -171,7 +171,8 @@ namespace db_course_design.Services.impl
             if (newPath.code != 0)
                 return newPath;
 
-            target.ProfilePicture = newPath.data.Substring(newPath.data.IndexOf('\\'));
+            newPath.data = newPath.data.Substring(newPath.data.IndexOf('\\'));
+            target.ProfilePicture = newPath.data;
             await _context.SaveChangesAsync();
             return newPath;
         }
@@ -188,7 +189,8 @@ namespace db_course_design.Services.impl
             if (newPath.code != 0)
                 return newPath;
 
-            target.ProfilePicture = newPath.data.Substring(newPath.data.IndexOf('\\'));
+            newPath.data = newPath.data.Substring(newPath.data.IndexOf('\\'));
+            target.ProfilePicture = newPath.data;
             await _context.SaveChangesAsync();
             return newPath;
         }
