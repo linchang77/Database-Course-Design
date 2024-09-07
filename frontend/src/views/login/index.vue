@@ -1,3 +1,4 @@
+<!-- eslint-disable prettier/prettier -->
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -116,45 +117,30 @@ const handleLoginOrRegister = () => {
 
 <template>
   <div class="login-container">
+    <div class="overlay" />
+
     <div class="login-card">
+      <!-- Logo -->
+      <div class="logo">
+        <img src="~@/assets/layouts/logo-text-2.png" alt="e行天下" />
+        <div class="name">e行天下</div>
+      </div>
+      <!-- 角色选择 -->
       <div class="role-selection">
-        <button
-          :class="{ selected: selectedRole === 'user' }"
-          @click="selectRole('user')"
-        >
-          游客
-        </button>
+        <button :class="{ selected: selectedRole === 'user' }" @click="selectRole('user')">游客</button>
         <!-- 仅在登录模式下显示管理员和导游 -->
-        <button
-          v-if="isLogin"
-          :class="{ selected: selectedRole === 'guide' }"
-          @click="selectRole('guide')"
-        >
+        <button v-if="isLogin" :class="{ selected: selectedRole === 'guide' }" @click="selectRole('guide')">
           导游
         </button>
-        <button
-          v-if="isLogin"
-          :class="{ selected: selectedRole === 'admin' }"
-          @click="selectRole('admin')"
-        >
+        <button v-if="isLogin" :class="{ selected: selectedRole === 'admin' }" @click="selectRole('admin')">
           管理员
         </button>
       </div>
       <div class="title">{{ isLogin ? "登录" : "注册" }}</div>
       <div class="content">
-        <el-form
-          ref="loginFormRef"
-          :model="loginFormData"
-          :rules="loginFormRules"
-          @keyup.enter="handleLoginOrRegister"
-        >
+        <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLoginOrRegister">
           <el-form-item prop="username">
-            <el-input
-              v-model.trim="loginFormData.username"
-              placeholder="用户名"
-              type="text"
-              size="large"
-            />
+            <el-input v-model.trim="loginFormData.username" placeholder="用户名" type="text" size="large" />
           </el-form-item>
           <el-form-item prop="password">
             <el-input
@@ -165,12 +151,7 @@ const handleLoginOrRegister = () => {
               show-password
             />
           </el-form-item>
-          <el-button
-            :loading="loading"
-            type="primary"
-            size="large"
-            @click.prevent="handleLoginOrRegister"
-          >
+          <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLoginOrRegister">
             {{ isLogin ? "登 录" : "注 册" }}
           </el-button>
         </el-form>
@@ -185,63 +166,111 @@ const handleLoginOrRegister = () => {
 <style lang="scss" scoped>
 .login-container {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background: url("~@/assets/login/bg1.avif") no-repeat center center/cover;
+  position: relative;
+  overflow: hidden;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); /* 背景半透明遮罩层 */
 }
 
 .login-card {
-  width: 480px;
-  max-width: 90%;
-  border-radius: 20px;
-  box-shadow: 0 0 10px #dcdfe6;
-  background-color: var(--el-bg-color);
-  overflow: hidden;
-  padding: 20px;
+  position: relative;
+  z-index: 10;
+  width: 400px;
+  padding: 30px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.85); /* 半透明背景 */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px); /* 背景模糊效果 */
+  text-align: center;
+
+  .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center; // 使img和name垂直居中对齐
+    margin-top: -15px;
+    margin-bottom: 0px;
+
+    img {
+      width: 170px;
+      margin-right: 10px; // 给img和name之间添加一些间距
+    }
+
+    .name {
+      font-size: 28px;
+      color: #409eff;
+      font-weight: bolder;
+      margin-left: -20px;
+      margin-bottom: -5px;
+    }
+  }
 
   .role-selection {
     display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
     button {
       flex: 1;
       padding: 10px;
       background-color: #d3d3d3;
+      border-radius: 5px;
+      margin-left: 2px;
+      margin-right: 2px;
       border: none;
       color: #000;
       font-size: 16px;
       cursor: pointer;
       transition: background-color 0.3s ease;
-
+      cursor: pointer;
       &.selected {
-        background-color: #fff;
+        background-color: #409eff;
+        color: #fff;
       }
 
       &:hover {
-        background-color: #e0e0e0;
+        background-color: #b3b3b3;
       }
     }
   }
 
   .title {
-    text-align: center;
-    font-size: 24px;
-    margin: 20px 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
   }
 
   .content {
-    padding: 20px;
+    .el-input,
+    .el-button {
+      margin-bottom: 15px;
+    }
 
     .el-button {
       width: 100%;
-      margin-top: 10px;
+      padding: 10px;
     }
 
     .switch-link {
-      margin-top: 20px;
-      text-align: center;
+      font-size: 14px;
       color: #409eff;
       cursor: pointer;
+      margin-top: 20px;
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 }
