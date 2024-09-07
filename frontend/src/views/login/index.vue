@@ -124,7 +124,7 @@ const handleLoginOrRegister = () => {
     <div class="login-card">
       <!-- Logo -->
       <div class="logo">
-        <img src="~@/assets/layouts/logo-text-1.png" alt="e行天下" />
+        <img src="~@/assets/layouts/logo-text-2.png" alt="e行天下" />
         <div class="name">e行天下</div>
       </div>
       <!-- 角色选择 -->
