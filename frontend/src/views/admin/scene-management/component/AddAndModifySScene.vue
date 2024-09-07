@@ -23,8 +23,8 @@
         <el-form-item label="景区位置">
           <el-input v-model="scenicToAdd.scenicSpotLocation" placeholder="请输入景区位置"></el-input>
         </el-form-item>
-        <el-form-item label="距离市中心远近">
-          <el-input v-model="scenicToAdd.scenicSpotRemoteness" placeholder="请输入距离市中心远近评分"></el-input>
+        <el-form-item label="到市中心距离">
+          <el-input v-model="scenicToAdd.scenicSpotRemoteness" placeholder="请输入到市中心距离"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -91,7 +91,7 @@
             <el-form-item label="景区位置">
               <el-input v-model="scenic.scenicSpotLocation" :disabled="!isEditingScenic"></el-input>
             </el-form-item>
-            <el-form-item label="距离市中心远近">
+            <el-form-item label="到市中心距离">
               <el-input v-model="scenic.scenicSpotRemoteness" :disabled="!isEditingScenic"></el-input>
             </el-form-item>
           </el-form>

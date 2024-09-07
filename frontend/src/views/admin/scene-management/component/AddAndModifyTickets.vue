@@ -11,7 +11,17 @@
           <el-input v-model="ticketToAdd.scenicSpotId" placeholder="请输入景点id"></el-input>
         </el-form-item>
         <el-form-item label="票种">
-          <el-input v-model="ticketToAdd.ticketType" placeholder="请输入票种"></el-input>
+          <div>
+            <el-select v-model="ticketToAdd.ticketType" style="width: 200%;"   :filterable="true"  placeholder="请选择票种">
+              <el-option
+                v-for="item in ticketTypes"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
         </el-form-item>
         <el-form-item label="价格">
           <el-input v-model="ticketToAdd.ticketPrice" placeholder="请输入价格"></el-input>
@@ -43,7 +53,17 @@
           <el-input v-model="ticketToDelete.scenicSpotId" placeholder="请输入景点id"></el-input>
         </el-form-item>
         <el-form-item label="票种">
-          <el-input v-model="ticketToDelete.ticketType" placeholder="请输入票种"></el-input>
+          <div>
+            <el-select v-model="ticketToDelete.ticketType" style="width: 200%;"   :filterable="true"  placeholder="请选择票种">
+              <el-option
+                v-for="item in ticketTypes"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
         </el-form-item>
         <el-form-item label="日期">
           <el-date-picker
@@ -69,7 +89,17 @@
           <el-input v-model="ticketToModify.scenicSpotId" placeholder="请输入景点id"></el-input>
         </el-form-item>
         <el-form-item label="票种">
-          <el-input v-model="ticketToModify.ticketType" placeholder="请输入票种"></el-input>
+          <div>
+            <el-select v-model="ticketToModify.ticketType" style="width: 200%;"   :filterable="true"  placeholder="请选择票种">
+              <el-option
+                v-for="item in ticketTypes"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
         </el-form-item>
         <el-form-item label="日期">
           <el-date-picker
@@ -100,7 +130,17 @@
               <el-input v-model="ticket.scenicSpotId" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="票种">
-              <el-input v-model="ticket.ticketType" :disabled="true"></el-input>
+              <div>
+                <el-select v-model="ticket.ticketType" style="width: 200%;"   :filterable="true"  placeholder="请选择票种">
+                  <el-option
+                    v-for="item in ticketTypes"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </div>
             </el-form-item>
             <el-form-item label="价格">
               <el-input v-model="ticket.ticketPrice" :disabled="!isEditingTicket"></el-input>
@@ -129,6 +169,10 @@ import { ElMessage } from 'element-plus';
 import { CirclePlus, Delete, EditPen } from '@element-plus/icons-vue';
 import { Edit } from 'vxe-table';
 
+const ticketTypes = [
+  { value: '儿童票', label: '儿童票' },
+  { value: '成人票', label: '成人票' }
+]
 // 新增票务表单是否可见
 const addTicketFormVisible = ref(false);
 
