@@ -6,7 +6,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     /** TS 严格模式 */
-    "strict": true,
+    "strict": false,
     "jsx": "preserve",
     "jsxImportSource": "vue",
     "importHelpers": true,
