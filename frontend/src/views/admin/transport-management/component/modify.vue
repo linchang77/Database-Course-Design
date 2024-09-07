@@ -201,7 +201,7 @@ function showModifySpecificTicketForm() {
 // 查询行程信息
 async function fetchVehicleSchedule() {
   try {
-    const response = await axios.get<VehicleSchedule>(`https://123.60.14.84:11000/api/Vehicle/schedule/${vehicleScheduleData.vehicleId}`);
+    const response = await axios.get<VehicleSchedule>(`https://123.60.14.84/api/Vehicle/schedule/${vehicleScheduleData.vehicleId}`);
     Object.assign(vehicleScheduleData, response.data);
   } catch (error) {
     console.error(error);
@@ -212,7 +212,7 @@ async function fetchVehicleSchedule() {
 // 查询特定车票信息
 async function fetchSpecificTicket() {
   try {
-    const response = await axios.get<VehicleTicket>(`https://123.60.14.84:11000/api/Vehicle/ticket/${vehicleTicketData.ticketId}`);
+    const response = await axios.get<VehicleTicket>(`https://123.60.14.84/api/Vehicle/ticket/${vehicleTicketData.ticketId}`);
     Object.assign(vehicleTicketData, response.data);
   } catch (error) {
     console.error(error);

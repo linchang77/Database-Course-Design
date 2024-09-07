@@ -38,7 +38,7 @@
 
 <!-- 添加行程的对话框 -->
     <!-- 添加行程的表单 -->
-    <el-dialog v-model="scheduleFormVisible" title="添加行程" :before-close="handleCloseScheduleForm">
+    <el-dialog v-model="scheduleFormVisible" title="添加行程">
       <el-form :model="vehicleScheduleData" label-width="120px">
         <el-form-item label="交通工具ID">
           <el-input v-model="vehicleScheduleData.VehicleId"></el-input>
@@ -97,7 +97,7 @@
     </el-dialog>
 
     <!-- 添加票务信息的表单 -->
-    <el-dialog v-model="ticketFormVisible" title="添加票务信息" :before-close="handleCloseTicketForm">
+    <el-dialog v-model="ticketFormVisible" title="添加票务信息">
       <el-form :model="vehicleTicketData" label-width="120px">
         <el-form-item label="交通工具ID">
           <el-input v-model="vehicleTicketData.VehicleId"></el-input>
