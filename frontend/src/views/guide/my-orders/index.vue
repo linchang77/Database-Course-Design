@@ -68,7 +68,7 @@ const apiUrl = "https://123.60.14.84/api/Order"
 // 获取订单列表
 const fetchOrders = () => {
   axios
-    .get(`https://123.60.14.84:11100/api/Guide/${userId.value}/filter/`, {
+    .get(`https://123.60.14.84/api/Guide/${userId.value}/filter/`, {
     params: {
         guideId: userId.value,
         orderType: categoryFilter.value || undefined,
