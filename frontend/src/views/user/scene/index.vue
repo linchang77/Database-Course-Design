@@ -44,11 +44,6 @@ const handleCityClick = (cityLower: string) => {
 
 <template>
   <div class="no-scroll">
-    <div class="search">
-      <input placeholder="搜索景点/城市" />
-      <button class="Search-Scene">搜索</button>
-    </div>
-
     <el-container>
       <el-aside width="300px" class="aside">
         <el-menu :default-active="selectedItem">
@@ -128,7 +123,6 @@ const handleCityClick = (cityLower: string) => {
 }
 
 .el-container {
-  height: 90vh;
   margin: 0 auto;
   box-sizing: border-box;
   height: 100vh;
