@@ -23,6 +23,7 @@ namespace db_course_design.Services
         Task<ScenicSpotTicketResponse?> GetScenicSpotTicketAsync(decimal scenicSpotId, string ticketType, DateTime ticketDate);
         Task<AdultChildTicketResponse?> GetTodayTicketInfoAsync(string scenicSpotName);
         Task<AdultChildTicketResponse?> GetTicketInfoByDateAsync(string scenicSpotName, DateTime date);
+        Task<IEnumerable<ScenicSpotTicketResponse?>> GetTicketInfoAsync(string scenicSpotName);
         Task<bool> PurchaseTicketAsync(string scenicSpotName, string type, DateTime date, CreateScenicSpotOrderRequest orderRequest, int number=1);
         Task<IEnumerable<ScenicSpotResponse>> GetRecommendedScenicSpotsAsync();
     }
