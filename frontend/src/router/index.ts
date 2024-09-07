@@ -109,14 +109,17 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         }
       },
       {
+        name: "OrderForAirplane",
         path: "airplane/order",
         component: () => import("@/views/user/transport/airplane/OrderPage.vue"),
       },
       {
+        name: "OrderForBus",
         path: "bus/order",
         component: () => import("@/views/user/transport/bus/OrderPage.vue"),
       },
       {
+        name: "OrderForTrain",
         path: "train/order",
         component: () => import("@/views/user/transport/train/OrderPage.vue"),
       }
