@@ -349,7 +349,7 @@ async function fetchVehicleSchedule() {
   }
 
   try {
-    const response = await axios.get(`https://123.60.14.84:11000/api/Vehicle/schedule/${vehicleId}`);
+    const response = await axios.get(`https://123.60.14.84/api/Vehicle/schedule/${vehicleId}`);
     vehicleScheduleData.value = response.data;
     isEditingVehicleSchedule.value = false;
     modifyScheduleFormVisible.value = false;
@@ -368,7 +368,7 @@ async function fetchVehicleTickets() {
   }
 
   try {
-    const response = await axios.get(`https://123.60.14.84:11000/api/Vehicle/tickets/${vehicleId}`);
+    const response = await axios.get(`https://123.60.14.84/api/Vehicle/tickets/${vehicleId}`);
     vehicleTickets.value = response.data;
     isEditingVehicleTicket.value = false;
     modifyVehicleTicketsFormVisible.value = false;
@@ -387,7 +387,7 @@ async function fetchSpecificTicket() {
   }
 
   try {
-    const response = await axios.get(`https://123.60.14.84:11000/api/Vehicle/ticket/${ticketId}`);
+    const response = await axios.get(`https://123.60.14.84/api/Vehicle/ticket/${ticketId}`);
     console.log(response.data);
     vehicleTicketData.value = response.data;
     isEditingSpecificTicket.value = false;
@@ -454,7 +454,7 @@ function editVehicleTicket(ticket) {
 // 更新车票信息
 async function updateVehicleTicket(ticket) {
   try {
-    await axios.put(`https://123.60.14.84:11000/api/Vehicle/ticket/${ticket.TicketId}`, ticket);
+    await axios.put(`https://123.60.14.84/api/Vehicle/ticket/${ticket.TicketId}`, ticket);
     ElMessage.success('车票信息更新成功');
     isEditingVehicleTicket.value = false;
   } catch (error) {

@@ -86,9 +86,11 @@ const return2 = (str: string) => {
 
 const imageMap: Record<string, string> = {
   '上海': 'https://img.dahepiao.com/uploads/image/2020/12/17/56d9e3bc071de06c4de6f0fa2f8e7a84.jpg',
-  '北京': 'https://img.zcool.cn/community/010e2d5de0f549a80120686b802e63.jpg@1280w_1l_2o_100sh.jpg',
+  //'北京': 'https://img.zcool.cn/community/010e2d5de0f549a80120686b802e63.jpg@1280w_1l_2o_100sh.jpg',
+  '北京': 'https://img.shetu66.com/2023/06/16/1686898131627941.png',
   '南京': 'https://img.zcool.cn/community/01088d556841970000012b20ccfc1a.jpg@3000w_1l_2o_100sh.jpg',
-  '成都': 'https://img.zcool.cn/community/01d9495b6dbc33a801215c8fe1df09.jpg@3000w_1l_0o_100sh.jpg',
+  //'成都': 'https://img.zcool.cn/community/01d9495b6dbc33a801215c8fe1df09.jpg@3000w_1l_0o_100sh.jpg',
+  '成都': 'https://img1.qunarzz.com/travel/poi/201407/30/cc58461b40f01e3cc8d65eac.jpg',
   '武汉': 'https://th.bing.com/th/id/R.43107bcfc6d493fd0e41b86a47f8a125?rik=Gy0Juky%2b9G1B4g&riu=http%3a%2f%2fimg.pconline.com.cn%2fimages%2fupload%2fupc%2ftx%2fphotoblog%2f1410%2f26%2fc2%2f40147263_1414299382894_mthumb.jpg&ehk=Vqm38FQdH7T8bH%2fAlDVATSrxmDaeqAosJOIE31tqabQ%3d&risl=&pid=ImgRaw&r=0',
 }
 

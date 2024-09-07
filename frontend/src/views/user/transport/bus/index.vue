@@ -52,7 +52,7 @@ interface VehicleScheduleRequest {
 // 定义行程请求的数据
 
 async function newSchedule(){
-  const url = "https://123.60.14.84:11000/api/Vehicle/schedule"
+  const url = "https://123.60.14.84/api/Vehicle/schedule"
   console.log("url:", url)
   const vehicleScheduleData: VehicleScheduleRequest = {
   VehicleId: 'Tryzone', // 示例值
@@ -111,7 +111,7 @@ interface VehicleTicketRequest {
 
 // 添加票务信息的函数
 async function addVehicleTicket() {
-  const url = "https://123.60.14.84:11000/api/Vehicle/ticket"
+  const url = "https://123.60.14.84/api/Vehicle/ticket"
   console.log("url:", url)
   const vehicleTicketData: VehicleTicketRequest = {
   VehicleId: 'TRYzone', // 示例值
