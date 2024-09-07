@@ -9,7 +9,9 @@ namespace db_course_design.Controllers
      * api/City/
      *      GET         - 获取所有城市
      *      {name}/
-     *      GET         - 根据城市名获取城市详细信息
+     *      GET         - 根据城市名获取城市基本信息
+     *          detail/
+     *              GET - 根据城市名获取城市详细信息
      *      add/
      *      POST        - 添加城市
      *      del/{name}/
@@ -41,6 +43,16 @@ namespace db_course_design.Controllers
         public async Task<IActionResult> GetCityByName(string name)
         {
             var city = await _cityService.GetCityByNameAsync(name);
+
+            if (city == null)
+                return NotFound("City " + name + " wasn't found.");
+            return Ok(city);
+        }
+
+        [HttpGet("{name}/detail")]
+        public async Task<IActionResult> GetCityDetailByName(string name)
+        {
+            var city = await _cityService.GetCityDetailByNameAsync(name);
 
             if (city == null)
                 return NotFound("City " + name + " wasn't found.");
