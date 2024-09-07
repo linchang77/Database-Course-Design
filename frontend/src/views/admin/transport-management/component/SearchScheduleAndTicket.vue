@@ -307,7 +307,7 @@ const getAllTickets = async () => {
 // 获取指定车票编号的车票信息
 const getTicketById = async (ticketId: string) => {
   try {
-    const response = await axios.get(`https://123.60.14.84:11000/api/Vehicle/ticket/${ticketId}`);
+    const response = await axios.get(`https://123.60.14.84/api/Vehicle/ticket/${ticketId}`);
     searchResults.value = [response.data];
   } catch (error) {
     console.error(error);
@@ -343,7 +343,7 @@ const onDelete = async (row: any) => {
     }
   ).then(async () => {
     try {
-      const url = searchType.value === 'schedule' ? `https://123.60.14.84:11000/api/Vehicle/schedule/delete/${row.id}` : `https://123.60.14.84:11000/api/Vehicle/ticket/delete/${row.id}`;
+      const url = searchType.value === 'schedule' ? `https://123.60.14.84/api/Vehicle/schedule/delete/${row.id}` : `https://123.60.14.84/api/Vehicle/ticket/delete/${row.id}`;
       await axios.delete(url);
       ElMessage.success('删除成功');
       await onSearch(); // 刷新列表
