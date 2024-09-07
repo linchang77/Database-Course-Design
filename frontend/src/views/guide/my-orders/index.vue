@@ -4,11 +4,11 @@ import { ElMessage, ElMessageBox } from "element-plus"
 import type { Action } from "element-plus"
 import { Search } from "@element-plus/icons-vue"
 import axios from "axios"
-import { useUserStoreHook } from '@/store/modules/user'
+import { useUserStoreHook } from "@/store/modules/user"
 
 const userStore = useUserStoreHook()
 const userRole = userStore.roles
-const userId = ref<string | null>(localStorage.getItem('id'))
+const userId = ref<string | null>(localStorage.getItem("id"))
 
 // 定义订单的响应类型
 interface BaseOrder {
@@ -68,15 +68,7 @@ const apiUrl = "https://123.60.14.84/api/Order"
 // 获取订单列表
 const fetchOrders = () => {
   axios
-    .get(`https://123.60.14.84:11100/api/Guide/${userId.value}/filter/`, {
-    params: {
-        guideId: userId.value,
-        orderType: categoryFilter.value || undefined,
-        statusType: statusFilter.value || undefined,
-        start: startDate.value || undefined,
-        end: endDate.value || undefined
-      }
-    })
+    .get(`https://123.60.14.84/api/Guide/${userId.value}/filter`)
     .then((response) => {
       console.log("API Response:", response.data) // 调试输出查看返回的数据结构
       // 遍历返回的数据并根据 orderType 将不同类型的订单添加到 orders 数组中
@@ -98,7 +90,7 @@ const fetchOrders = () => {
               return {
                 ...order,
                 groupId: order.groupId,
-                groupName: order.groupName,
+                groupName: order.groupName
               }
             default:
               return order
@@ -178,7 +170,7 @@ const filterOrders = () => {
   }
   axios
     .get(`https://123.60.14.84/api/Guide/${userId.value}/filter/`, {
-    params: {
+      params: {
         OrderType: category.value,
         UserId: user_id_input.value,
         startDate: startDateValue,
@@ -298,7 +290,6 @@ const formatTransport = (status: string) => {
   return stateMap[status] || "未知类型"
 }
 
-
 // 确认取消订单弹窗
 const openCancel = (orderId: number) => {
   ElMessageBox.confirm("确认要取消订单吗？", "取消订单确认", {
@@ -357,19 +348,10 @@ function formatDateToDay(dateString?: string): string {
       </div>
       <div class="second=row" style="margin-top: 5px">
         <span class="word"> 用户编号 </span>
-        <el-input
-          v-model="user_id_input"
-          style="width: 210px"
-          placeholder="请输入用户编号"
-          :prefix-icon="Search"
-        />
+        <el-input v-model="user_id_input" style="width: 210px" placeholder="请输入用户编号" :prefix-icon="Search" />
 
         <span class="word"> 订单类型 </span>
-        <el-select
-          v-model="order_type_input"
-          placeholder="请选择订单类型"
-          style="width: 210px"
-        >
+        <el-select v-model="order_type_input" placeholder="请选择订单类型" style="width: 210px">
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
 
@@ -414,14 +396,16 @@ function formatDateToDay(dateString?: string): string {
                   <li>用户编号：{{ (order as GuideOrder).userId }}</li>
                   <li>用户姓名：{{ (order as GuideOrder).userName }}</li>
                   <li>
-                    服务时间：{{ formatDateToDay((order as GuideOrder).serviceBeginDate) }} 至 
+                    服务时间：{{ formatDateToDay((order as GuideOrder).serviceBeginDate) }} 至
                     {{ formatDateToDay((order as GuideOrder).serviceEndDate) }}
                   </li>
                 </ul>
                 <ul v-else>
                   <li>旅行团：{{ (order as TourOrder).groupName }}</li>
-                  <li>服务时间：{{ formatDateToDay((order as TourOrder).startDate) }} 至 
-                  {{ formatDateToDay((order as TourOrder).endDate) }}</li>
+                  <li>
+                    服务时间：{{ formatDateToDay((order as TourOrder).startDate) }} 至
+                    {{ formatDateToDay((order as TourOrder).endDate) }}
+                  </li>
                 </ul>
               </div>
               <div class="column state">
@@ -476,7 +460,7 @@ function formatDateToDay(dateString?: string): string {
 
   .main-container {
     min-height: 500px;
-    padding: 10px 0; 
+    padding: 10px 0;
 
     .holder-container {
       min-height: 500px;
@@ -504,14 +488,14 @@ function formatDateToDay(dateString?: string): string {
   .head {
     height: 50px;
     line-height: 50px;
-    background: #f0f0f0; 
+    background: #f0f0f0;
     padding: 0 20px;
     overflow: hidden;
-    font-weight: bold; 
+    font-weight: bold;
 
     span {
       margin-right: 20px;
-      color: #333; 
+      color: #333;
 
       &.down-time {
         margin-right: 0;
@@ -524,7 +508,7 @@ function formatDateToDay(dateString?: string): string {
 
         b {
           vertical-align: middle;
-          font-weight: bold; 
+          font-weight: bold;
         }
       }
     }
@@ -533,7 +517,7 @@ function formatDateToDay(dateString?: string): string {
   .body {
     display: flex;
     align-items: stretch;
-    padding: 0px 20px; 
+    padding: 0px 20px;
 
     .column {
       border-left: 1px solid #f5f5f5;
@@ -543,7 +527,7 @@ function formatDateToDay(dateString?: string): string {
       > p {
         padding-top: 10px;
         margin-bottom: 5px;
-        color: #555; 
+        color: #555;
       }
 
       &:first-child {
@@ -582,7 +566,7 @@ function formatDateToDay(dateString?: string): string {
 
                 &.name {
                   height: 38px;
-                  font-weight: bold; 
+                  font-weight: bold;
                 }
 
                 &.attr {
@@ -598,7 +582,7 @@ function formatDateToDay(dateString?: string): string {
 
             .count {
               width: 80px;
-              font-weight: bold; 
+              font-weight: bold;
             }
           }
         }
@@ -606,9 +590,9 @@ function formatDateToDay(dateString?: string): string {
 
       &.state {
         width: 120px;
-        display: flex; 
-        flex-direction: column; 
-        justify-content: center; 
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         padding-bottom: 5%;
         .pay:hover {
           color: #3498db;
@@ -620,13 +604,13 @@ function formatDateToDay(dateString?: string): string {
 
       &.amount {
         width: 150px;
-        display: flex; 
-        flex-direction: column; 
-        justify-content: center; 
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         padding-bottom: 5%;
         .red {
           color: #3498db;
-          font-weight: bold; 
+          font-weight: bold;
           font-size: larger;
         }
       }
