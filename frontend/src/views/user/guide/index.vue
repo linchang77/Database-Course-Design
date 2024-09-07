@@ -384,7 +384,7 @@ onMounted(() => {
 
 .photo {
   width: 100px;
-  height:150px;
+  height:140px;
   border-radius: 5%;
   margin-top: 10px;
 }
