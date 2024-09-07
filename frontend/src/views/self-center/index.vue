@@ -115,7 +115,7 @@ async function uploadAvatar() {
       apiUrl = `${baseUrl}/api/Profile/admin/${admin.value.Id}/picture`
     }
 
-    const response = await axios.post(apiUrl, formData, {
+    const response = await axios.put(apiUrl, formData, {
       headers: {
         "Content-Type": "multipart/form-data"
       }
