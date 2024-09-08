@@ -117,7 +117,9 @@ const handleLoginOrRegister = () => {
 
 <template>
   <div class="login-container">
-    <div class="overlay" />
+    <div class="overlay">
+      <img src="~@/assets/login/bg3.jpg" alt="bg" />
+    </div>
 
     <div class="login-card">
       <!-- Logo -->
@@ -170,7 +172,6 @@ const handleLoginOrRegister = () => {
   align-items: center;
   width: 100vw;
   height: 100vh;
-  background: url("~@/assets/login/bg2.jpg") no-repeat center center/cover;
   position: relative;
   overflow: hidden;
 }
@@ -181,7 +182,12 @@ const handleLoginOrRegister = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4); /* 背景半透明遮罩层 */
+}
+
+.overlay img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 这个属性可以确保图片在容器内以合理方式缩放 */
 }
 
 .login-card {
@@ -190,7 +196,7 @@ const handleLoginOrRegister = () => {
   width: 400px;
   padding: 30px;
   border-radius: 15px;
-  background: rgba(255, 255, 255, 0.85); /* 半透明背景 */
+  background: rgba(255, 255, 255, 0.311); /* 半透明背景 */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px); /* 背景模糊效果 */
   text-align: center;
@@ -223,7 +229,7 @@ const handleLoginOrRegister = () => {
     button {
       flex: 1;
       padding: 10px;
-      background-color: #d3d3d3;
+      background-color: #fffdfdad;
       border-radius: 5px;
       margin-left: 2px;
       margin-right: 2px;
@@ -239,7 +245,7 @@ const handleLoginOrRegister = () => {
       }
 
       &:hover {
-        background-color: #b3b3b3;
+        background-color: #d0d0d0d5;
       }
     }
   }
@@ -247,24 +253,27 @@ const handleLoginOrRegister = () => {
   .title {
     font-size: 20px;
     font-weight: bold;
-    color: #333;
+    color: #333333e2;
     margin-bottom: 20px;
   }
 
   .content {
+    border-radius: 5px;
     .el-input,
     .el-button {
       margin-bottom: 15px;
+      border-radius: 5px;
     }
 
     .el-button {
       width: 100%;
       padding: 10px;
+      border-radius: 5px;
     }
 
     .switch-link {
       font-size: 14px;
-      color: #409eff;
+      color: #fafafacc;
       cursor: pointer;
       margin-top: 20px;
 
