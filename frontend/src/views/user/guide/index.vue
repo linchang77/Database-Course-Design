@@ -110,7 +110,7 @@ const fetchById = () => {
           guidePerformanceLevel: Number(guide.guidePerformanceLevel),
           guideSeniority: guide.guideSeniority,
           guidePrice: guide.guidePrice,
-          imageUrl: guide.profilePicture
+          imageUrl: `${baseUrl}${guide.profilePicture}`
         }))
         showEmptyMessage.value = false
       } else {
@@ -149,7 +149,7 @@ const fetchByGrade = () => {
           guidePerformanceLevel: Number(guide.guidePerformanceLevel),
           guideSeniority: guide.guideSeniority,
           guidePrice: guide.guidePrice,
-          imageUrl: guide.profilePicture
+          imageUrl: `${baseUrl}${guide.profilePicture}`
         }))
         showEmptyMessage.value = false
       } else {
@@ -384,6 +384,7 @@ onMounted(() => {
 
 .photo {
   width: 100px;
+  height:140px;
   border-radius: 5%;
   margin-top: 10px;
 }

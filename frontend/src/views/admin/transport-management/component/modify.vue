@@ -1,8 +1,9 @@
 <template>
   <div>
+    <!--
     <el-button type="primary" icon="EditPen" @click="showModifyScheduleForm">修改行程</el-button>
     <el-button type="primary" icon="EditPen" @click="showModifySpecificTicketForm">修改某张特定车/机票</el-button>
-
+    -->
     <!-- 修改行程的对话框 -->
     <el-dialog v-model="modifyScheduleFormVisible" title="修改行程" :before-close="handleCloseModifyScheduleForm">
       <el-form :model="vehicleScheduleData" label-width="120px">
