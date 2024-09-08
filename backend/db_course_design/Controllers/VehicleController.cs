@@ -47,7 +47,7 @@ namespace db_course_design.Controllers
     api/
         Vehicle/
             ticket/
-                purchase/{userId},{vehicleId},{type}/
+                purchase/{userId},{ticketId}/
                     POST            - 购买指定班次的指定种类的票
                 refund/
                     one/{orderId},{passengerId}/
@@ -182,25 +182,13 @@ namespace db_course_design.Controllers
             return NoContent();
         }
 
-        [HttpPost("ticket/purchase/{userId},{vehicleId},{type}")]
-        public async Task<IActionResult> PurchaseTicket(int userId, string vehicleId, string type, [FromBody] List<VehiclePassengerRequest> passengers)
+        [HttpPost("ticket/purchase/{userId},{ticketId}")]
+        public async Task<IActionResult> PurchaseTicket(int userId, decimal ticketId, [FromBody] List<VehiclePassengerRequest> passengers)
         {
-            var tickets = await _vehicleService.GetVehicleTicketsAsync(vehicleId);
-            VehicleTicket? ticket;
+            var ticket = await _vehicleService.GetVehicleTicketAsync(ticketId);
 
-            if (tickets == null || tickets.Count == 0)
-                return BadRequest("No vehicle ticket for " + vehicleId);
-
-            try
-            {
-                ticket = tickets.SingleOrDefault(t => t.TicketType == type);
-                if (ticket == null)
-                    throw new Exception();
-            }
-            catch
-            {
-                return BadRequest("Unable to purchase the ticket. This type of ticket doesn't exist.");
-            }
+            if (ticket == null)
+                return NotFound("Vehicle ticket " + ticketId + " doesn't exist.");
 
             if (ticket.TicketRemaining <= 0)
                 return BadRequest("Unable to purchase the ticket. This type of ticket has been sold out.");
