@@ -485,6 +485,19 @@ function formatToISO(date) {
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
 }
 
+function formatdtToISO(datetime) {
+  if (!datetime) return null
+  // 先将日期转换为 ISO 格式，并截取前 19 个字符 (YYYY-MM-DDTHH:mm:ss)
+  const year = datetime.getFullYear()
+  const month = String(datetime.getMonth() + 1).padStart(2, "0") // 月份从0开始，需要加1
+  const day = String(datetime.getDate()).padStart(2, "0")
+  const hours = String(datetime.getHours()).padStart(2, "0")
+  const minutes = String(datetime.getMinutes()).padStart(2, "0")
+  const seconds = String(datetime.getSeconds()).padStart(2, "0")
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
+}
+
 // 打开新增旅行团对话框
 const openAddTourDialog = () => {
   isEditing.value = false
@@ -724,6 +737,7 @@ onMounted(() => {
                   type="datetime"
                   placeholder="选择行程时间"
                   value-format="YYYY-MM-DD HH:mm:ss"
+                  @change="(datetime) => (tourForm.startDate = formatdtToISO(datetime))"
                 />
               </el-form-item>
               <el-form-item label="时长">
