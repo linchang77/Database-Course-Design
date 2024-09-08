@@ -106,12 +106,11 @@ function returnId() {
 const emit = defineEmits(['prevStep', 'nextStep']);
 async function buyTicket() {
   const userId = returnId();
-  const vehicleId = orderInfo.flight.vehicleId;
-  const type = orderInfo.flight.ticketType;
+  const ticketId = orderInfo.flight.ticketId;
 
   const passengers = buildPassengers();
 
-  const url = `https://123.60.14.84/api/Vehicle/ticket/purchase/${userId},${vehicleId},${type}`;
+  const url = `https://123.60.14.84/api/Vehicle/ticket/purchase/${userId},${ticketId}`;
 
   console.log("posting to url:", url);
   console.log("passengers:", passengers);
