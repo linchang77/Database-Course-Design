@@ -276,6 +276,7 @@ const updateTour = () => {
       ElMessage.success("旅行团更新成功")
       fetchTourGroups()
       tourDialogVisible.value = false
+      console.log(newTourForm.value)
     })
     .catch((error) => {
       ElMessage.error("更新失败: " + error.message)
@@ -471,6 +472,19 @@ function formatDateToDay(dateString?: string): string {
   return `${year}年${month}月${day}日`
 }
 
+function formatToISO(date) {
+  if (!date) return null
+  // 先将日期转换为 ISO 格式，并截取前 19 个字符 (YYYY-MM-DDTHH:mm:ss)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0") // 月份从0开始，需要加1
+  const day = String(date.getDate()).padStart(2, "0")
+  const hours = String(date.getHours()).padStart(2, "0")
+  const minutes = String(date.getMinutes()).padStart(2, "0")
+  const seconds = String(date.getSeconds()).padStart(2, "0")
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
+}
+
 // 打开新增旅行团对话框
 const openAddTourDialog = () => {
   isEditing.value = false
@@ -614,10 +628,20 @@ onMounted(() => {
             <el-input v-model="tourForm.groupPrice" type="number" />
           </el-form-item>
           <el-form-item label="开始日期" required>
-            <el-date-picker v-model="tourForm.startDate" type="date" placeholder="选择开始日期" />
+            <el-date-picker
+              v-model="tourForm.startDate"
+              type="date"
+              placeholder="选择开始日期"
+              @change="(date) => (tourForm.startDate = formatToISO(date))"
+            />
           </el-form-item>
           <el-form-item label="结束日期" required>
-            <el-date-picker v-model="tourForm.endDate" type="date" placeholder="选择结束日期" />
+            <el-date-picker
+              v-model="tourForm.endDate"
+              type="date"
+              placeholder="选择结束日期"
+              @change="(date) => (tourForm.endDate = formatToISO(date))"
+            />
           </el-form-item>
           <el-form-item label="导游" required>
             <el-select v-model="tourForm.guideId" placeholder="请选择导游">
