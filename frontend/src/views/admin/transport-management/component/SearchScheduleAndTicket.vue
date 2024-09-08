@@ -50,7 +50,9 @@
         </template>
         <el-table-column label="操作" fixed="right" >
           <template #default="{ row }">
+            <!--
             <el-button @click="showModifyForm(row)" type="text" size="small">修改</el-button>
+            -->
             <el-button @click="onDelete(row)" type="text" size="small" style="color: red;">删除</el-button>
           </template>
         </el-table-column>
