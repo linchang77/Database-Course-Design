@@ -65,6 +65,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 // Enable static file service.
 app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions

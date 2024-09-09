@@ -304,25 +304,31 @@ namespace db_course_design.Services.impl
         public async Task<List<OrderResponseOfGuide>> OrderFilterofGuide(byte GuideId, string? OrderType, int? UserId, DateTime? StartDate, DateTime? EndDate)
         {
             var allOrders = new List<OrderResponseOfGuide>();
-
-            if (OrderType == null)
-            {
-                var guideOrder = await GuideOrderFilter(GuideId, UserId, StartDate, EndDate);
-                var tourOrder = await TourOrderFilter(GuideId, StartDate, EndDate);
-                allOrders.AddRange(guideOrder);
-                allOrders.AddRange(tourOrder);
-            }
-            else if (OrderType.Equals("GuideOrder"))
+            if (UserId.HasValue)
             {
                 var guideOrder = await GuideOrderFilter(GuideId, UserId, StartDate, EndDate);
                 allOrders.AddRange(guideOrder);
             }
-            else if (OrderType.Equals("TourOrder"))
+            else
             {
-                var tourOrder = await TourOrderFilter(GuideId, StartDate, EndDate);
-                allOrders.AddRange(tourOrder);
+                if (OrderType == null)
+                {
+                    var guideOrder = await GuideOrderFilter(GuideId, UserId, StartDate, EndDate);
+                    var tourOrder = await TourOrderFilter(GuideId, StartDate, EndDate);
+                    allOrders.AddRange(guideOrder);
+                    allOrders.AddRange(tourOrder);
+                }
+                else if (OrderType.Equals("GuideOrder"))
+                {
+                    var guideOrder = await GuideOrderFilter(GuideId, UserId, StartDate, EndDate);
+                    allOrders.AddRange(guideOrder);
+                }
+                else if (OrderType.Equals("TourOrder"))
+                {
+                    var tourOrder = await TourOrderFilter(GuideId, StartDate, EndDate);
+                    allOrders.AddRange(tourOrder);
+                }
             }
-            
             return allOrders;
         }
         /*--添加导游信息--*/
